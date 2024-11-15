@@ -17,24 +17,46 @@ Before you start, make sure you have the following installed on your system:
 
 ### 1. Clone the Repository
 
-Start by cloning the repository to your local machine:
-
+    Start by cloning the repository to your local machine:
 ```bash
-git clone https://github.com/Jhonwal/tour-backend.git
-cd tour-backend
-
+    git clone https://github.com/Jhonwal/tour-backend.git
+    cd tour-backend
+```
 ### 2. Set Up Laravel (Backend)
+    Install PHP Dependencies
+```bash
     composer install
+```
+Set Up Environment File
+```bash
     cp .env.example .env
+```
+Generate a new application key for Laravel:
+```bash
     php artisan key:generate
+```
+Run the database migrations to set up the necessary tables:
+```bash
     php artisan migrate (or importe the db file)
+```
+Now, serve the Laravel backend using Artisan:
+```bash
     php artisan serve
-### 3. Set up react frontend
-    cd tour-frontend
-    npm install
-    npm run dev
+```
+ ### 3. Set up react frontend
+ Now, navigate to the frontend folder: 
+```bash
+     cd tour-frontend
+```
+Install the necessary dependencies:
+```bash
+     npm install
+```
+Run the React development server:
+```bash
+     npm run dev
 
-
+```
 ### How to Access the Project
 
 1. **Backend (Laravel API)**: The backend will be running on `http://127.0.0.1:8000` (default). You can interact with the API by sending requests from the React frontend.
