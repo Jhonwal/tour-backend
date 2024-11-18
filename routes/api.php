@@ -5,18 +5,20 @@ use App\Models\TourType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\TourDayController;
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\TourPriceController;
+use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\VisitorCountController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\ActivityController;
-use App\Http\Controllers\TourDayController;
-use App\Http\Controllers\DestinationController;
-
-
+use App\Http\Controllers\DayImageController;
 
 Route::get('/destinations/featured', [TourController::class, 'getThree']);
 
@@ -44,13 +46,17 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
                 ->middleware(['auth', 'throttle:6,1'])
                 ->name('verification.send');
 
+Route::get('/tour/{id}', [TourController::class, 'show']);
+
+Route::get('images', [ImageController::class, 'index']);
+
 
 Route::get('/tour-types', function () {
     return TourType::all();
 });
 Route::post('/track-visitor', [VisitorCountController::class, 'trackVisitor']);
 Route::get('visitor-counts/top-countries', [VisitorCountController::class, 'getTopCountries']);
-Route::post('/delete/session', [SessionController::class, 'delete']);
+Route::post('/delete/session', [SessionController::class, 'cleanup']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', function (){
@@ -68,5 +74,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tour-days', [TourDayController::class, 'store']);
     Route::post('/submit-day', [TourDayController::class, 'updateDayAndActivities']);
     Route::post('/destinations/store', [DestinationController::class, 'store']);
+    Route::post('/services/store', [ServiceController::class, 'store']);
+    Route::post('/tour-prices', [TourPriceController::class, 'store']);
+    Route::post('/tour/latest-days/pictures', [DayImageController::class, 'uploadPictures']);
+
 
 });

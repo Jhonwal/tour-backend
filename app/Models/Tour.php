@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Tour extends Model
 {
     protected $fillable = [
+        'name',
         'depart_city',
         'end_city',
         'tour_type',
@@ -14,7 +15,6 @@ class Tour extends Model
         'map_image',
         'banner',
         'duration',
-        'max_participants',
     ];
 
     public function bookings()

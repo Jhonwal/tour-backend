@@ -8,6 +8,9 @@ import MainTours from './tours/MainTours';
 import AddTourForm from './tours/AddTourForm';
 import TourDestinition from "@/admin/tours/tourDestinition.jsx";
 import TourActivities from "@/admin/tours/TourActivites.jsx";
+import TourServices from '@/admin/tours/TourServices.jsx';
+import TourPrices from '@/admin/tours/TourPrices';
+import DayImages from './tours/DayImages';
 
 function LayoutAdmin() {
   return (
@@ -18,7 +21,10 @@ function LayoutAdmin() {
           <Route path='/tours' element={<MainTours/>} />
           <Route path='/tours/new-tours' element={<AddTourForm/>} />
           <Route path='/tours/activites' element={<TourActivities/>}/>
+          <Route path='/tours/day-images' element={<DayImages/>}/>
           <Route path='/tours/destination' element={<TourDestinition/>}/>
+          <Route path='/tours/prices' element={<TourPrices/>}/>
+          <Route path='/tours/services' element={<TourServices/>}/>
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="/logout" element={<Logout />} />

@@ -1,32 +1,31 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { BadgeInfo, Loader, SquareX } from 'lucide-react';
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import useApi from "@/services/api.js";
+import Loading from "@/services/Loading";
+import { Button } from "@/components/ui/button";
 
 const TourDestination = () => {
     const [numDestinations, setNumDestinations] = useState(1);
     const navigate = useNavigate();
-    const [destinations, setDestinations] = useState([{ city: '', nights: 0 }]);
-    const [cities, setCities] = useState([]);
-    const [cookies] = useCookies(['activites']);
+    const [destinations, setDestinations] = useState([{ city: "", nights: 0 }]);
+    const [cookies, setCookie] = useCookies(["day_images", "destination"])
+    const [tour_id, setTourId] = useState(null);
     const [maxNights, setMaxNights] = useState(0); // Initialize as 0 to ensure it's a number
     const api = useApi();
-    const [message, setMessage] = useState(''); // State to handle submission message
-
+    const [message, setMessage] = useState(""); // State to handle submission message
+    const [loading, setLoading] = useState(true);
+    const [isSubmit, setIsSubmit] = useState(false);
     // Redirect if 'activities' cookie is missing
     useEffect(() => {
-        if (!cookies.activites) {
-            navigate('/admin/tours/activities');
+        if (!cookies.day_images) {
+            navigate("/admin/tours/day-images");
+        };
+        if(cookies.destination){
+            navigate("/admin/tours/prices");
         }
     }, [cookies, navigate]);
-
-    // Fetch Moroccan cities
-    useEffect(() => {
-        axios.get('https://api.example.com/moroccan-cities')
-            .then(response => setCities(response.data))
-            .catch(error => console.error('Error fetching cities:', error));
-    }, []);
 
     // Fetch maximum nights allowed from the database
     useEffect(() => {
@@ -40,7 +39,9 @@ const TourDestination = () => {
             try {
                 const tourResponse = await api.get("/api/last-tour", { headers });
                 const tourDays = tourResponse.data.tour?.tour_days || [];
+                setTourId(tourResponse.data.tour.id);
                 setMaxNights(tourDays.length);
+                setLoading(false);
             } catch (error) {
                 console.error("Error fetching max nights from DB:", error);
             }
@@ -52,15 +53,18 @@ const TourDestination = () => {
     const handleNumDestinationsChange = (e) => {
         const value = parseInt(e.target.value, 10);
         setNumDestinations(value);
-        setDestinations(Array.from({ length: value }, () => ({ city: '', nights: 0 })));
+        setDestinations(Array.from({ length: value }, () => ({ city: "", nights: 0 })));
     };
 
     const handleInputChange = (index, field, value) => {
-        const newDestinations = [...destinations];
-        const numericValue = field === 'nights' ? Math.min(value, getMaxNightsForInput(index)) : value;
-
-        newDestinations[index] = { ...newDestinations[index], [field]: numericValue };
-        setDestinations(newDestinations);
+        setDestinations((prevDestinations) => {
+            const newDestinations = [...prevDestinations];
+            newDestinations[index] = {
+                ...newDestinations[index],
+                [field]: field === "nights" ? Math.max(0, value) : value,
+            };
+            return newDestinations;
+        });
     };
 
     // Calculate total nights across all destinations
@@ -74,14 +78,16 @@ const TourDestination = () => {
     // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Create an array of valid destinations
-        const validDestinations = destinations.filter(dest => dest.city && dest.nights > 0);
-
-        if (validDestinations.length === 0) {
-            setMessage('Please fill in at least one destination with valid data.');
-            return;
-        }
+        setIsSubmit(true);
+        // Map all destinations for submission
+        const validDestinations = destinations.map((dest) => ({
+            name: dest.city || "", // Default to an empty string if the city is missing
+            number_of_nights: dest.nights || 0, // Default to 0 if no nights are entered
+            tour_id: tour_id,
+        }));
+        const dateExpire = new Date();
+        dateExpire.setDate(dateExpire.getDate() + 60);
+        console.log("Submitting Destinations:", validDestinations); // Debug log
 
         const token = localStorage.getItem("token");
         const headers = {
@@ -90,21 +96,43 @@ const TourDestination = () => {
         };
 
         try {
-            const response = await api.post("/api/destinations", validDestinations, { headers });
-            setMessage(response.data.message || 'Destinations submitted successfully!');
-            // Optionally reset the form or redirect
-            // resetForm();
+            const response = await api.post("/api/destinations/store", validDestinations, { headers });
+            setMessage(response.data.message || "Destinations submitted successfully!");
+            setIsSubmit(false);
+            setCookie('destination', 'true', { path: '/', expires: dateExpire });
+            navigate('/admin/tours/prices');
         } catch (error) {
             console.error("Error submitting destinations:", error);
             setMessage("Failed to submit destinations. Please try again.");
         }
     };
+    const closeError = () => {
+        setMessage('');
+    };
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <div className="p-4 max-w-md mx-auto">
+            <span className={`py-1 px-4 bg-orange-200 border border-orange-300 text-orange-600 rounded`}> <strong>step 3:</strong> tour destinations</span>
             <h1 className="text-2xl font-bold mb-4 text-orange-600 text-center">
                 Add destinations to your trip
             </h1>
+            {message && 
+            <div
+                className="flex items-center p-4 mb-4 text-red-800 border-t-4 border-red-300 bg-red-50"
+                role="alert"
+            >
+                <BadgeInfo className="mr-3"/>
+                <div className="text-sm font-medium">{message}</div>
+                <SquareX
+                    onClick={closeError}
+                    className="ms-auto p-1.5 rounded-lg cursor-pointer"
+                />
+            </div>
+            }
+
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label htmlFor="numDestinations" className="block text-gray-700">
@@ -121,48 +149,50 @@ const TourDestination = () => {
 
                 {destinations.map((destination, index) => (
                     <div key={index} className="mb-4">
-                        <h2 className="text-xl font-semibold text-gray-800">Destination {index + 1}</h2>
-
+                        <h2 className="text-xl font-semibold text-orange-800">Destination {index + 1}</h2>
                         <label htmlFor={`city-${index}`} className="block text-gray-700">City:</label>
-                        <select
+                        <input
+                            type="text"
                             id={`city-${index}`}
                             value={destination.city}
-                            onChange={(e) => handleInputChange(index, 'city', e.target.value)}
+                            onChange={(e) => handleInputChange(index, "city", e.target.value)}
+                            placeholder="Enter city name"
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                        >
-                            <option value="">Select a city</option>
-                            {cities.map((city, i) => (
-                                <option key={i} value={city}>{city}</option>
-                            ))}
-                        </select>
+                        />
 
-                        {/* Render nights input conditionally based on totalNights and maxNights */}
-                        {(totalNights < maxNights || destination.nights > 0) && (
-                            <div>
-                                <label htmlFor={`nights-${index}`} className="block text-gray-700 mt-2">Number of Nights:</label>
-                                <input
-                                    type="number"
-                                    id={`nights-${index}`}
-                                    value={destination.nights}
-                                    min={0}
-                                    max={getMaxNightsForInput(index)}
-                                    onChange={(e) => handleInputChange(index, 'nights', parseInt(e.target.value, 10))}
-                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                                />
-                            </div>
-                        )}
+                        <label htmlFor={`nights-${index}`} className="block text-gray-700 mt-2">Number of Nights:</label>
+                        <input
+                            type="number"
+                            id={`nights-${index}`}
+                            value={destination.nights}
+                            min={0}
+                            max={getMaxNightsForInput(index)}
+                            onChange={(e) => handleInputChange(index, "nights", parseInt(e.target.value, 10))}
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        />
                     </div>
                 ))}
 
-                <button
-                    type="submit"
-                    disabled={totalNights !== maxNights} // Disable the button if totalNights does not equal maxNights
-                    className={`w-full ${totalNights === maxNights ? 'bg-orange-600' : 'bg-gray-400'} text-white px-4 py-2 rounded-md shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500`}
-                >
-                    Submit
-                </button>
+                {!isSubmit ? (
+                    <Button
+                        type="submit"
+                        variant={`waguer2`}
+                        onClick={() => handleSubmit()}
+                        className="mt-4"
+                    >
+                        Submit
+                    </Button>
+                ) : (
+                    <Button
+                        type="submit"
+                        disabled
+                        variant={`waguer2`}
+                        className="mt-4"
+                    >
+                        <Loader className={`animate-spin`}/> Submitted
+                    </Button>
+                )}
             </form>
-            {message && <p className="mt-4 text-center text-red-600">{message}</p>}
         </div>
     );
 };

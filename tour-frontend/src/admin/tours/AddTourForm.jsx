@@ -28,6 +28,7 @@ const isValidImageFile = (file) => {
 
 const tourSchema = z.object({
     depart_city: z.string().min(1, 'Departure city is required'),
+    name: z.string().min(1, 'Tour name is required'),
     end_city: z.string().min(1, 'End city is required'),
     description: z.string().min(10, 'Description must be at least 10 characters long'),
     map_image: z.any().refine((file) => {
@@ -43,7 +44,6 @@ const tourSchema = z.object({
         return false;
     }, 'Banner image is required and must be a valid image less than 2MB'),
     duration: z.preprocess((val) => Number(val), z.number().min(1, 'Duration must be at least 1 day')),
-    max_participants: z.preprocess((val) => Number(val), z.number().min(1, 'Must have at least 1 participant')),
     tour_type_id: z.string().min(1, 'Please select a tour type'),
     image_count: z.preprocess((val) => Number(val), z.number().min(0, 'The number of images cannot be negative')),
 });
@@ -70,13 +70,13 @@ const AddTourForm = () => {
     const form = useForm({
         resolver: zodResolver(tourSchema),
         defaultValues: {
+            name: '',
             depart_city: '',
             end_city: '',
             description: '',
             map_image: null,
             banner: null,
             duration: '',
-            max_participants: '',
             tour_type_id: '',
             image_count: 0,
         },
@@ -100,48 +100,6 @@ const AddTourForm = () => {
 
         fetchTourTypes();
     }, [api]);
-
-    const handleAddTour = async (data) => {
-        setLoading(true);
-        setServerError('');
-        const dateExpire = new Date();
-        dateExpire.setDate(dateExpire.getDate() + 60);
-
-        const formData = new FormData();
-        formData.append('depart_city', data.depart_city);
-        formData.append('end_city', data.end_city);
-        formData.append('description', data.description);
-        formData.append('map_image', data.map_image[0]); // Access file using index
-        formData.append('banner', data.banner[0]); // Access file using index
-        formData.append('duration', data.duration);
-        formData.append('max_participants', data.max_participants);
-        formData.append('tour_type_id', data.tour_type_id);
-        additionalImages.forEach((file, index) => {
-            formData.append(`additional_images_${index}`, file);
-        });
-
-        try {
-            const token = localStorage.getItem('token');
-            await api.post('/api/add-tours', formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-
-            setCookie('tours', 'true', { path: '/', expires: dateExpire });
-            navigate('/admin/tours/activites');
-        } catch (error) {
-            setServerError('Failed to add tour. Please check your inputs and try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const closeError = () => {
-        setServerError('');
-    };
-
     const handleAdditionalImageChange = (e, index) => {
         const files = e.target.files;
         if (files && files[0]) {
@@ -157,6 +115,50 @@ const AddTourForm = () => {
             updatedPreviews[index] = fileUrl;
             setAdditionalPreview(updatedPreviews);
         }
+    };
+
+
+    const handleAddTour = async (data) => {
+        setLoading(true);
+        setServerError('');
+        const dateExpire = new Date();
+        dateExpire.setDate(dateExpire.getDate() + 60);
+
+        const formData = new FormData();
+        formData.append('name', data.name);
+        formData.append('depart_city', data.depart_city);
+        formData.append('end_city', data.end_city);
+        formData.append('description', data.description);
+        formData.append('map_image', data.map_image[0]); // Access file using index
+        formData.append('banner', data.banner[0]); // Access file using index
+        formData.append('duration', data.duration);
+        formData.append('tour_type_id', data.tour_type_id);
+        additionalImages.forEach((file, index) => {
+            if (file) {
+                formData.append('additional_images[]', file); // Use consistent field name
+            }
+        });        
+        try {
+            const token = localStorage.getItem('token');
+            await api.post('/api/add-tours', formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            setCookie('tours', 'true', { path: '/', expires: dateExpire });
+            navigate('/admin/tours/activites');
+        } catch (error) {
+            setServerError('Failed to add tour. Please check your inputs and try again.');
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const closeError = () => {
+        setServerError('');
     };
 
     return (
@@ -181,6 +183,17 @@ const AddTourForm = () => {
                     )}
 
                     {/* Form Fields */}
+                    <div className="grid grid-cols-1 gap-4">
+                        <FormField control={control} name="name" render={({field}) => (
+                            <FormItem>
+                                <FormLabel>Trip name</FormLabel>
+                                <FormControl>
+                                    <Input variant="orange" placeholder="Trip name" {...field} />
+                                </FormControl>
+                                {errors.name && <FormMessage>{errors.name.message}</FormMessage>}
+                            </FormItem>
+                        )}/>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField control={control} name="depart_city" render={({field}) => (
                             <FormItem>
@@ -258,7 +271,7 @@ const AddTourForm = () => {
                                     />
                                 </FormControl>
                                 {bannerPreview &&
-                                    <img src={bannerPreview} alt="Banner Preview" className="mt-2 max-w-xs"/>}
+                                    <img src={bannerPreview} alt="Banner Preview"  className="m-auto max-w-xs rounded-lg border-4 border-transparent animate-spin-border"/>}
                                 {errors.banner && <FormMessage>{errors.banner.message}</FormMessage>}
                             </FormItem>
                         )}/>
@@ -281,20 +294,25 @@ const AddTourForm = () => {
                             </FormItem>
                         )}/>
 
-                        <FormField control={control} name="max_participants" render={({field}) => (
+                        <FormField control={control} name="image_count" render={({field}) => (
                             <FormItem>
-                                <FormLabel>Max Participants</FormLabel>
+                                <FormLabel>Number of Additional Images</FormLabel>
                                 <FormControl>
                                     <Input
-                                        variant="orange"
                                         type="number"
-                                        placeholder="Max Participants"
+                                        min='0'
+                                        placeholder="0"
+                                        variant="orange"
                                         value={field.value}
-                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                        onChange={(e) => {
+                                            const count = Number(e.target.value);
+                                            field.onChange(count);
+                                            setImageCount(count);
+                                            setAdditionalImages(new Array(count).fill(null));
+                                        }}
                                     />
                                 </FormControl>
-                                {errors.max_participants &&
-                                    <FormMessage>{errors.max_participants.message}</FormMessage>}
+                                {errors.image_count && <FormMessage>{errors.image_count.message}</FormMessage>}
                             </FormItem>
                         )}/>
                     </div>
@@ -322,51 +340,28 @@ const AddTourForm = () => {
                         </FormItem>
                     )}/>
 
-                    {/* Number of Additional Images */}
-                    <FormField control={control} name="image_count" render={({field}) => (
-                        <FormItem>
-                            <FormLabel>Number of Additional Images</FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="number"
-                                    min='0'
-                                    placeholder="0"
-                                    variant="orange"
-                                    value={field.value}
-                                    onChange={(e) => {
-                                        const count = Number(e.target.value);
-                                        field.onChange(count);
-                                        setImageCount(count);
-                                        setAdditionalImages(new Array(count).fill(null));
-                                    }}
-                                />
-                            </FormControl>
-                            {errors.image_count && <FormMessage>{errors.image_count.message}</FormMessage>}
-                        </FormItem>
-                    )}/>
-
                     {/* Dynamic Inputs for Additional Images */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {Array.from({length: imageCount}, (_, index) => (
                             <FormField key={index} control={control} name={`additional_image_${index}`}
-                                       render={({field}) => (
-                                           <FormItem>
-                                               <FormLabel>Additional Image {index + 1}</FormLabel>
-                                               <FormControl>
-                                                   <Input
-                                                       type="file"
-                                                       accept="image/*"
-                                                       variant="orange"
-                                                       onChange={(e) => handleAdditionalImageChange(e, index)}  // Use the handler
-                                                   />
-                                               </FormControl>
-                                               {additionalPreview[index] &&
-                                                   <img src={additionalPreview[index]}
-                                                        alt={`Additional Preview ${index + 1}`}
-                                                        className="m-auto max-w-xs rounded-lg border-4 border-transparent animate-spin-border"/>
-                                               }
-                                           </FormItem>
-                                       )}/>
+                                render={({field}) => (
+                                   <FormItem>
+                                       <FormLabel>Additional Image {index + 1}</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                variant="orange"
+                                                onChange={(e) => handleAdditionalImageChange(e, index)}  // Use the handler
+                                            />
+                                        </FormControl>
+                                       {additionalPreview[index] &&
+                                            <img src={additionalPreview[index]}
+                                                alt={`Additional Preview ${index + 1}`}
+                                                className="m-auto max-w-xs rounded-lg border-4 border-transparent animate-spin-border"/>
+                                        }
+                                   </FormItem>
+                               )}/>
 
                         ))}
                     </div>

@@ -9,23 +9,22 @@ class DestinationController extends Controller
 {
     public function store(Request $request)
     {
-        // Validate the incoming request data
+        // Validation allows 0 nights, ensuring that no destination is excluded.
         $validatedData = $request->validate([
-            'name' => 'required|string',
-            'number_of_nights' => 'required|integer|min:1',
-            'tour_id' => 'required|integer|exists:tours,id',
+            '*.name' => 'required|string|max:255', // City name must be provided
+            '*.number_of_nights' => 'required|integer|min:0', // Nights can be 0
+            '*.tour_id' => 'required|exists:tours,id', // Valid tour ID
         ]);
 
-        // Create a new record in the database
-        $destination = Destination::create($validatedData);
+        try {
+            // Bulk insert all destinations
+            Destination::insert($validatedData);
 
-        // Return a success response
-        return response()->json([
-            'message' => 'Destination created successfully!',
-            'data' => $destination
-        ], 201);
+            return response()->json(['message' => 'Destinations saved successfully!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to save destinations.', 'error' => $e->getMessage()], 500);
+        }
     }
 }
-
 
 

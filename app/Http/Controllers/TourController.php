@@ -25,13 +25,13 @@ class TourController extends Controller
     {
         // Define validation rules
         $validator = Validator::make($request->all(), [
+            'name' => 'required|string',
             'depart_city' => 'required|string|max:255',
             'end_city' => 'required|string|max:255',
             'description' => 'required|string|min:10',
             'map_image' => 'required|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max size: 2MB
             'banner' => 'required|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max size: 2MB
             'duration' => 'required|integer|min:1',
-            'max_participants' => 'required|integer|min:1',
             'tour_type_id' => 'required|exists:tour_types,id', // Validate against existing tour types
         ]);
 
@@ -45,13 +45,13 @@ class TourController extends Controller
         $bannerPath = $request->file('banner')->store('public/tours/banners');
         // Create a new tour record
         $tour = new Tour();
+        $tour->name = $request->name;
         $tour->depart_city = $request->depart_city;
         $tour->end_city = $request->end_city;
         $tour->description = $request->description;
         $tour->map_image = Storage::url($mapImagePath); // Store file path
         $tour->banner = Storage::url($bannerPath); // Store file path
         $tour->duration = $request->duration;
-        $tour->max_participants = $request->max_participants;
         $tour->tour_type_id = $request->tour_type_id;
         // Save the tour to the database
         $tour->save();
@@ -64,17 +64,25 @@ class TourController extends Controller
             $tourDay->save();
 
         };
-        if ($request->hasFile('additional_images')) {
-            foreach ($request->file('additional_images') as $file) {
+        foreach ($request->file('additional_images') as $file) {
                 $filePath = $file->store('public/tours/additional');
                 TourImage::create([
-                    'url' => $filePath,
+                    'url' => Storage::url($filePath),
                     'tour_id' => $tourID->id
                 ]);
-            }
         }
         // Return success response
         return response()->json(['message' => 'Tour added successfully!', 'tour' => $tour], 201);
+    }
+    public function show($id)
+    {
+        $tour = Tour::with(['destinations', 'tourServices', 'tourImages', 'tourActivites'])->findOrFail($id);
+        
+        // Optionally, group tour activities by day if they are not already in the DB
+        $tour->tourActivites = $tour->tourActivites->groupBy('day');
+        
+        // Return the tour data as JSON for the React frontend
+        return response()->json($tour);
     }
     public function getThree()
     {

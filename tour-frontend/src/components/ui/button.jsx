@@ -20,6 +20,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         waguer:"primary-btn",
         waguer2:"waguer-btn",
+        danger:"waguer-danger",
       },
       size: {
         default: "h-10 px-4 py-2",

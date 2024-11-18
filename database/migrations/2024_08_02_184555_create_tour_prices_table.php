@@ -21,6 +21,10 @@ return new class extends Migration
             $table->float('4-stars|3-4');
             $table->float('4&5-stars|3-4');
             $table->float('5-stars|3-4');
+            $table->float('3-stars|5<n');
+            $table->float('4-stars|5<n');
+            $table->float('4&5-stars|5<n');
+            $table->float('5-stars|5<n');
             $table->unsignedBigInteger('tour_id');
             $table->foreign('tour_id')->references('id')->on('tours')->onDelete('cascade');
             

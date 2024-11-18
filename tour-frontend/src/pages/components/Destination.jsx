@@ -50,7 +50,7 @@ const Destinations = () => {
                                         <h3 className="text-xl font-semibold mb-2 bg-orange-200" >{destination.depart_city}-{destination.end_city}</h3>
                                         <p className="text-gray-700 mb-4">{destination.description}</p>
                                     </div>
-                                    <Link to={`/destinations/${destination.id}`} className="waguer-btn self-end">Learn More</Link>
+                                    <Link to={`/tour/${destination.id}`} className="waguer-btn self-end">Learn More</Link>
                                 </div>
                             </div>
                         ))}

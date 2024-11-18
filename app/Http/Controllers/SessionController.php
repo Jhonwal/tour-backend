@@ -2,26 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Config;
 
 class SessionController extends Controller
 {
-    public function delete(){
-            $latestSession = DB::table('sessions')
-            ->orderBy('last_activity', 'desc')
-            ->first();
+    /**
+     * Clean up expired sessions and retain the latest N sessions per user.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cleanup()
+    {
+        // Define the number of sessions to retain per user
+        $retainLimit = 6;
 
-        // Check if there's at least one session
-        if ($latestSession) {
-            // Delete all sessions except the most recent one
-            DB::table('sessions')
-                ->where('id', '!=', $latestSession->id)
-                ->delete();
+        // Step 1: Remove expired sessions based on session lifetime
+        $expiredSessionsCount = DB::table('sessions')
+            ->where('last_activity', '<', now()->subMinutes(Config::get('session.lifetime'))->getTimestamp())
+            ->delete();
 
-            return response()->json(['message' => 'Old sessions removed, only the latest session is kept.']);
-        }
+        // Step 2: Retain the latest N sessions per user
+        // Fetch all sessions grouped by user
+        $allSessions = DB::table('sessions')
+            ->select('id', 'user_id', 'last_activity')
+            ->orderBy('user_id') // Group by user (requires user_id in sessions table)
+            ->orderBy('last_activity', 'desc') // Order by most recent activity
+            ->get();
 
-        return response()->json(['message' => 'No sessions found.']);
+        $sessionsToKeep = $allSessions
+            ->groupBy('user_id') // Group sessions by user
+            ->flatMap(function ($sessions) use ($retainLimit) {
+                return $sessions->take($retainLimit)->pluck('id'); // Keep the latest N sessions per user
+            });
+
+        // Delete all other sessions except the retained ones
+        $deletedSessionsCount = DB::table('sessions')
+            ->whereNotIn('id', $sessionsToKeep)
+            ->delete();
+
+        return response()->json([
+            'message' => 'Session cleanup completed.',
+            'expired_sessions_removed' => $expiredSessionsCount,
+            'active_sessions_kept' => $sessionsToKeep->count(),
+            'other_sessions_deleted' => $deletedSessionsCount,
+        ]);
     }
 }

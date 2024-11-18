@@ -33,7 +33,7 @@ const TourActivities = () => {
     useEffect(() => {
 
         if (cookie.activites){
-            navigate('/admin/tours/destination')
+            navigate('/admin/tours//day-images')
         }
         if (!cookieTors.tours){
             navigate('/admin/tours/new-tours')
@@ -161,7 +161,7 @@ const TourActivities = () => {
                 dateExpire.setDate(dateExpire.getDate() + 60);
                 localStorage.removeItem('submittedDays');
                 setCookie('activites', 'true', { path: '/', expires: dateExpire});
-                navigate('/admin/tours/destination'); // Redirect to another page
+                navigate('/admin/tours/day-images'); // Redirect to another page
             }
             setIsSubmit(false);
         } catch (error) {
@@ -215,7 +215,7 @@ const TourActivities = () => {
             <div className={`flex justify-between lg:mt-0 lg:top-0 mt-10`}>
                 <span className={`py-1 px-4 bg-orange-200 border border-orange-300 text-orange-600 rounded`}> <strong>step 2:</strong> tour days</span>
                 <h1 className={`text-center text-orange-600 font-bold text-xl`}>
-                    {tour.depart_city}-{tour.end_city} Tour
+                    {tour.name} Tour
                 </h1>
                 <span className={`py-2 px-4 bg-orange-200 border border-orange-300 text-orange-600 rounded-lg`}>
                     {submittedDaysCount}/{totalDays} days submitted

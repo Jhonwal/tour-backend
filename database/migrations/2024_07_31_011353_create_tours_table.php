@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('tours', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->string('depart_city');
             $table->string('end_city');
             $table->text('description');
             $table->string('map_image');
             $table->string('banner');
             $table->unsignedInteger('duration');
-            $table->unsignedInteger('max_participants');
             $table->unsignedBigInteger('tour_type_id');
             $table->foreign('tour_type_id')->references('id')->on('tour_types')->onDelete('cascade');
             $table->timestamps();
