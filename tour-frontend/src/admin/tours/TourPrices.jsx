@@ -6,6 +6,7 @@ import useApi from "@/services/api";
 import Loading from "@/services/Loading";
 import { Button } from "@/components/ui/button";
 import { Loader } from "lucide-react";
+import { getToken } from "@/services/getToken";
 
 const TourPrices = () => {
     const [lastTour, setLastTour] = useState(null);
@@ -32,7 +33,7 @@ const TourPrices = () => {
 
     useEffect(() => {
         const fetchLastTour = async () => {
-            const token = localStorage.getItem("token");
+            const token =  getToken();
             if (!token) {
                 console.error("No token found. Redirecting to login.");
                 navigate("/login");
@@ -84,7 +85,7 @@ const TourPrices = () => {
             setErrors(validationErrors);
             return;
         }
-        const token = localStorage.getItem("token");
+        const token =  getToken();
         if (!token) {
             console.error("No token found. Redirecting to login.");
             navigate("/login");
@@ -149,12 +150,9 @@ const TourPrices = () => {
                                                 value={formData[fieldName] || ""}
                                                 onChange={handleInputChange}
                                                 className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none sm:text-sm ${
-                                                    errors[fieldName]
-                                                        ? "border-red-500" // Red border for errors
-                                                        : "border-orange-300" // Default orange border
-                                                } focus:ring-orange-500 focus:border-orange-500`} // Keep the orange focus style
+                                                    errors[fieldName] ? "border-red-500" : "border-orange-300"
+                                                } focus:ring-orange-500 focus:border-orange-500`}
                                             />
-
                                             {errors[fieldName] && (
                                                 <span className="text-red-500 text-sm">{errors[fieldName]}</span>
                                             )}
@@ -166,25 +164,22 @@ const TourPrices = () => {
                     </tbody>
                 </table>
 
-                
-                {!isSubmit ? (
-                    <Button
-                        variant={`waguer2`}
-                        onClick={() => handleSubmit()}
-                        className="mt-4"
-                    >
-                        Submit
-                    </Button>
-                ) : (
-                    <Button
-                        disabled
-                        variant={`waguer2`}
-                        className="mt-4"
-                    >
-                        <Loader className={`animate-spin`}/> Submitted
-                    </Button>
-                )}
+                <Button
+                    type="submit" // Change here to type="submit"
+                    variant={`waguer2`}
+                    disabled={isSubmit} // Disable while submitting
+                    className="mt-4"
+                >
+                    {isSubmit ? (
+                        <>
+                            <Loader className={`animate-spin`} /> Submitted
+                        </>
+                    ) : (
+                        'Submit'
+                    )}
+                </Button>
             </form>
+
         </div>
     );
 };

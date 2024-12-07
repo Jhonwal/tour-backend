@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import axios from "axios"
 import {
   Card,
   CardContent,
@@ -31,7 +30,7 @@ export function Visitors() {
     api.get("/api/visitor-counts/top-countries")
       .then((response) => {
         const data = response.data.chartData
-        setChartData(data)
+        setChartData(data);
         const total = data.reduce((acc, curr) => acc + curr.visitors, 0)
         setTotalVisitors(total)
         setPercentageChange(response.data.percentageChange)

@@ -61,7 +61,7 @@ export default function CarouselPlugin() {
                                             <h2 className="text-4xl font-bold mb-4">{slide.name}</h2>
                                             <p className="mb-6">{slide.description}</p>
                                             {slide.id && (
-                                                <Link to={`/tours/typs/${slide.id}`}>
+                                                <Link to={`/tour/types/${slide.id}`}>
                                                     <Button variant="waguer2" className="w-1/2">
                                                         Discover {slide.name}
                                                     </Button>

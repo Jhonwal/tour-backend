@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TourActivite;
 use App\Models\TourDay;
+use App\Models\TourActivite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 class TourDayController extends Controller
 {
@@ -72,4 +73,21 @@ class TourDayController extends Controller
             return response()->json(['error' => 'Failed to update day and activities.', 'details' => $e->getMessage()], 500);
         }
     }
+    
+    public function getDayDetails($id)
+    {
+        $day = TourDay::with(['activities.activites', 'dayImages'])->find($id);
+
+        if (!$day) {
+            return response()->json(['message' => 'Day not found'], 404);
+        }
+        // Ensure image URLs are full paths
+        foreach ($day->dayImages as $image) {
+            $image->url = URL::to($image->url); // Make sure the image URL is absolute
+        }
+    
+        // Return the data as JSON for your React frontend
+        return response()->json($day);
+    }
+    
 }

@@ -8,6 +8,7 @@ import LayoutAdmin from './admin/LayoutAdmin';
 import AuthMiddleware from './contexts/AuthContext';
 import LoginContext from './contexts/LoginContext';
 import TourDetails from './pages/tour/TourDetails';
+import TourTypesList from './pages/tour/TourTypesList';
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="/tour/:id" element={<TourDetails />} />
+          <Route path="/tour/types/:id" element={<TourTypesList/>} />
         </Route>
         {/* <Route path="/log" element={<Logout />}/> */}
         <Route path="login" element={

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import useApi from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { Loader2Icon } from 'lucide-react';
+import Loading from '@/services/Loading';
 
 const Logout = () => {
     const api = useApi();
@@ -35,15 +36,8 @@ const Logout = () => {
     }, [api, navigate]);
 
     return (
-        <div className="bg-cover bg-center bg-[url('/images/dades.webp')]">
-            <div className="flex justify-center items-center h-screen bg-white bg-opacity-50">
-                <div className="relative">
-                    <Loader2Icon className='text-red-700 animate-spin' size={200} />
-                    <div className="absolute inset-2 flex justify-center items-center text-red-700 font-bold animate-bounce">
-                        Logout
-                    </div>
-                </div>
-            </div>
+        <div className="bg-cover bg-center !bg-[url('/images/sahara.webp')]">
+            <Loading />
         </div>
     );
 };

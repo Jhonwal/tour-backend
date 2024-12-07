@@ -11,16 +11,14 @@ import DayDetails from "./components/DayDetails";
 import ServiceTable from "./components/ServiceTable";
 import TourPrices from "./components/TourPrices";
 import { Reserve } from "./components/Reserve";
-import { useParams } from "react-router-dom";
 
 // Main TourDet Component
-function TourDetails() {
+function TourDet({ id }) {
   const api = useApi();
   const [tour, setTour] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null); // State for the selected day
-  const { id } = useParams(); 
 
   const autoplayPlugin = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: false }) // Autoplay indefinitely
@@ -43,7 +41,6 @@ function TourDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-orange-700 text-center underline">Tour: {tour.name}</h1>
       {/* Tour Overview */}
       <div className="flex flex-col lg:flex-row gap-8 p-5 shadow-md shadow-orange-300">
         {/* Left Section */}
@@ -208,4 +205,4 @@ function TourDetails() {
   );
 }
 
-export default TourDetails;
+export default TourDet;

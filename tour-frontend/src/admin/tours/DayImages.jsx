@@ -8,6 +8,7 @@ import { Loader, Terminal } from 'lucide-react';
 import Loading from '@/services/Loading';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+import { getToken } from '@/services/getToken';
 
 const DayImages = () => {
   const api = useApi();
@@ -36,7 +37,7 @@ const DayImages = () => {
   useEffect(() => {
     const fetchLatestTourDays = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = getToken();
         const headers = {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -98,7 +99,7 @@ const DayImages = () => {
         });
       }
 
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       const rep =  await api.post('/api/tour/latest-days/pictures', formData, {
         headers: {

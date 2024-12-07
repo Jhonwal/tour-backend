@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useApi from "@/services/api.js";
 import { useCookies } from "react-cookie";
 import Loading from "@/services/Loading";
+import { getToken } from "@/services/getToken";
 
 const TourServices = () => {
     const [numServices, setNumServices] = useState(1);
@@ -22,7 +23,7 @@ const TourServices = () => {
     }, [cookies, navigate]);
     useEffect(() => {
         const fetchTourID = async () => {
-            const token = localStorage.getItem("token");
+            const token =  getToken();
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -55,7 +56,7 @@ const TourServices = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("token");
+        const token =  getToken();
         const headers = {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

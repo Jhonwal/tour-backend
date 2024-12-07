@@ -28,7 +28,7 @@ class DayImageController extends Controller
             if ($request->hasFile('pictures') && count($request->file('pictures')) > 0) {
                 foreach ($request->file('pictures') as $file) {
                     // Store the file in the 'public/tour_pictures' directory
-                    $path = $file->store('tour/tour_days', 'public');
+                    $path = $file->store('tours/tour_days', 'public');
 
                     // Save the file path in the 'day_images' table
                     $dayImage = DayImage::create([

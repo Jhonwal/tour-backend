@@ -5,15 +5,23 @@ use App\Models\Tour;
 use App\Models\TourDay;
 use App\Models\TourImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class TourController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $destinations = Tour::all();
-        return response()->json($destinations);
+        $tours = Tour::paginate(10); // Changez 10 par le nombre d'éléments par page
+        return response()->json($tours);
+    }
+    public function tour_type($type)
+    {
+        // Récupère tous les tours du type spécifié
+        $tours = Tour::where('tour_type_id', $type)->get();
+
+        return response()->json($tours);
     }
     /**
      * Store a new tour.
@@ -64,31 +72,52 @@ class TourController extends Controller
             $tourDay->save();
 
         };
-        foreach ($request->file('additional_images') as $file) {
-                $filePath = $file->store('public/tours/additional');
-                TourImage::create([
-                    'url' => Storage::url($filePath),
-                    'tour_id' => $tourID->id
-                ]);
+        if ($request->file('additional_images')  !== null) {
+            foreach ($request->file('additional_images') as $file) {
+                    $filePath = $file->store('public/tours/additional');
+                    TourImage::create([
+                        'url' => Storage::url($filePath),
+                        'tour_id' => $tourID->id
+                    ]);
+            }
         }
         // Return success response
         return response()->json(['message' => 'Tour added successfully!', 'tour' => $tour], 201);
     }
     public function show($id)
     {
-        $tour = Tour::with(['destinations', 'tourServices', 'tourImages', 'tourActivites'])->findOrFail($id);
-        
-        // Optionally, group tour activities by day if they are not already in the DB
-        $tour->tourActivites = $tour->tourActivites->groupBy('day');
-        
-        // Return the tour data as JSON for the React frontend
+        $tour = Tour::with([
+            'destinations',
+            'tourImages',
+            'price',
+            'tourDays',
+            'excludedServices',
+            'includedServices',
+        ])->findOrFail($id);
+    
+        // Ensure all image paths are full URLs
+        $tour->banner = URL::to($tour->banner);
+        $tour->map_image = URL::to($tour->map_image);
+    
+        foreach ($tour->tourImages as $image) {
+            $image->url = URL::to($image->url);
+        }
+    
         return response()->json($tour);
     }
-    public function getThree()
+    
+    public function getThree() 
     {
-        $destinations = Tour::limit(3)->get();
+        $destinations = Tour::limit(6)->get();
+    
+        $destinations->each(function ($destination) {
+            $destination->banner = URL::to($destination->banner);
+            $destination->map_image = URL::to($destination->map_image);
+        });
+    
         return response()->json($destinations);
     }
+    
     public function count()
     {
         $numberOfTours = Tour::count();
@@ -105,5 +134,5 @@ class TourController extends Controller
             return response()->json(['error' => 'No tour found'], 404);
         }
     }
-
+    
 }

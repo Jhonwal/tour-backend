@@ -1,10 +1,12 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Visitors } from "../components/Visitors";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { PartyPopper } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import TourList from "./TourList";
+import { TourTypes } from "./TourTypes";
+import TourTypesTable from "./TourTypesTable";
 
 export default function MainTours() {
     const [message, setMessage] = useState(null);
@@ -43,16 +45,39 @@ export default function MainTours() {
                 </Alert>
             )}
             <div className="flex flex-col p-2">
-                <div className="flex justify-between items-center mb-2">
-                    <Input type="text" className="md:w-2/4 sm:w-2/3 w-full mr-2" placeholder="search" variant="orange" />
-                    <Link to="/admin/tours/new-tours">
-                        <Button variant="waguer2">Create new tour</Button>
-                    </Link>
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
+                    <Input 
+                        type="text" 
+                        className="w-full sm:w-2/3 md:w-2/4 xl:w-1/3 mr-2" 
+                        placeholder="search" 
+                        variant="orange" 
+                    />
+                    
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                        <Link to="/admin/tours/new-tours" className="w-full sm:w-auto">
+                            <Button variant="waguer2" className="w-full sm:w-auto">Create new tour</Button>
+                        </Link>
+                        
+                        <Link to="/tour-types/create" className="w-full sm:w-auto">
+                            <Button variant="waguer2" className="w-full sm:w-auto">Add New Tour Type</Button>
+                        </Link>
+                    </div>
                 </div>
-                <div className="grid md:grid-cols-3 sm:grid-cols-1 gap-4">
-                    <Visitors /><Visitors /><Visitors />
+
+                <div className="grid md:grid-cols-3 sm:grid-cols-1 gap-4 mb-2">
+                    <div className="col-span-1">
+                        <TourTypes/>
+                    </div>
+                    <div className="col-span-2">
+                        <TourTypesTable/>
+                    </div>
+                </div>
+                <div>
+                    <TourList/>
                 </div>
             </div>
         </>
     );
 }
+
+

@@ -8,6 +8,7 @@ import { BadgeInfo, Loader, PartyPopper, Terminal, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Loading from "@/services/Loading";
 import {useCookies} from "react-cookie";
+import { getToken } from "@/services/getToken";
 
 const TourActivities = () => {
     const api = useApi();
@@ -50,7 +51,7 @@ const TourActivities = () => {
 
         const fetchTourAndRelatedData = async () => {
             try {
-                const token = localStorage.getItem("token");
+                const token =  getToken();
                 const headers = {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -121,7 +122,7 @@ const TourActivities = () => {
             setIsSubmit(true);
             setShowAlert(true);
             setShowAlert1(true);
-            const token = localStorage.getItem("token");
+            const token =  getToken();
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",

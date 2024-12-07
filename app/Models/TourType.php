@@ -9,4 +9,10 @@ class TourType extends Model
 {
     use HasFactory;
     protected $fillable = ['name', 'description', 'image'];
+
+    public function tours()
+    {
+        return $this->hasMany(Tour::class);
+    }
+
 }

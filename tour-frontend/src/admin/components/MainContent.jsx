@@ -1,6 +1,7 @@
 import useApi from "@/services/api";
 import { useEffect, useState } from "react";
 import { Visitors } from "./Visitors";
+import { getToken } from "@/services/getToken";
 
 export default function MainContent() {
   const api = useApi();
@@ -9,7 +10,7 @@ export default function MainContent() {
     useEffect(() => {
       const fetchNumberOfTour = async () => {
           try {
-              const token = localStorage.getItem('token');
+              const token =  getToken();
               const response = await api.get('/api/tours/countOfTours', {
                   headers: {
                       Authorization: `Bearer ${token}`

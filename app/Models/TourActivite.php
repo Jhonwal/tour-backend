@@ -10,9 +10,9 @@ class TourActivite extends Model
         'tour_id', 'tour_day_id', 'activite_id',
     ];
 
-    public function activite()
+    public function activites()
     {
-        return $this->belongsTo(Activite::class);
+        return $this->belongsTo(Activite::class, 'activite_id');
     }
 
     public function tour()

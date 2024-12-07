@@ -17,6 +17,7 @@ import useApi from '@/services/api.js';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import { getToken } from '@/services/getToken';
 
 // Define the Zod schema for form validation
 const isValidImageFile = (file) => {
@@ -139,7 +140,7 @@ const AddTourForm = () => {
             }
         });        
         try {
-            const token = localStorage.getItem('token');
+            const token = getToken();
             await api.post('/api/add-tours', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,

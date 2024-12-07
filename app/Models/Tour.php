@@ -10,7 +10,7 @@ class Tour extends Model
         'name',
         'depart_city',
         'end_city',
-        'tour_type',
+        'tour_type_id',
         'description',
         'map_image',
         'banner',
@@ -26,7 +26,6 @@ class Tour extends Model
     {
         return $this->hasMany(Destination::class);
     }
-
     public function tourActivites()
     {
         return $this->hasMany(TourActivite::class);
@@ -42,13 +41,28 @@ class Tour extends Model
         return $this->hasMany(TourImage::class);
     }
 
-    public function tourPrices()
+    public function price()
     {
-        return $this->hasMany(TourPrice::class);
+        return $this->hasOne(TourPrice::class);
     }
-
+    
     public function tourServices()
     {
         return $this->hasMany(Service::class);
     }
+    public function tourType()
+    {
+        return $this->belongsTo(TourType::class);
+    }
+    public function includedServices()
+    {
+        return $this->hasMany(Service::class)->where('type', 'include');
+    }
+
+    public function excludedServices()
+    {
+        return $this->hasMany(Service::class)->where('type', 'exclude');
+    }
+
+
 }

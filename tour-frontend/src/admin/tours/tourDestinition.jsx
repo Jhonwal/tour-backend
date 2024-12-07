@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import useApi from "@/services/api.js";
 import Loading from "@/services/Loading";
 import { Button } from "@/components/ui/button";
+import { getToken } from "@/services/getToken";
 
 const TourDestination = () => {
     const [numDestinations, setNumDestinations] = useState(1);
@@ -30,7 +31,7 @@ const TourDestination = () => {
     // Fetch maximum nights allowed from the database
     useEffect(() => {
         const fetchMaxNights = async () => {
-            const token = localStorage.getItem("token");
+            const token =  getToken();
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -79,22 +80,31 @@ const TourDestination = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmit(true);
+    
+        // Validate if total nights match the max nights allowed
+        if (totalNights !== maxNights) {
+            setMessage(`The total number of nights must equal ${maxNights}. Please adjust the number of nights.`);
+            setIsSubmit(false);
+            return; // Prevent form submission
+        }
+    
         // Map all destinations for submission
         const validDestinations = destinations.map((dest) => ({
             name: dest.city || "", // Default to an empty string if the city is missing
             number_of_nights: dest.nights || 0, // Default to 0 if no nights are entered
             tour_id: tour_id,
         }));
+    
         const dateExpire = new Date();
         dateExpire.setDate(dateExpire.getDate() + 60);
         console.log("Submitting Destinations:", validDestinations); // Debug log
-
-        const token = localStorage.getItem("token");
+    
+        const token = getToken();
         const headers = {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
         };
-
+    
         try {
             const response = await api.post("/api/destinations/store", validDestinations, { headers });
             setMessage(response.data.message || "Destinations submitted successfully!");
@@ -106,6 +116,7 @@ const TourDestination = () => {
             setMessage("Failed to submit destinations. Please try again.");
         }
     };
+    
     const closeError = () => {
         setMessage('');
     };
@@ -114,7 +125,7 @@ const TourDestination = () => {
     }
 
     return (
-        <div className="p-4 max-w-md mx-auto">
+        <div className="p-4 mx-auto">
             <span className={`py-1 px-4 bg-orange-200 border border-orange-300 text-orange-600 rounded`}> <strong>step 3:</strong> tour destinations</span>
             <h1 className="text-2xl font-bold mb-4 text-orange-600 text-center">
                 Add destinations to your trip
@@ -133,66 +144,62 @@ const TourDestination = () => {
             </div>
             }
 
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label htmlFor="numDestinations" className="block text-gray-700">
-                        Number of Destinations:
-                    </label>
+        <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+                <label htmlFor="numDestinations" className="block text-gray-700">
+                    Number of Destinations:
+                </label>
+                <input
+                    type="number"
+                    id="numDestinations"
+                    value={numDestinations}
+                    onChange={handleNumDestinationsChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                />
+            </div>
+
+            {destinations.map((destination, index) => (
+                <div key={index} className="mb-4">
+                    <h2 className="text-xl font-semibold text-orange-800">Destination {index + 1}</h2>
+                    <label htmlFor={`city-${index}`} className="block text-gray-700">City:</label>
+                    <input
+                        type="text"
+                        id={`city-${index}`}
+                        value={destination.city}
+                        onChange={(e) => handleInputChange(index, "city", e.target.value)}
+                        placeholder="Enter city name"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                    />
+
+                    <label htmlFor={`nights-${index}`} className="block text-gray-700 mt-2">Number of Nights:</label>
                     <input
                         type="number"
-                        id="numDestinations"
-                        value={numDestinations}
-                        onChange={handleNumDestinationsChange}
+                        id={`nights-${index}`}
+                        value={destination.nights}
+                        min={0}
+                        max={getMaxNightsForInput(index)}
+                        onChange={(e) => handleInputChange(index, "nights", parseInt(e.target.value, 10))}
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                     />
                 </div>
+            ))}
 
-                {destinations.map((destination, index) => (
-                    <div key={index} className="mb-4">
-                        <h2 className="text-xl font-semibold text-orange-800">Destination {index + 1}</h2>
-                        <label htmlFor={`city-${index}`} className="block text-gray-700">City:</label>
-                        <input
-                            type="text"
-                            id={`city-${index}`}
-                            value={destination.city}
-                            onChange={(e) => handleInputChange(index, "city", e.target.value)}
-                            placeholder="Enter city name"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                        />
-
-                        <label htmlFor={`nights-${index}`} className="block text-gray-700 mt-2">Number of Nights:</label>
-                        <input
-                            type="number"
-                            id={`nights-${index}`}
-                            value={destination.nights}
-                            min={0}
-                            max={getMaxNightsForInput(index)}
-                            onChange={(e) => handleInputChange(index, "nights", parseInt(e.target.value, 10))}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                        />
-                    </div>
-                ))}
-
-                {!isSubmit ? (
-                    <Button
-                        type="submit"
-                        variant={`waguer2`}
-                        onClick={() => handleSubmit()}
-                        className="mt-4"
-                    >
-                        Submit
-                    </Button>
+            <Button
+                type="submit"
+                variant={`waguer2`}
+                disabled={isSubmit} // Disable button while submitting
+                className="mt-4"
+            >
+                {isSubmit ? (
+                    <>
+                        <Loader className={`animate-spin`} /> Submitted
+                    </>
                 ) : (
-                    <Button
-                        type="submit"
-                        disabled
-                        variant={`waguer2`}
-                        className="mt-4"
-                    >
-                        <Loader className={`animate-spin`}/> Submitted
-                    </Button>
+                    'Submit'
                 )}
-            </form>
+            </Button>
+        </form>
+
         </div>
     );
 };

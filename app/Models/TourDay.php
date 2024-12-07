@@ -16,12 +16,12 @@ class TourDay extends Model
         return $this->belongsTo(Tour::class);
     }
 
-    public function tourActivites()
+    public function activities()
     {
         return $this->hasMany(TourActivite::class);
     }
     public function dayImages()
     {
-        return $this->hasMany(DayImage::class);
+        return $this->hasMany(DayImage::class, 'day_id');
     }
 }

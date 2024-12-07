@@ -45,24 +45,36 @@ const Login = () => {
   const handleLogin = async (data) => {
     setLoading(true);
     setServerError('');
-
+  
     try {
       const response = await api.post('/api/login', data);
-      localStorage.setItem('token', response.data.token);
+  
+      // Set token with expiration
+      const token = response.data.token;
+      const ttl = 3600000;
+      const now = new Date();
+  
+      const tokenWithExpiry = {
+        value: token,
+        expiry: now.getTime() + ttl,
+      };
+  
+      localStorage.setItem('token', JSON.stringify(tokenWithExpiry));
+  
       navigate('/admin');
     } catch (error) {
       setServerError('Login failed. Please check your credentials and try again.');
     } finally {
       setLoading(false);
     }
-  };
+  };  
 
   const closeError = () => {
     setServerError('');
   };
 
   return (
-  <div className="bg-[url('/images/maroc_gate.webp')] bg-fixed bg-cover bg-center min-h-screen p-8">
+  <div className="!bg-[url('/images/maroc_gate.webp')] bg-fixed bg-cover bg-center min-h-screen p-8">
     <div className="max-w-2xl mx-auto p-8 bg-orange-100 rounded-3xl bg-opacity-75">
       <img src="/images/waguer.png" alt="logo" className="w-40 mx-auto my-3" />
       <Form {...form}>
@@ -117,12 +129,12 @@ const Login = () => {
           {/* Submit Button */}
           <div>
             {loading ? (
-              <Button variant="waguer" disabled>
+              <Button variant="waguer2" disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Please wait
               </Button>
             ) : (
-              <Button variant="waguer">Login</Button>
+              <Button variant="waguer2">Login</Button>
             )}
           </div>
         </form>
