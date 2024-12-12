@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 use App\Models\Tour;
+use App\Models\User;
 use App\Models\TourDay;
+use App\Models\TourType;
 use App\Models\TourImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -13,15 +16,26 @@ class TourController extends Controller
 {
     public function index(Request $request)
     {
-        $tours = Tour::paginate(10); // Changez 10 par le nombre d'éléments par page
-        return response()->json($tours);
+        $tours = Tour::all(); 
+        $type = TourType::all();
+        return response()->json([
+            'tours' => $tours,
+            'types' => $type,
+        ]);
     }
     public function tour_type($type)
     {
-        // Récupère tous les tours du type spécifié
-        $tours = Tour::where('tour_type_id', $type)->get();
 
-        return response()->json($tours);
+        $tours = Tour::where('tour_type_id', $type)->orderBy('created_at', 'desc')->get();
+        $type = TourType::find($type);
+        $tours->each(function ($tour) {
+            $tour->banner = URL::to($tour->banner);
+            $tour->map_image = URL::to($tour->map_image);
+        });
+        return response()->json([
+            'tours' => $tours,
+            'type' => $type,
+        ]);
     }
     /**
      * Store a new tour.
@@ -108,8 +122,9 @@ class TourController extends Controller
     
     public function getThree() 
     {
+
         $destinations = Tour::limit(6)->get();
-    
+        
         $destinations->each(function ($destination) {
             $destination->banner = URL::to($destination->banner);
             $destination->map_image = URL::to($destination->map_image);
@@ -124,8 +139,8 @@ class TourController extends Controller
         return response()->json(['count' => $numberOfTours]);
     }
     public function lastTour() {
-        $tour = Tour::all()->last();  // Fetch the last tour
 
+        $tour = Tour::all()->last();  // Fetch the last tour
         if ($tour) {
             // Use the relationship method to get related tour days
             $tourDays = $tour->tourDays; // Use the property, not method call

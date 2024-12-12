@@ -52,7 +52,8 @@ Route::get('images', [ImageController::class, 'index']);
 
 
 Route::get('/tour-types', function () {
-    return TourType::all();
+    $tourTypes = TourType::with('tours')->get();
+    return response()->json($tourTypes);
 });
 Route::get('/tour-types/page', [TourTypeController::class, 'tour_type']);
 Route::post('/track-visitor', [VisitorCountController::class, 'trackVisitor']);
@@ -65,7 +66,7 @@ Route::get('/tour-prices/{id}', [TourPriceController::class, 'show']);
 Route::post('/testimonials', [TestimonialController::class, 'store']);
 Route::get('/testimonials', [TestimonialController::class, 'index']);
 Route::post('/bookings', [BookingController::class, 'store']);
-
+Route::post('/check-booking', [BookingController::class, 'checkBooking']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', function (){
@@ -73,14 +74,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::get('/tours', [TourController::class, 'index']);
     Route::get('/tours/countOfTours', [TourController::class, 'count']);
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->name('logout');
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::post('/add-tours', [TourController::class, 'store']);
     Route::get('/last-tour', [TourController::class, 'lastTour']);
-
     Route::get('/activities', [ActivityController::class, 'index']);
     Route::get('/tour-days/{tour_id}', [TourDayController::class, 'index']);
-
     Route::post('/tour-days', [TourDayController::class, 'store']);
     Route::post('/submit-day', [TourDayController::class, 'updateDayAndActivities']);
     Route::post('/destinations/store', [DestinationController::class, 'store']);
@@ -91,5 +89,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/testimonials/all', [TestimonialController::class, 'showAll']);
     Route::put('/testimonials/{id}', [TestimonialController::class, 'updateState']);
     Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy']);
+    Route::get('/admin/bookings', [BookingController::class, 'index']);
+    Route::post('/admin/bookings', [BookingController::class, 'store']);
+    Route::put('/admin/bookings/{id}', [BookingController::class, 'update']);
+    Route::delete('/admin/bookings/{id}', [BookingController::class, 'destroy']);
+
     
 });

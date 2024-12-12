@@ -11,13 +11,14 @@ import {
 import Autoplay from "embla-carousel-autoplay";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import TestemonialForm from "./TestemonialForm";
+import './styles.css';
 
 const TestimonialList = () => {
     const api = useApi();
     const [testimonials, setTestimonials] = useState([]);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false); // State for popover visibility
     const [isLargeScreen, setIsLargeScreen] = useState(false); // Track screen size
-    const [currentIndex, setCurrentIndex] = useState(0); // Track current carousel index
+    const [loading, setLoading] = useState(true);
 
     const carouselRef = useRef(); // Reference to the carousel to get access to the carousel API
 
@@ -25,12 +26,15 @@ const TestimonialList = () => {
         const fetchTestimonials = async () => {
             try {
                 const response = await api.get("/api/testimonials");
-                setTestimonials(response.data);
+                const testimonialsArray = Object.values(response.data); // Convert object to array
+                setTestimonials(testimonialsArray); // Update state with the array
+                setLoading(false);
             } catch (error) {
                 console.error("Error fetching testimonials:", error);
             }
         };
-
+        
+        
         fetchTestimonials();
 
         // Check for screen size on mount and resize
@@ -62,11 +66,14 @@ const TestimonialList = () => {
     };
 
     return (
-        <div className="bg-gray-100 bg-opacity-75 py-10">
-            <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Testimonials</h2>
+        <div className="bg-gray-100 bg-opacity-75 pb-5">
+            <h2 className="text-3xl font-bold font-verdana text-center mb-8 text-white bg-orange-500 p-2">What Our Customers Say.</h2>
+            <p className="text-center text-lg font-semibold font-verdana text-orange-600 mb-8">
+                We take great pride in delivering exceptional services to our customers. Here's what some of them have to say about their experiences with us. Their feedback motivates us to continue improving and providing the best service possible.
+            </p>
             <Carousel
                 ref={carouselRef} // Pass the carousel reference
-                className="max-w-5xl p-2 mx-auto"
+                className="max-w-5xl p-4 mx-auto"
                 plugins={[plugin.current]}
                 onMouseEnter={plugin.current.stop}
                 onMouseLeave={plugin.current.reset}
@@ -93,39 +100,27 @@ const TestimonialList = () => {
                                         {/* Testimonial Content */}
                                         <div className="flex-1">
                                             <h3 className="text-xl font-semibold text-gray-800">{testimonial.name}</h3>
-                                            <p className="text-gray-500 text-sm">{testimonial.email}</p>
                                             <p className="text-yellow-500 text-sm mt-1">
                                                 {"★".repeat(testimonial.rating)}{" "}
                                                 <span className="text-gray-400">{"☆".repeat(5 - testimonial.rating)}</span>
                                             </p>
-                                            <p className="text-gray-700 mt-4">{testimonial.message}</p>
+                                            <div className="max-h-32 min-h-32 bg-orange-200 bg-opacity-50 p-2 shadow-md rounded-md overflow-auto scrollbar-thin scrollbar-thumb-orange-500 scrollbar-track-transparent">
+                                                <p className="text-orange-800 mt-4">{testimonial.message}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
                         </CarouselItem>
                     ))}
                 </CarouselContent>
+                <CarouselNext/>
+                <CarouselPrevious/>
             </Carousel>
-
-            {/* Progress Bar */}
-            {totalItems > 1 && (
-                <div className="relative mt-6">
-                    <div className="h-2 bg-gray-300 rounded-full">
-                        <div
-                            className="h-full bg-orange-500 rounded-full"
-                            style={{
-                                width: `${((currentIndex) / (totalItems - 1)) * 100}%`, // Progress based on current index
-                                transition: "width 0.5s ease", // Smooth transition for the progress
-                            }}
-                        />
-                    </div>
-                </div>
-            )}
 
             <div className="max-w-md mx-auto my-3">
                 <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                     <PopoverTrigger asChild>
-                        <Button variant="waguer2">Add Yours</Button>
+                        <Button variant="waguer2">Share Your Experience</Button>
                     </PopoverTrigger>
                     <PopoverContent className="min-w-6xl"> {/* Popover width set to 2/3 screen */}
                         <TestemonialForm onSuccess={handleFormSuccess} />

@@ -12,6 +12,7 @@ import TourServices from '@/admin/tours/TourServices.jsx';
 import TourPrices from '@/admin/tours/TourPrices';
 import DayImages from './tours/DayImages';
 import Testimonials from '@/admin/testimonials/Testimonials';
+import MainBook from '@/admin/booking/MainBook';
 
 function LayoutAdmin() {
   return (
@@ -27,6 +28,7 @@ function LayoutAdmin() {
           <Route path='/tours/prices' element={<TourPrices/>}/>
           <Route path='/tours/services' element={<TourServices/>}/>
           <Route path='/testimonials' element={<Testimonials />} />
+          <Route path="/bookings" element={<MainBook />} />
         </Route>
         <Route path="*" element={<NotFound />} />
         <Route path="/logout" element={<Logout />} />

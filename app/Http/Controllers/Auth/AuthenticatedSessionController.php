@@ -14,6 +14,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request) 
     {
+
         if (Auth::attempt($request->only('email', 'password'))) {
             $token = $request->user()->createToken('authToken')->plainTextToken;
 

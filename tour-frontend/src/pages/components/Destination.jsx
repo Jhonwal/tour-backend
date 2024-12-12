@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import useApi from '../../services/api';
 import {
     Sheet,
     SheetContent,
-    SheetDescription,
     SheetFooter,
     SheetHeader,
     SheetTitle,
@@ -12,12 +10,19 @@ import {
 } from "@/components/ui/sheet";
 import TourDet from '../tour/TourDet';
 import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
 const Destinations = () => {
     const api = useApi();
     const [destinations, setDestinations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // State for hover effect
+    const [hoveredId, setHoveredId] = useState(null);
+
+    // State for handling clicked destination
+    const [clickedDestination, setClickedDestination] = useState(null);
 
     useEffect(() => {
         const fetchDestinations = async () => {
@@ -48,6 +53,14 @@ const Destinations = () => {
         </div>
     );
 
+    const handleImageClick = (destination) => {
+        setClickedDestination(destination);
+    };
+
+    const closeModal = () => {
+        setClickedDestination(null);
+    };
+
     if (loading) {
         return (
             <div>
@@ -77,11 +90,17 @@ const Destinations = () => {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {destinations.map((destination) => (
-                        <div className="bg-white rounded-lg shadow-md overflow-hidden" key={destination.id}>
+                        <div
+                            className="bg-white rounded-lg shadow-md overflow-hidden"
+                            key={destination.id}
+                            onMouseEnter={() => setHoveredId(destination.id)}  // Set hover state
+                            onMouseLeave={() => setHoveredId(null)}  // Reset hover state
+                        >
                             <img
-                                src={destination.banner}
-                                alt={destination.depart_city}
-                                className="w-full h-48 object-cover"
+                                src={hoveredId === destination.id ? destination.banner : destination.map_image}  // Switch images on hover
+                                alt={destination.name}
+                                className="w-full h-64 object-cover transition-all duration-500 ease-in-out cursor-pointer"  // Add transition for smooth change
+                                onClick={() => handleImageClick(destination)}  // Handle click to display both images
                             />
                             <div className="p-6 flex flex-col items-stretch bg-orange-400 bg-opacity-30">
                                 <div className="text-center">
@@ -90,7 +109,7 @@ const Destinations = () => {
                                 </div>
                                 <div className="lg:h-40 md:h-36 mb-4 text-center">
                                     <h3 className="text-xl font-semibold mb-2 bg-orange-200">
-                                        {destination.depart_city}-{destination.end_city}
+                                        {destination.name}
                                     </h3>
                                     <p className="text-gray-700 mb-4">
                                         {destination.description.length > 140 
@@ -99,20 +118,16 @@ const Destinations = () => {
                                         }
                                     </p>
                                 </div>
-                                <Link to={`/tour/${destination.id}`} className="waguer-btn self-end">
-                                    Learn More
-                                </Link>
                                 <Sheet>
                                     <SheetTrigger asChild>
-                                        <Button variant="waguer2">Learn More</Button>
+                                        <Button variant="waguer2" className='font-semibold'>View {destination.name}</Button>
                                     </SheetTrigger>
                                     <SheetContent side="left">
                                         <SheetHeader>
-                                            <SheetTitle>Tripe: {destination.name}</SheetTitle>
+                                            <SheetTitle>Trip: {destination.name}</SheetTitle>
                                         </SheetHeader>
-                                            <TourDet id={destination.id}/>
-                                        <SheetFooter>
-                                        </SheetFooter>
+                                        <TourDet id={destination.id} />
+                                        <SheetFooter />
                                     </SheetContent>
                                 </Sheet>
                             </div>
@@ -120,9 +135,37 @@ const Destinations = () => {
                     ))}
                 </div>
             </section>
+
+            {/* Modal for displaying clicked destination images */}
+            {clickedDestination && (
+                <div className="fixed inset-0 z-50 bg-orange-100 bg-opacity-70 flex items-center justify-center">
+                    <div className="relative bg-white bg-opacity-75 p-6">
+                        <X   onClick={closeModal} 
+                            className="absolute top-2 right-2 text-red-700 hover:border-red-700 hover:border-2 font-bold text-xl"></X>
+                        
+                        <div className="flex space-x-6 items-center p-6">
+                            <div>
+                                <img
+                                    src={clickedDestination.map_image}
+                                    alt="Map"
+                                    className="h-auto w-80 object-contain"
+                                />
+                                <p className='text-center font-semibold text-orange-600 text-lg'>Tour Map</p>
+                            </div>
+                            <div>
+                                <img
+                                    src={clickedDestination.banner}
+                                    alt="Banner"
+                                    className="h-auto w-80 object-contain"
+                                />
+                                <p className='text-center font-semibold text-orange-600 text-lg'>Tour Flyer</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
 
 export default Destinations;
-

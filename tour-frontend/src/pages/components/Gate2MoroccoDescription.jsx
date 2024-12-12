@@ -9,24 +9,29 @@ const Gate2MoroccoDescription = () => {
     facebook: 'https://facebook.com/johndoe',
     instagram: 'https://instagram.com/johndoe'
   };
+
   return (
     <section className="py-6 px-6 lg:px-16">
-      <div className="flex justify-center bg-orange-600 opacity-95">
-        <div className='w-2/5 pb-4'>
-          <InfoCard {...userInfo}/>
+      <h2 className="text-3xl font-bold font-verdana text-center mb-8 text-white bg-orange-500 p-2">
+          About US
+      </h2>
+      <div className="flex flex-col lg:flex-row justify-center bg-orange-600 opacity-95">
+        <div className="w-full lg:w-2/5 pb-4 lg:pb-0 lg:pr-4">
+          <InfoCard {...userInfo} />
+          <InfoCard {...userInfo} />
         </div>
-        <div className="bg-red-200 w-3/5 opacity-75 shadow-lg px-8 lg:p-12 mt-4 mr-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Gate2Morocco: Your Gateway to Authentic Moroccan Adventures</h2>
-          <p className="text-lg text-gray-700 mb-6">
+        <div className="bg-red-200 w-full lg:w-3/5 opacity-75 shadow-lg px-8 lg:px-12 mt-4 lg:mt-0 mr-4 rounded-lg">
+          <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">Gate2Morocco: Your Gateway to Authentic Moroccan Adventures</h2>
+          <p className="text-base lg:text-lg text-gray-700 mb-6">
             Welcome to <span className="font-semibold text-indigo-600">Gate2Morocco</span>, your premier travel partner for exploring the rich cultural tapestry and breathtaking landscapes of Morocco. As a leading tourism agency, we specialize in crafting unforgettable experiences that capture the essence of this vibrant North African gem.
           </p>
-          <p className="text-lg text-gray-700 mb-6">
+          <p className="text-base lg:text-lg text-gray-700 mb-6">
             Our expert team is dedicated to providing personalized travel solutions that cater to your unique interests and preferences. From the bustling souks of Marrakech and the ancient ruins of Fes to the majestic Atlas Mountains and the serene Sahara Desert, we offer a diverse range of curated tours and activities.
           </p>
-          <p className="text-lg text-gray-700 mb-6">
+          <p className="text-base lg:text-lg text-gray-700 mb-6">
             At <span className="font-semibold text-indigo-600">Gate2Morocco</span>, we pride ourselves on our deep local knowledge and commitment to exceptional service. Whether you're seeking a luxurious getaway, an adventurous journey, or an immersive cultural experience, we are here to ensure your Moroccan adventure is nothing short of extraordinary.
           </p>
-          <p className="text-lg text-gray-700">
+          <p className="text-base lg:text-lg text-gray-700">
             Embark on a journey with <span className="font-semibold text-indigo-600">Gate2Morocco</span> and let us be your guide to discovering the enchanting beauty and rich heritage of Morocco. Your adventure starts here!
           </p>
         </div>

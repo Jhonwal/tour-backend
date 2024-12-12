@@ -88,7 +88,10 @@ module.exports = {
   		},
   		fontFamily: {
   			verdana: ['Verdana', 'sans-serif']
-  		}
+  		},
+		scale:{
+			160:['1.6']
+		}
   	}
   },
   plugins: [require("tailwindcss-animate")],

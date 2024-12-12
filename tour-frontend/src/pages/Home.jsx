@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import CarouselPlugin from "./components/Carousel";
 import Destinations from "./components/Destination";
 import Gate2MoroccoDescription from "./components/Gate2MoroccoDescription";
-import Footer from "@/pages/components/Footer.jsx";
-import TestimonialList from './components/TestimonialList';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PartyPopper } from 'lucide-react';
+import TestimonialList from './testemonials/TestimonialList';
 
 export default function Home() {
     const [message, setMessage] = useState('');
@@ -67,7 +66,7 @@ export default function Home() {
                 <div className={`bg-opacity-50 bg-orange-100`}>
                     <CarouselPlugin id="carousel"/>
                     <Gate2MoroccoDescription/>
-                    <div className="max-w-screen-lg mx-auto px-6 py-12">
+                    <div className="py-6 px-6 lg:px-16 mx-auto">
                         <section id="Tours">
                             <Destinations/>
                         </section>
@@ -84,8 +83,6 @@ export default function Home() {
                         <TestimonialList/>
                     </div>
                 </div>
-
-                <Footer/>
             </div>
         </>
     );

@@ -7,6 +7,8 @@ use App\Models\TourPrice;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
@@ -81,5 +83,78 @@ class BookingController extends Controller
             ], 500);
         }
     }
-    
+    public function checkBooking(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'reference_code' => 'required|string|max:255',
+        ]);
+
+        $booking = Booking::where('email', $validated['email'])
+                        ->where('reference_code', $validated['reference_code'])
+                        ->with('tour')
+                        ->first();
+        // Assuming 'tour' is a relationship in the Booking model
+        $tour = $booking->tour;
+        
+        // Append the image URLs dynamically
+        $booking->tour->banner = URL::to($tour->banner);
+        $booking->tour->map_image = URL::to($tour->map_image);
+
+        if ($booking) {
+            return response()->json([
+                'message' => 'Booking found!',
+                'data' => $booking,
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'No booking found for the provided details.',
+        ], 404);
+    }
+    // Fetch all bookings with optional filtering
+    public function index(Request $request)
+    {
+        $query = Booking::query();
+
+        $bookings = $query->get();
+
+        // Count status types
+        $statusCounts = [
+            'pending' => $bookings->where('status', 'pending')->count(),
+            'confirmed' => $bookings->where('status', 'confirmed')->count(),
+            'canceled' => $bookings->where('status', 'canceled')->count(),
+            'completed' => $bookings->where('status', 'completed')->count(),
+        ];
+
+        return response()->json([
+            'data' => $bookings,
+            'status_counts' => $statusCounts
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|in:pending,confirmed,canceled,completed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $booking = Booking::findOrFail($id);
+        $booking->update(['status' => $request->status]);
+
+        return response()->json(['message' => 'Booking updated successfully', 'data' => $booking]);
+    }
+
+    // Delete a booking
+    public function destroy($id)
+    {
+        $booking = Booking::findOrFail($id);
+        $booking->delete();
+
+        return response()->json(['message' => 'Booking deleted successfully']);
+    }
 }

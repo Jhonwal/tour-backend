@@ -20,6 +20,7 @@ import {
 import { Circle, PartyPopper } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getToken } from "@/services/getToken";
+import { Button } from "@/components/ui/button";
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
@@ -30,7 +31,8 @@ const Testimonials = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(null);
   const [loding, setLoading] = useState(false);
   const [alert, setAlert] = useState({ visible: false, message: "" }); // Alert state
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   // Fetch testimonials from the backend
   useEffect(() => {
@@ -61,8 +63,10 @@ const Testimonials = () => {
   useEffect(() => {
     if (selectedState) {
       setFilteredTestimonials(testimonials.filter((t) => t.state === selectedState));
+      setCurrentPage(1);
     } else {
       setFilteredTestimonials(testimonials);
+      setCurrentPage(1);
     }
   }, [selectedState, testimonials]);
 
@@ -109,6 +113,15 @@ const Testimonials = () => {
     pending: "text-yellow-400 bg-yellow-400",
     accept: "text-green-400 bg-green-400",
     decline: "text-red-400 bg-red-400",
+  };
+  const handlePagination = (pageNumber) => {
+      setCurrentPage(pageNumber);
+  };
+
+  const paginateTestimonials = () => {
+      const indexOfLastTestimonial = currentPage * perPage;
+      const indexOfFirstTestimonial = indexOfLastTestimonial - perPage;
+      return filteredTestimonials.slice(indexOfFirstTestimonial, indexOfLastTestimonial);
   };
   if(!loding){
     return <Loading/>
@@ -158,7 +171,11 @@ const Testimonials = () => {
           </div>
         ))}
       </div>
-
+      {selectedState &&(
+        <div className="flex justify-end p-4">
+          <Button variant='link' className='w-1/3 hover:bg-orange-300' onClick={() => setSelectedState(null)}>Remove filter</Button>
+        </div>
+      )}
       {/* Testimonials Table */}
       <div className="overflow-x-auto">
         <table className="w-full table-auto border-collapse border border-gray-200">
@@ -173,7 +190,7 @@ const Testimonials = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredTestimonials.map((testimonial) => (
+            {paginateTestimonials().map((testimonial) => (
               <tr key={testimonial.id} className="odd:bg-white even:bg-gray-50 hover:bg-orange-50">
                   <td className="border border-orange-300 px-4 py-2">{testimonial.name}</td>
                   <td className="border border-orange-300 px-4 py-2">{testimonial.email}</td>
@@ -181,7 +198,7 @@ const Testimonials = () => {
                   <TooltipProvider>
                       <Tooltip>
                           <TooltipTrigger asChild>
-                              <p>Show</p>
+                              <p className="hover:cursor-pointer">Show</p>
                           </TooltipTrigger>
                       <TooltipContent>
                           <div className="max-w-lg">
@@ -193,8 +210,8 @@ const Testimonials = () => {
               </TooltipProvider>
                   </td>
                   <td className="border border-orange-300 px-4 py-2">{testimonial.rating}</td>
-                  <td className='border-orange-300 flex justify-center'>
-                      <Circle className={`rounded-full text-center ${stateColors[testimonial.state]}`}/>
+                  <td className="border border-orange-300 mx-auto px-4 py-2">
+                    <span><Circle className={`mx-auto ${stateColors[testimonial.state]}`}/></span>
                   </td>
                   <td className="border border-orange-300 px-4 py-2">
                       <Dialog>
@@ -291,6 +308,21 @@ const Testimonials = () => {
           </tbody>
         </table>
       </div>
+      <div className="pagination flex justify-center mt-4">
+          {[...Array(Math.ceil(filteredTestimonials.length / perPage)).keys()].map((pageNumber) => (
+              <button
+                  key={pageNumber}
+                  onClick={() => handlePagination(pageNumber + 1)}
+                  className={`px-3 py-1 text-sm font-medium rounded-md ${
+                      currentPage === pageNumber + 1 
+                        ? "bg-orange-500 text-white"
+                        : "bg-orange-200 text-orange-700 hover:bg-orange-300"
+                  }`}
+              >
+                  {pageNumber + 1}
+              </button>
+          ))}
+        </div>
     </div>
   );
 };

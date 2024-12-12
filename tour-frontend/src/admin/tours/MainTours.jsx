@@ -46,22 +46,12 @@ export default function MainTours() {
             )}
             <div className="flex flex-col p-2">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
-                    <Input 
-                        type="text" 
-                        className="w-full sm:w-2/3 md:w-2/4 xl:w-1/3 mr-2" 
-                        placeholder="search" 
-                        variant="orange" 
-                    />
-                    
-                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                        <Link to="/admin/tours/new-tours" className="w-full sm:w-auto">
-                            <Button variant="waguer2" className="w-full sm:w-auto">Create new tour</Button>
-                        </Link>
-                        
-                        <Link to="/tour-types/create" className="w-full sm:w-auto">
-                            <Button variant="waguer2" className="w-full sm:w-auto">Add New Tour Type</Button>
-                        </Link>
-                    </div>
+                    <Link to="/tour-types/create" className="w-full lg:min-w-96 sm:w-auto">
+                        <Button variant="waguer2" className="w-full lg:min-w-96 sm:w-auto">Add new tour type</Button>
+                    </Link>
+                    <Link to="/admin/tours/new-tours" className="w-full lg:min-w-96 sm:w-auto">
+                            <Button variant="waguer2" className="w-full lg:min-w-96 sm:w-auto">Create new tour</Button>
+                    </Link>
                 </div>
 
                 <div className="grid md:grid-cols-3 sm:grid-cols-1 gap-4 mb-2">

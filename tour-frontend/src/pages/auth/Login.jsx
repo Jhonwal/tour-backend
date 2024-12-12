@@ -51,7 +51,7 @@ const Login = () => {
   
       // Set token with expiration
       const token = response.data.token;
-      const ttl = 3600000;
+      const ttl = 7200000;
       const now = new Date();
   
       const tokenWithExpiry = {

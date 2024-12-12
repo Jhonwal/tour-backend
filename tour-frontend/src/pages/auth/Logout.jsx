@@ -3,6 +3,7 @@ import useApi from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { Loader2Icon } from 'lucide-react';
 import Loading from '@/services/Loading';
+import { getToken } from '@/services/getToken';
 
 const Logout = () => {
     const api = useApi();
@@ -11,7 +12,7 @@ const Logout = () => {
     useEffect(() => {
         const handleLogout = async () => {
             try {
-                const token = localStorage.getItem('token');
+                const token = getToken();
                 if (!token) throw new Error("No token found");
 
                 await api.post('/api/logout', {}, {

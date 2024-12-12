@@ -1,0 +1,15 @@
+/* styles.css */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 8px;
+    border-radius: 10px;
+}
+
+.scrollbar-thumb-orange-500::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 165, 0, 0.6); /* Orange thumb */
+    border-radius: 10px;
+}
+
+.scrollbar-track-transparent::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1); /* Subtle track background */
+    border-radius: 10px;
+}
