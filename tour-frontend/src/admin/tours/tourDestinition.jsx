@@ -157,33 +157,34 @@ const TourDestination = () => {
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                 />
             </div>
+            {/* dev ressponssive design grid*/}
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {destinations.map((destination, index) => (
+                    <div key={index} className="mb-4">
+                        <h2 className="text-xl font-semibold text-orange-800">Destination {index + 1}</h2>
+                        <label htmlFor={`city-${index}`} className="block text-gray-700">City:</label>
+                        <input
+                            type="text"
+                            id={`city-${index}`}
+                            value={destination.city}
+                            onChange={(e) => handleInputChange(index, "city", e.target.value)}
+                            placeholder="Enter city name"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        />
 
-            {destinations.map((destination, index) => (
-                <div key={index} className="mb-4">
-                    <h2 className="text-xl font-semibold text-orange-800">Destination {index + 1}</h2>
-                    <label htmlFor={`city-${index}`} className="block text-gray-700">City:</label>
-                    <input
-                        type="text"
-                        id={`city-${index}`}
-                        value={destination.city}
-                        onChange={(e) => handleInputChange(index, "city", e.target.value)}
-                        placeholder="Enter city name"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                    />
-
-                    <label htmlFor={`nights-${index}`} className="block text-gray-700 mt-2">Number of Nights:</label>
-                    <input
-                        type="number"
-                        id={`nights-${index}`}
-                        value={destination.nights}
-                        min={0}
-                        max={getMaxNightsForInput(index)}
-                        onChange={(e) => handleInputChange(index, "nights", parseInt(e.target.value, 10))}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                    />
-                </div>
-            ))}
-
+                        <label htmlFor={`nights-${index}`} className="block text-gray-700 mt-2">Number of Nights:</label>
+                        <input
+                            type="number"
+                            id={`nights-${index}`}
+                            value={destination.nights}
+                            min={0}
+                            max={getMaxNightsForInput(index)}
+                            onChange={(e) => handleInputChange(index, "nights", parseInt(e.target.value, 10))}
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                        />
+                    </div>
+                ))}
+            </div>
             <Button
                 type="submit"
                 variant={`waguer2`}

@@ -69,7 +69,7 @@ const TourServices = () => {
             tour_id: tourId,
         }));
 
-        console.log("Submitting Services:", validServices); // Debug log
+        // console.log("Submitting Services:", validServices); // Debug log
 
 
         try {
@@ -84,7 +84,7 @@ const TourServices = () => {
             removeCookies("destination", { path: "/" });
             removeCookies("day_images", { path: "/" });
             localStorage.setItem('messageTour', "The new trip has been successfully added to the catalog! 🗂️ It's now live for users to explore.");
-            navigate("/admin/tours")
+            navigate("/admin/tours");
 
         } catch (error) {
             console.error("Error submitting services:", error);
@@ -97,13 +97,13 @@ const TourServices = () => {
     }
 
     return (
-        <div className="p-4 max-w-md mx-auto">
+        <div className="p-4 mx-auto">
             <h1 className="text-2xl font-bold mb-4 text-orange-600 text-center">
                 Add Services to Your Tour
             </h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                    <label htmlFor="numServices" className="block text-gray-700">
+                    <label htmlFor="numServices" className="block text-orange-700">
                         Number of Services:
                     </label>
                     <input
@@ -114,43 +114,44 @@ const TourServices = () => {
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                     />
                 </div>
+                {/* div with ressponssive design */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {services.map((service, index) => (
+                        <div key={index} className="mb-4">
+                            <h2 className="text-xl font-semibold text-gray-800">Service {index + 1}</h2>
 
-                {services.map((service, index) => (
-                    <div key={index} className="mb-4">
-                        <h2 className="text-xl font-semibold text-gray-800">Service {index + 1}</h2>
+                            <label htmlFor={`service-${index}`} className="block text-orange-700">Service:</label>
+                            <input
+                                type="text"
+                                id={`service-${index}`}
+                                value={service.service}
+                                onChange={(e) => handleInputChange(index, "service", e.target.value)}
+                                placeholder="Enter service name"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                            />
 
-                        <label htmlFor={`service-${index}`} className="block text-gray-700">Service:</label>
-                        <input
-                            type="text"
-                            id={`service-${index}`}
-                            value={service.service}
-                            onChange={(e) => handleInputChange(index, "service", e.target.value)}
-                            placeholder="Enter service name"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                        />
+                            <label htmlFor={`description-${index}`} className="block text-orange-700">Description:</label>
+                            <textarea
+                                id={`description-${index}`}
+                                value={service.description}
+                                onChange={(e) => handleInputChange(index, "description", e.target.value)}
+                                placeholder="Enter service description"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                            />
 
-                        <label htmlFor={`description-${index}`} className="block text-gray-700">Description:</label>
-                        <textarea
-                            id={`description-${index}`}
-                            value={service.description}
-                            onChange={(e) => handleInputChange(index, "description", e.target.value)}
-                            placeholder="Enter service description"
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                        />
-
-                        <label htmlFor={`type-${index}`} className="block text-gray-700">Service Type:</label>
-                        <select
-                            id={`type-${index}`}
-                            value={service.type}
-                            onChange={(e) => handleInputChange(index, "type", e.target.value)}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-                        >
-                            <option value="include">Include</option>
-                            <option value="exclude">Exclude</option>
-                        </select>
-                    </div>
-                ))}
-
+                            <label htmlFor={`type-${index}`} className="block text-orange-700">Service Type:</label>
+                            <select
+                                id={`type-${index}`}
+                                value={service.type}
+                                onChange={(e) => handleInputChange(index, "type", e.target.value)}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
+                            >
+                                <option value="include">Include</option>
+                                <option value="exclude">Exclude</option>
+                            </select>
+                        </div>
+                    ))}
+                </div>
                 <button
                     type="submit"
                     className="w-full bg-orange-600 text-white px-4 py-2 rounded-md shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"

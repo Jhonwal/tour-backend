@@ -51,7 +51,7 @@ export default function Footer() {
                     <div className='lg:place-items-start place-items-center'>
                         <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
                         <p className="mb-2">1234 Travel Road, Wander City</p>
-                        <p className="mb-2">Phone: +1 (123) 456-7890</p>
+                        <p className="mb-2">Phone: +1 (123) 456-7890-</p>
                         <p>Email: info@travelagency.com</p>
                     </div>
 

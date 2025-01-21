@@ -160,7 +160,7 @@ const DayImages = () => {
 
         <Accordion type="single" collapsible>
           {days
-            .filter((day) => !submittedDays.includes(day.id))  // Filter out already submitted days
+            .filter((day) => !submittedDays.includes(day.id))  
             .map((day) => (
               <AccordionItem key={day.id} value={`day-${day.id}`}>
                 <AccordionTrigger>
@@ -177,6 +177,7 @@ const DayImages = () => {
                       </label>
                       <Input
                         type="number"
+                        variant='orange'
                         min="0"
                         value={picturesCount[day.id] || ''}
                         onChange={(e) => handleInputChange(day.id, e.target.value)}
@@ -187,6 +188,7 @@ const DayImages = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         {[...Array(parseInt(picturesCount[day.id] || 0)).keys()].map((_, index) => (
                           <Input
+                            variant="orange"
                             key={index}
                             type="file"
                             onChange={(e) => handleFileChange(day.id, index, e)}

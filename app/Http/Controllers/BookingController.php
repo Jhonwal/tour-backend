@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ReservationCreated;
 use App\Models\Booking;
 use App\Models\TourPrice;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
@@ -51,6 +54,7 @@ class BookingController extends Controller
             $price = $tour_price->$price_category;
     
             $total_price = $price * $total_people;
+            $reference = strtoupper(Str::random(10));
     
             $booking = Booking::create([
                 'full_name' => $validated['full_name'],
@@ -67,10 +71,11 @@ class BookingController extends Controller
                 'status' => 'pending',
                 'total_price' => $total_price, 
                 'discount' => 0,
-                'reference_code' => strtoupper(Str::random(10)),
+                'reference_code' => $reference,
                 'tour_id' => $validated['tour_id'],
             ]);
-    
+            Mail::to($validated['email'])->send(new ReservationCreated($validated['full_name'], $reference));
+            $this->sendNewBookingNotification($reference);
             return response()->json([
                 'message' => 'Booking created successfully!',
                 'data' => $booking,
@@ -157,4 +162,22 @@ class BookingController extends Controller
 
         return response()->json(['message' => 'Booking deleted successfully']);
     }
+
+
+    private function sendNewBookingNotification($bookingReference)
+    {
+        // Fetch all users from the users table
+        $users = User::all();
+
+        // Send email to admins only
+        foreach ($users as $user) {
+            Mail::send('admin_new_booking', ['name' => $user->name, 'reference' => $bookingReference], function ($message) use ($user) {
+                $message->to($user->email)
+                    ->subject('New Booking Created - Sharming Morocco Tours');
+            });
+        }
+
+        return response()->json(['message' => 'Notification sent to admins successfully.']);
+    }
+
 }

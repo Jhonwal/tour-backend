@@ -141,30 +141,38 @@ const MainBook = () => {
                     </select>
                 </div>
             </div>
-            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-                <thead className="bg-gray-100">
-                    <tr>
-                        <th className="p-2 text-left">Name</th>
-                        <th className="p-2 text-left">Email</th>
-                        <th className="p-2 text-left">Arrival Date</th>
-                        <th className="p-2 text-left">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {paginateBookings().map((booking) => (
-                        <tr key={booking.reference_code} className="border-t">
-                            <td className="p-2">{booking.full_name}</td>
-                            <td className="p-2">{booking.email}</td>
-                            <td className="p-2">{booking.arrival_date}</td>
-                            <td className="p-2">
-                                <span className="px-2 py-1 rounded-lg text-white" style={{ backgroundColor: renderStatusColor(booking.status) }}>
-                                    {booking.status}
-                                </span>
-                            </td>
+            {paginateBookings().length > 0 ? (
+                <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+                    <thead className="bg-gray-100">
+                        <tr>
+                            <th className="p-2 text-left">Name</th>
+                            <th className="p-2 text-left">Email</th>
+                            <th className="p-2 text-left">Arrival Date</th>
+                            <th className="p-2 text-left">Status</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {paginateBookings().map((booking) => (
+                            <tr key={booking.reference_code} className="border-t">
+                                <td className="p-2">{booking.full_name}</td>
+                                <td className="p-2">{booking.email}</td>
+                                <td className="p-2">{booking.arrival_date}</td>
+                                <td className="p-2">
+                                    <span className="px-2 py-1 rounded-lg text-white" style={{ backgroundColor: renderStatusColor(booking.status) }}>
+                                        {booking.status}
+                                    </span>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) :(
+                <div className="mx-auto flex items-center justify-center">
+                    <span className="text-center py-4 text-orange-500">
+                        No booking available.
+                    </span>
+                </div>
+            )}
 
             <div className="pagination flex justify-center mt-4">
                 {[...Array(Math.ceil(filteredBookings.length / perPage)).keys()].map((pageNumber) => (

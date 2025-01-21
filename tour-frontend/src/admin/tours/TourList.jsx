@@ -3,6 +3,7 @@ import useApi from "@/services/api";
 import { Eye, Pen, Trash2 } from "lucide-react";
 import { getToken } from "@/services/getToken";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 
 const TourTable = () => {
   const [tours, setTours] = useState([]);
@@ -133,24 +134,14 @@ const TourTable = () => {
                   <td className="border border-orange-300 px-4 py-2">{tour.end_city}</td>
                   <td className="border border-orange-300 px-4 py-2 text-center">
                     <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 justify-center">
-                      <button
-                        className="px-3 py-1 bg-blue-500 text-white text-sm font-medium rounded-md hover:bg-blue-600 w-full sm:w-auto text-center"
-                        onClick={() => console.log(`View: ${tour.id}`)}
-                      >
-                        <Eye />
-                      </button>
-                      <button
-                        className="px-3 py-1 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
-                        onClick={() => console.log(`Edit: ${tour.id}`)}
-                      >
-                        <Pen />
-                      </button>
-                      <button
-                        className="px-3 py-1 bg-red-500 text-white text-sm font-medium rounded-md hover:bg-red-600 w-full sm:w-auto text-center"
-                        onClick={() => deleteTour(tour.id)}
-                      >
-                        <Trash2 />
-                      </button>
+                      <Link to={`/admin/tours/${tour.id}`}>
+                        <button
+                          className="px-3 py-1 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
+                          onClick={() => console.log(`View: ${tour.id}`)}
+                        >
+                            <Eye />
+                        </button>
+                      </Link>
                     </div>
                   </td>
                 </tr>

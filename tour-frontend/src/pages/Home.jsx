@@ -3,22 +3,19 @@ import CarouselPlugin from "./components/Carousel";
 import Destinations from "./components/Destination";
 import Gate2MoroccoDescription from "./components/Gate2MoroccoDescription";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { PartyPopper } from 'lucide-react';
+import { Map, PartyPopper } from 'lucide-react';
 import TestimonialList from './testemonials/TestimonialList';
+import { Button } from '@/components/ui/button';
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function Home() {
-    const [message, setMessage] = useState('');
-    const [reference, setReference] = useState('');
     
     useEffect(() => {
-        const storedMessage = localStorage.getItem('bookingMessage');
-        const storedReference = localStorage.getItem('bookingReference');
-
-        if (storedMessage && storedReference) {
-            setMessage(storedMessage);
-            setReference(storedReference);
+        const message = localStorage.getItem('bookingMessage');
+        const refcode = localStorage.getItem("bookingReference");
+        if (message && refcode) {
+            toast.success(localStorage.getItem('bookingMessage') + localStorage.getItem("bookingReference"));
         }
-
         const styleSheet = document.styleSheets[0];
         styleSheet.insertRule(
             `.bg-sahara { background-image: url('/images/sahara.jpg') !important; background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important; background-attachment: fixed !important; }`,
@@ -26,49 +23,26 @@ export default function Home() {
         );
     }, []);
 
-    const closeAlert = () => {
-        localStorage.removeItem('bookingMessage');
-        localStorage.removeItem('bookingReference');
-        setMessage('');
-        setReference('');
-    };
-
-    const copyReference = () => {
-        if (reference) {
-            navigator.clipboard.writeText(reference)
-                .then(() => alert('Reference copied to clipboard!'))
-                .catch(err => alert('Failed to copy reference'));
-        }
-    };
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            localStorage.removeItem('bookingMessage');
+            localStorage.removeItem('bookingReference');
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
 
     return (
         <>
-            {message && reference && (
-                <Alert variant="success" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-4 max-w-xl w-full flex items-center justify-between">
-                    <div className="flex flex-col">
-                        <div className="flex items-center">
-                            <PartyPopper className="h-6 w-6 mr-2" />
-                            <div>
-                                <AlertTitle>Success!</AlertTitle>
-                                <AlertDescription className='grid grid-cols-1'>
-                                    <p>{message}</p>
-                                    <span className="font-bold text-lg cursor-pointer" onClick={copyReference}>
-                                        Reference Code: {reference}
-                                    </span>
-                                </AlertDescription>
-                            </div>
-                        </div>
-                    </div>
-                </Alert>
-            )}
-
-            <div className="font-sans bg-sahara"  onClick={closeAlert}>
+            <div className="font-sans bg-sahara">
                 <div className={`bg-opacity-50 bg-orange-100`}>
                     <CarouselPlugin id="carousel"/>
                     <Gate2MoroccoDescription/>
                     <div className="py-6 px-6 lg:px-16 mx-auto">
                         <section id="Tours">
                             <Destinations/>
+                            <div className='lg:max-w-md w-full mx-auto'>
+                                <Button variant='waguer2' className='p-8'><Map/> <p className='ml-2'>View all sharming Morocco Tours</p></Button>
+                            </div>
                         </section>
                         <section id="offers" className="py-12">
                             <h2 className="text-3xl font-bold font-verdana text-center mb-8 text-white bg-orange-500 p-2">Special Offers</h2>
@@ -83,6 +57,11 @@ export default function Home() {
                         <TestimonialList/>
                     </div>
                 </div>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                />
             </div>
         </>
     );

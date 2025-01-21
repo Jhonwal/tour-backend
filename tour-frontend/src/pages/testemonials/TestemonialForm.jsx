@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { z } from "zod";
 import useApi from "@/services/api.js";
+import { toast } from "react-toastify";
+import { Loader2Icon } from "lucide-react";
 
 const TestimonialForm = ({ closePopover }) => {
     const api = useApi();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -45,6 +48,7 @@ const TestimonialForm = ({ closePopover }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            setLoading(true);
             testimonialSchema.parse(formData);
 
             const formDataToSend = new FormData();
@@ -59,8 +63,10 @@ const TestimonialForm = ({ closePopover }) => {
             await api.post("/api/testimonials", formDataToSend, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-
-            alert("Testimonial added successfully!");
+            setLoading(false);
+            toast.success("Testimonial added successfully!",{
+                position:'top-center'
+            });
             setFormData({
                 name: "",
                 email: "",
@@ -68,12 +74,14 @@ const TestimonialForm = ({ closePopover }) => {
                 rating: 1,
                 avatar: null,
             });
-            closePopover(); // Close the popover on success
+            closePopover(false);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const fieldErrors = error.flatten().fieldErrors;
                 setErrors(fieldErrors);
+                setLoading(false);
             } else {
+                setLoading(false);
                 console.error("Error submitting testimonial:", error.response?.data);
             }
         }
@@ -84,12 +92,12 @@ const TestimonialForm = ({ closePopover }) => {
             onSubmit={handleSubmit}
             className="bg-white shadow-md rounded px-6 py-6 space-y-6"
         >
-            <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">Add Your Testimonial</h2>
+            <h2 className="text-2xl font-bold mb-4 text-orange-800 text-center">Add Your Testimonial</h2>
 
             <div className="grid gap-4 md:grid-cols-2">
                 {/* Name Input */}
                 <div>
-                    <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-1">
+                    <label htmlFor="name" className="block text-orange-700 text-sm font-bold mb-1">
                         Name
                     </label>
                     <input
@@ -99,14 +107,14 @@ const TestimonialForm = ({ closePopover }) => {
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-orange-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                 </div>
 
                 {/* Email Input */}
                 <div>
-                    <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-1">
+                    <label htmlFor="email" className="block text-orange-700 text-sm font-bold mb-1">
                         Email
                     </label>
                     <input
@@ -115,7 +123,7 @@ const TestimonialForm = ({ closePopover }) => {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-orange-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                     {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
@@ -123,7 +131,7 @@ const TestimonialForm = ({ closePopover }) => {
 
             {/* Message Input */}
             <div>
-                <label htmlFor="message" className="block text-gray-700 text-sm font-bold mb-1">
+                <label htmlFor="message" className="block text-orange-700 text-sm font-bold mb-1">
                     Message
                 </label>
                 <textarea
@@ -132,7 +140,7 @@ const TestimonialForm = ({ closePopover }) => {
                     value={formData.message}
                     onChange={handleChange}
                     required
-                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500 h-24"
+                    className="shadow appearance-none border rounded w-full py-2 px-3 text-orange-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500 h-24"
                 ></textarea>
                 {errors.message && (
                     <p className="text-red-500 text-xs mt-1">{errors.message}</p>
@@ -142,7 +150,7 @@ const TestimonialForm = ({ closePopover }) => {
             <div className="grid gap-4 md:grid-cols-2">
                 {/* Rating Input */}
                 <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-1">Rating</label>
+                    <label className="block text-orange-700 text-sm font-bold mb-1">Rating</label>
                     <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                             <svg
@@ -169,7 +177,7 @@ const TestimonialForm = ({ closePopover }) => {
                 <div>
                     <label
                         htmlFor="avatar"
-                        className="block text-gray-700 text-sm font-bold mb-1"
+                        className="block text-orange-700 text-sm font-bold mb-1"
                     >
                         Upload Avatar
                     </label>
@@ -177,7 +185,7 @@ const TestimonialForm = ({ closePopover }) => {
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
-                        className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-100 file:text-orange-700 hover:file:bg-orange-200"
+                        className="block w-full text-sm text-orange-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-100 file:text-orange-700 hover:file:bg-orange-200"
                     />
                     {errors.avatar && <p className="text-red-500 text-xs mt-1">{errors.avatar}</p>}
                 </div>
@@ -187,8 +195,17 @@ const TestimonialForm = ({ closePopover }) => {
             <button
                 type="submit"
                 className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                disabled={loading}
             >
-                Submit
+            {loading? (
+                <span className="flex items-center justify-center">
+                    <Loader2Icon className="w-6 h-6 animate-spin" />
+                    sending...
+                </span>
+              ) :(
+                "Send"
+              )
+            }
             </button>
         </form>
     );

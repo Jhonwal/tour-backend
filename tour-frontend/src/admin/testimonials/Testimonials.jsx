@@ -17,10 +17,12 @@ import {
     DialogDescription,
     DialogClose,
   } from "@/components/ui/dialog";
-import { Circle, PartyPopper } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Circle } from "lucide-react";
 import { getToken } from "@/services/getToken";
 import { Button } from "@/components/ui/button";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const Testimonials = () => {
   const [testimonials, setTestimonials] = useState([]);
@@ -82,7 +84,7 @@ const Testimonials = () => {
         setTestimonials((prev) =>
           prev.map((t) => (t.id === id ? { ...t, state: newState } : t))
         );
-        setAlert({ visible: true, message: `Status updated to '${newState}' successfully.` });
+        toast.success(`Status updated to '${newState}' successfully.`);
       })
       .catch((error) => console.error("Error updating status:", error));
   };
@@ -98,16 +100,16 @@ const Testimonials = () => {
       .delete(`/api/testimonials/${id}`, { headers })
       .then(() => {
         setTestimonials((prev) => prev.filter((t) => t.id !== id));
-        setAlert({ visible: true, message: `Testimonial deleted successfully.` });
+        toast.success(`Testimonial deleted successfully.`);
         setCurrentTestimonial(null); // Close dialog
         hideAlertAfterTimeout();
       })
       .catch((error) => console.error("Error deleting testimonial:", error));
   };
 
-  const closeAlert = () => {
-      setAlert({ visible: false, message: '' });
-  };
+  // const closeAlert = () => {
+  //     setAlert({ visible: false, message: '' });
+  // };
   // State color mapping
   const stateColors = {
     pending: "text-yellow-400 bg-yellow-400",
@@ -127,15 +129,15 @@ const Testimonials = () => {
     return <Loading/>
   }
   return (
-    <div className="p-6 relative" onClick={closeAlert}>
+    <div className="p-6 relative" >
       {/* Alert */}
-      {alert.visible && (
+      {/* {alert.visible && (
           <Alert variant="success" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-4 max-w-xl">
             <PartyPopper className="h-6 w-6 mr-2" />
             <AlertTitle>Success!</AlertTitle>
             <AlertDescription>{alert.message}</AlertDescription>
           </Alert>
-      )}
+      )} */}
       <h1 className="text-2xl font-bold mb-6 text-center text-orange-700">Testimonials</h1>
 
       {/* Filter Cards */}
@@ -323,6 +325,11 @@ const Testimonials = () => {
               </button>
           ))}
         </div>
+        <ToastContainer 
+          position="top-center"
+          autoClose={5000}
+          theme="dark"
+        />
     </div>
   );
 };

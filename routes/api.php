@@ -93,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/bookings', [BookingController::class, 'store']);
     Route::put('/admin/bookings/{id}', [BookingController::class, 'update']);
     Route::delete('/admin/bookings/{id}', [BookingController::class, 'destroy']);
+    Route::get('/tours/{id}', [TourController::class, 'showTour']);
 
     
 });

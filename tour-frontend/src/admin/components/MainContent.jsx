@@ -2,6 +2,8 @@ import useApi from "@/services/api";
 import { useEffect, useState } from "react";
 import { Visitors } from "./Visitors";
 import { getToken } from "@/services/getToken";
+import { TourTypes } from "../tours/TourTypes";
+import { VisitorsAll } from "./VisitorsAll";
 
 export default function MainContent() {
   const api = useApi();
@@ -36,13 +38,11 @@ export default function MainContent() {
         <div>
           <Visitors />
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-2">Number of tours</h2>
-          <p>{numberOfTour}</p>
+        <div>
+          <TourTypes/>
         </div>        
         <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-2">Number of tours</h2>
-          <p>{numberOfTour}</p>
+          <VisitorsAll/>
         </div>
       </div>
     </div>

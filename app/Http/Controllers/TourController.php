@@ -149,5 +149,13 @@ class TourController extends Controller
             return response()->json(['error' => 'No tour found'], 404);
         }
     }
+    public function showTour($id){
+        $tour = Tour::find($id);
+        if ($tour) {
+            return response()->json($tour);
+            } else {
+                return response()->json(['error' => 'Tour not found'], 404);
+        }
+    }
     
 }

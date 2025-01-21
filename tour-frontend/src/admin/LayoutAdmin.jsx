@@ -13,6 +13,9 @@ import TourPrices from '@/admin/tours/TourPrices';
 import DayImages from './tours/DayImages';
 import Testimonials from '@/admin/testimonials/Testimonials';
 import MainBook from '@/admin/booking/MainBook';
+import { Page } from './sideBar/sidBar';
+import TourTypesTable from './tours/TourTypesTable';
+import TourDetails from './tours/view/TourDetails';
 
 function LayoutAdmin() {
   return (
@@ -27,9 +30,12 @@ function LayoutAdmin() {
           <Route path='/tours/destination' element={<TourDestinition/>}/>
           <Route path='/tours/prices' element={<TourPrices/>}/>
           <Route path='/tours/services' element={<TourServices/>}/>
+          <Route path='/tours/tour_types/:id' element={<TourTypesTable/>}/>
+          <Route path="/tours/:id" element={<TourDetails />} />
           <Route path='/testimonials' element={<Testimonials />} />
           <Route path="/bookings" element={<MainBook />} />
         </Route>
+        <Route path="/pagee" element={<Page />} />
         <Route path="*" element={<NotFound />} />
         <Route path="/logout" element={<Logout />} />
       </Routes>

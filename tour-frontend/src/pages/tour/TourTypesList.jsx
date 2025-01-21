@@ -70,7 +70,7 @@ const TourTypesList = () => {
         return <div className="text-center min-h-[60vh] place-content-center place-items-center bg-yellow-200  text-gray-600">
            <div className='max-w-md bg-yellow-300 border-l-4 border-yellow-700 p-4 flex flex-wrap items-center'>
                 <BadgeAlert className='mr-3'/>
-                <p className='text-lg font-semibold text-orange-600'>No tours found for this type.</p>
+                <p className='text-lg font-semibold text-orange-600'>No tours found for this type right now. it's coming soon! </p>
             </div>
         </div>;
     }

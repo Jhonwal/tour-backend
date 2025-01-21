@@ -1,5 +1,4 @@
 import * as React from "react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,6 +22,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import useApi from "@/services/api";
+import { toast, ToastContainer } from "react-toastify";
+//import toast style
+import "react-toastify/dist/ReactToastify.css";
+import { Loader2 } from "lucide-react";
 
 export function Reserve({ tourId, name }) {
   const [open, setOpen] = React.useState(false);
@@ -62,18 +65,21 @@ export function Reserve({ tourId, name }) {
     e.preventDefault();
 
     try {
+        setIsSubmitting(true);
         const response = await api.post('/api/bookings', formData);
-
         if (response.data.reference_code) {
             localStorage.setItem('bookingReference', response.data.reference_code);
             localStorage.setItem('bookingMessage',`Booking successful! Your reference code is:`);
             window.location.href = '/';
+            setIsSubmitting(false);
         } else {
-            alert("Booking failed. Please try again.");
+            toast.error("Booking failed. Please try again.");
+            setIsSubmitting(false);
         }
     } catch (error) {
         console.error("Error occurred during booking:", error);
-        alert("There was an error while booking. Please try again.");
+        toast.error("There was an error while booking. Please try again.");
+        setIsSubmitting(false);
     }
   };
 
@@ -300,8 +306,16 @@ function BookingFormContent({ formData, onChange, onSubmit, errors, isSubmitting
         ></Textarea>
       </div>
       <Button type="submit" variant='waguer2' disabled={isSubmitting} className="lg:col-span-2">
-        {isSubmitting ? "Submitting..." : "Submit Booking"}
+        {isSubmitting ? (
+          <span className="flex items-center justify-center">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Submitting...
+          </span>
+        ) : "Submit Booking"}
       </Button>
+      <ToastContainer 
+        position="bottom-right"
+      />
     </form>
   );
 }

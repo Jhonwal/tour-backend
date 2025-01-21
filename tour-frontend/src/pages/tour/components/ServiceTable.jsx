@@ -21,7 +21,7 @@ export default function ServiceTable({ includedServices, excludedServices }) {
                     <td className="border border-gray-300 px-4 py-2">
                         <ul className="list-disc">
                             {excludedServices?.length > 0 ? (
-                                excludedServices.map((service, index) => <p key={index}>{service.services}</p>)
+                                excludedServices.map((service, index) => <li key={index}>{service.services}</li>)
                             ) : (
                                 <li>No services excluded.</li>
                             )}

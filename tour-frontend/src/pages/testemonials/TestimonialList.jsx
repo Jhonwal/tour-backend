@@ -123,8 +123,8 @@ const TestimonialList = () => {
                         <Button variant="waguer2">Share Your Experience</Button>
                     </PopoverTrigger>
                     <PopoverContent className="min-w-6xl"> {/* Popover width set to 2/3 screen */}
-                        <TestemonialForm onSuccess={handleFormSuccess} />
-                    </PopoverContent>
+                        <TestemonialForm onSuccess={handleFormSuccess} closePopover={setIsPopoverOpen}/>
+                    </PopoverContent>-
                 </Popover>
             </div>
         </div>

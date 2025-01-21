@@ -51,7 +51,7 @@ const TourTypesTable = () => {
 
 return (
     <div className="mx-auto">
-        <div className="overflow-x-auto"> {/* Make the table horizontally scrollable */}
+        <div className="overflow-x-auto">
             <table className="table-auto w-full border-collapse">
                 <thead className="bg-orange-200 text-black">
                     <tr>
@@ -81,20 +81,20 @@ return (
                             <td className="border px-4 py-2 space-x-2 border-b-orange-200">
                                 <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
                                     <Link 
-                                        to={`/admin/tour_types/${tourType.id}`} 
-                                        className="text-center bg-blue-500 text-white py-1 px-2 rounded-md text-sm w-full sm:w-auto flex justify-center items-center"
+                                        to={`/admin/tours/tour_types/${tourType.id}`} 
+                                        className="text-center text-blue-500  py-1 px-2 rounded-md text-sm w-full sm:w-auto flex justify-center items-center"
                                     >
                                         <Eye className="w-5 h-5" />
                                     </Link>
                                     <Link 
                                         to={`/admin/tour_types/${tourType.id}/edit`} 
-                                        className="text-center bg-green-500 text-white py-1 px-2 rounded-md text-sm w-full sm:w-auto flex justify-center items-center"
+                                        className="text-center text-green-500 py-1 px-2 rounded-md text-sm w-full sm:w-auto flex justify-center items-center"
                                     >
                                         <Pen className="w-5 h-5" />
                                     </Link>
                                     <button
                                         onClick={() => handleDelete(tourType.id)}
-                                        className="text-center bg-red-500 text-white py-1 px-2 rounded-md text-sm w-full sm:w-auto flex justify-center items-center"
+                                        className="text-center text-red-500 py-1 px-2 rounded-md text-sm w-full sm:w-auto flex justify-center items-center"
                                     >
                                         <Trash2 className="w-5 h-5" />
                                     </button>
