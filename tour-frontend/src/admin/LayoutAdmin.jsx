@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import NotFound from '../components/NotFound';
 import Sidebar from './components/Sidbar';
 import MainContent from './components/MainContent';
-import Logout from '@/pages/auth/Logout';
+import Logout from '@/admin/auth/Logout';
 import MainTours from './tours/MainTours';
 import AddTourForm from './tours/AddTourForm';
 import TourDestinition from "@/admin/tours/tourDestinition.jsx";
@@ -16,6 +16,8 @@ import MainBook from '@/admin/booking/MainBook';
 import { Page } from './sideBar/sidBar';
 import TourTypesTable from './tours/TourTypesTable';
 import TourDetails from './tours/view/TourDetails';
+import UpdateTour from './tours/updates/UpdateTour';
+import UserProfile from './profile/UserProfile';
 
 function LayoutAdmin() {
   return (
@@ -34,6 +36,8 @@ function LayoutAdmin() {
           <Route path="/tours/:id" element={<TourDetails />} />
           <Route path='/testimonials' element={<Testimonials />} />
           <Route path="/bookings" element={<MainBook />} />
+          <Route path="/tours/:tourId/update" element={<UpdateTour />} />
+          <Route path="/profile" element={<UserProfile />} />
         </Route>
         <Route path="/pagee" element={<Page />} />
         <Route path="*" element={<NotFound />} />

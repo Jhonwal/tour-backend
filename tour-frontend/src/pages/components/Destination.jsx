@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import useApi from '../../services/api';
 import {
     Sheet,
     SheetContent,
@@ -11,6 +10,7 @@ import {
 import TourDet from '../tour/TourDet';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
+import useApi from '@/services/api';
 
 const Destinations = () => {
     const api = useApi();
@@ -65,7 +65,7 @@ const Destinations = () => {
         return (
             <div>
                 <section id="destinations" className="mb-12 font-verdana">
-                    <h2 className="text-3xl font-bold font-verdana text-center mb-8 text-white bg-orange-500 p-2">
+                    <h2 className="text-2xl font-bold text-center mb-12 relative bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-lg shadow-md">
                         Featured Tours
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -85,7 +85,7 @@ const Destinations = () => {
     return (
         <div>
             <section id="destinations" className="mb-12 font-verdana">
-                <h2 className="text-3xl font-bold font-verdana text-center mb-8 text-white bg-orange-500 p-2">
+                <h2 className="text-2xl font-bold text-center mb-12 relative bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-lg shadow-md">
                     Featured Tours
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

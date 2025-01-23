@@ -12,6 +12,9 @@ import TourTypesList from './pages/tour/TourTypesList';
 import CheckBooking from './pages/CheckBooking';
 import WaguerPolicy from './services/WaguerPolicy';
 import TermsOfService from './services/TermsOfService';
+import ForgotPassword from './admin/auth/ForgotPassword';
+import ResetPassword from './admin/auth/ResetPassword';
+import BlogPage from './pages/components/BlogPage';
 
 export default function App() {
   return (
@@ -24,7 +27,11 @@ export default function App() {
           <Route path='/check-booking' element={<CheckBooking/>} />
           <Route path='/privacy' element={<WaguerPolicy/>} />
           <Route path='/terms' element={<TermsOfService/>} />
+          <Route path='/blog' element={<BlogPage/>} />
         </Route>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/password-reset/:token" element={<ResetPassword />} />
+
         {/* <Route path="/log" element={<Logout />}/> */}
         <Route path="login" element={
             <LoginContext />

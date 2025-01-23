@@ -1,11 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Destination;
+use App\Models\Service;
 use App\Models\Tour;
 use App\Models\User;
 use App\Models\TourDay;
 use App\Models\TourType;
 use App\Models\TourImage;
+use App\Models\TourPrice;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
@@ -157,5 +162,58 @@ class TourController extends Controller
                 return response()->json(['error' => 'Tour not found'], 404);
         }
     }
-    
+    public function getTourDetails($id): JsonResponse
+    {
+        try {
+            // Fetch the tour details
+            $tour = Tour::with(['tourType'])
+                ->where('id', $id)
+                ->firstOrFail();
+                $tour->banner = URL::to($tour->banner);
+                $tour->map_image = URL::to($tour->map_image);
+            // Fetch related images
+            $images = TourImage::where('tour_id', $id)->get();
+            foreach ($images as $image) {
+                $image->url = URL::to($image->url);
+            }
+            // Fetch tour days
+            $days = TourDay::with('dayImages')
+                ->where('tour_id', $id)
+                ->get();
+            foreach ($days as $day) {
+                foreach ($day->dayImages as $image) {
+                    $image->url = URL::to($image->url);
+                }
+            }
+                
+            // Fetch destinations
+            $destinations = Destination::where('tour_id', $id)->get();
+
+            // Fetch services
+            $services = Service::where('tour_id', $id)->get();
+
+            // Fetch prices
+            $prices = TourPrice::where('tour_id', $id)->get();
+
+            // Combine all data into a single response
+            $data = [
+                'tour' => $tour,
+                'images' => $images,
+                'days' => $days,
+                'destinations' => $destinations,
+                'services' => $services,
+                'prices' => $prices,
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $data,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching tour details: ' . $e->getMessage(),
+            ], 500);
+        }
+    }   
 }

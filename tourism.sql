@@ -264,33 +264,6 @@ CREATE TABLE `visitor_counts` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Déchargement des données de la table `visitor_counts`
---
-
-INSERT INTO `visitor_counts` (`id`, `month`, `year`, `country`, `count`, `created_at`, `updated_at`) VALUES
-(2, 8, 2024, 'Morocco', 55, '2024-08-14 14:04:59', '2024-08-28 14:27:44'),
-(3, 8, 2024, 'United States of America', 42, '2024-08-14 14:20:12', '2024-08-14 22:57:53'),
-(4, 8, 2024, 'Sweden', 19, '2024-08-14 18:12:31', '2024-08-14 18:12:31'),
-(5, 8, 2024, 'China', 14, '2024-08-14 18:12:31', '2024-08-14 18:12:31'),
-(6, 8, 2024, 'Canada', 30, '2024-08-01 10:00:00', '2024-08-01 10:00:00'),
-(7, 8, 2024, 'United Kingdom', 40, '2024-08-01 11:00:00', '2024-08-01 11:00:00'),
-(8, 8, 2024, 'Australia', 22, '2024-08-01 12:00:00', '2024-08-01 12:00:00'),
-(9, 8, 2024, 'Germany', 35, '2024-08-01 13:00:00', '2024-08-01 13:00:00'),
-(10, 8, 2024, 'India', 45, '2024-08-01 14:00:00', '2024-08-01 14:00:00'),
-(11, 7, 2024, 'Australia', 302, '2024-08-14 19:06:07', '2024-08-14 19:06:07'),
-(12, 9, 2024, 'Morocco', 76, '2024-09-02 14:36:26', '2024-09-16 13:27:37'),
-(13, 9, 2024, 'United States of America', 1, '2024-09-08 17:41:56', '2024-09-08 17:41:56'),
-(14, 10, 2024, 'Morocco', 7, '2024-10-31 15:13:50', '2024-10-31 15:44:39'),
-(15, 11, 2024, 'Morocco', 4, '2024-11-03 13:36:21', '2024-11-17 13:22:06'),
-(16, 11, 2024, 'United States of America', 1, '2024-11-17 15:43:51', '2024-11-17 15:43:51'),
-(17, 12, 2024, 'Morocco', 3, '2024-12-01 15:12:27', '2024-12-12 19:02:19'),
-(18, 12, 2024, 'United States of America', 4, '2024-12-12 19:01:20', '2024-12-12 19:01:37'),
-(19, 12, 2024, 'Germany', 4, '2024-12-12 19:01:54', '2024-12-12 19:02:05');
-
---
--- Index pour les tables déchargées
---
 
 --
 -- Index pour la table `activites`
@@ -541,3 +514,5 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+

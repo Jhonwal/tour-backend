@@ -108,7 +108,7 @@ export default function Footer() {
 
             </div>
                 {/* Footer Bottom Section */}
-                <div className="text-center mt-8 pt-8 border-t-4 flex flex-wrap lg:gap-10 gap-2 justify-center border-gray-700 bg-orange-900">
+                <div className="text-center mt-8 pt-8 border-t-4 flex flex-wrap lg:gap-10 gap-2 justify-center border-gray-700 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-400">
                     <p className="mb-2">&copy; 2024 CMT. All rights reserved.</p>
                     <div>
                         <Sheet>

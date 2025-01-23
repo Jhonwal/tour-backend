@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { z } from 'zod';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'; // Import the zodResolver
 import { Button } from '@/components/ui/button';
@@ -95,7 +95,6 @@ const Login = () => {
               />
             </div>
           )}
-          {/* Email Field */}
           <FormField
             control={control}
             name="email"
@@ -104,14 +103,12 @@ const Login = () => {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input type="text" variant="orange" placeholder="Email" {...field} />
-                  {/* <input type="email" placeholder="Email" {...field} /> */}
                 </FormControl>
                 {errors.email && <FormMessage>{errors.email.message}</FormMessage>}
               </FormItem>
             )}
           />
 
-          {/* Password Field */}
           <FormField
             control={control}
             name="password"
@@ -125,8 +122,6 @@ const Login = () => {
               </FormItem>
             )}
           />
-
-          {/* Submit Button */}
           <div>
             {loading ? (
               <Button variant="waguer2" disabled>
@@ -137,6 +132,15 @@ const Login = () => {
               <Button variant="waguer2">Login</Button>
             )}
           </div>
+          <div className="text-end mt-4">
+            <Link 
+              to="/forgot-password" 
+              className="text-orange-900 hover:text-orange-700 hover:underline transition-all duration-300 transform hover:scale-105"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+
         </form>
       </Form>
     </div>

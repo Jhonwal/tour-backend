@@ -78,8 +78,6 @@
             <h2>New Booking Alert</h2>
         </div>
         @php
-            $name = 'waguer';
-            $reference = 'SMO34LFMDO';
         @endphp
         <!-- Body Section -->
         <div class="email-body">

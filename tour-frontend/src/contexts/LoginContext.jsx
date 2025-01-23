@@ -1,5 +1,5 @@
 // src/components/LoginContext.jsx
-import Login from '@/pages/auth/Login';
+import Login from '@/admin/auth/Login';
 import { getToken } from '@/services/getToken';
 import { Navigate } from 'react-router-dom';
 

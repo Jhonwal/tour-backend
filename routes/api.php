@@ -94,6 +94,30 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/admin/bookings/{id}', [BookingController::class, 'update']);
     Route::delete('/admin/bookings/{id}', [BookingController::class, 'destroy']);
     Route::get('/tours/{id}', [TourController::class, 'showTour']);
-
     
+    
+});
+
+Route::prefix('tours/update')->group(function () {
+    Route::get('/{id}', [TourController::class, 'getTourDetails']); // Get tour details
+    Route::put('/{id}', [TourController::class, 'update']); // Update tour info
+    Route::post('/{id}/images', [TourController::class, 'updateImages']); // Update tour images
+    Route::put('/{id}/days', [TourController::class, 'updateDays']); // Update tour days
+    Route::put('/{id}/destinations', [TourController::class, 'updateDestinations']); // Update tour destinations
+    Route::put('/{id}/services', [TourController::class, 'updateServices']); // Update tour services
+    Route::put('/{id}/prices', [TourController::class, 'updatePrices']); // Update tour prices
+});
+
+Route::prefix('tours')->group(function () {
+    // Fetch tour details
+    Route::get('update/{id}', [TourController::class, 'getTourDetails']);
+
+    // Update tour information
+    Route::post('update/{id}', [TourController::class, 'updateTour']);
+
+    // Delete tour image
+    Route::delete('tour-images/{id}', [TourController::class, 'deleteTourImage']);
+
+    // Delete day image
+    Route::delete('day-images/{id}', [TourController::class, 'deleteDayImage']);
 });
