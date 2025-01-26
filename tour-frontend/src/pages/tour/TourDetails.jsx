@@ -28,7 +28,7 @@ function TourDetails() {
 
   useEffect(() => {
     // Fetch tour data from the API
-    api.get(`/api/tour/${id}`).then((response) => {
+    api.get(`/api/tour/slug/${id}`).then((response) => {
       const tourData = response.data;
       console.log(tourData);
       setTour(tourData);

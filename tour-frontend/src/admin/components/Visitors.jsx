@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react"
 import {
   Card,
@@ -14,7 +12,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-import { TrendingUp, TrendingDown } from "lucide-react"
+import { TrendingUp, TrendingDown, Loader } from "lucide-react"
 import { LabelList, Pie, PieChart } from "recharts"
 import useApi from "@/services/api"
 
@@ -23,6 +21,7 @@ export function Visitors() {
   const [totalVisitors, setTotalVisitors] = useState(0)
   const [percentageChange, setPercentageChange] = useState(0)
   const [deferent, setDeferent] = useState(0)
+  const [loading, setLoading] = useState(true);
   const api = useApi()
 
   useEffect(() => {
@@ -35,9 +34,11 @@ export function Visitors() {
         setTotalVisitors(total)
         setPercentageChange(response.data.percentageChange)
         setDeferent(response.data.deferent)
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching visitor data:", error)
+        setLoading(false);
       })
   }, [])
 
@@ -84,15 +85,16 @@ export function Visitors() {
   }
 
   return (
-    <Card className="flex flex-col bg-orange-300 bg-opacity-15">
+    <Card className="flex flex-col bg-orange-300 bg-opacity-15 hover:shadow-2xl transition-all duration-300">
       <CardHeader className="items-center pb-0">
         <CardTitle>Visitor Distribution</CardTitle>
         <CardDescription>{`Month: ${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
+        {loading ? <Loader className='animate-spin text-orange-500 w-20 mx-auto place-items-center place-content-center h-full' />:
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[200px]"
+          className="mx-auto aspect-square max-h-[300px]"
         >
           <PieChart>
             <ChartTooltip
@@ -141,6 +143,7 @@ export function Visitors() {
             </Pie>
           </PieChart>
         </ChartContainer>
+        }
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         {renderPercentageChange()}

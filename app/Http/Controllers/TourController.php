@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Destination;
-use App\Models\Service;
 use App\Models\Tour;
 use App\Models\User;
+use App\Models\Service;
 use App\Models\TourDay;
 use App\Models\TourType;
 use App\Models\TourImage;
 use App\Models\TourPrice;
-use Illuminate\Http\JsonResponse;
+use App\Models\Destination;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,11 +29,10 @@ class TourController extends Controller
             'types' => $type,
         ]);
     }
-    public function tour_type($type)
+    public function tour_type($slug)
     {
-
-        $tours = Tour::where('tour_type_id', $type)->orderBy('created_at', 'desc')->get();
-        $type = TourType::find($type);
+        $type = TourType::where('slug', $slug)->first();
+        $tours = Tour::where('tour_type_id', $type->id)->orderBy('created_at', 'desc')->get();
         $tours->each(function ($tour) {
             $tour->banner = URL::to($tour->banner);
             $tour->map_image = URL::to($tour->map_image);
@@ -73,6 +73,7 @@ class TourController extends Controller
         // Create a new tour record
         $tour = new Tour();
         $tour->name = $request->name;
+        $tour->slug = Str::slug($tour->name);
         $tour->depart_city = $request->depart_city;
         $tour->end_city = $request->end_city;
         $tour->description = $request->description;
@@ -124,7 +125,27 @@ class TourController extends Controller
     
         return response()->json($tour);
     }
+    public function showSlug($slug)
+    {
+        $tour = Tour::with([
+            'destinations',
+            'tourImages',
+            'price',
+            'tourDays',
+            'excludedServices',
+            'includedServices',
+        ])->where('slug', $slug)->first();
     
+        // Ensure all image paths are full URLs
+        $tour->banner = URL::to($tour->banner);
+        $tour->map_image = URL::to($tour->map_image);
+    
+        foreach ($tour->tourImages as $image) {
+            $image->url = URL::to($image->url);
+        }
+    
+        return response()->json($tour);
+    }
     public function getThree() 
     {
 

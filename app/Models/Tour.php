@@ -8,6 +8,7 @@ class Tour extends Model
 {
     protected $fillable = [
         'name',
+        'slug',
         'depart_city',
         'end_city',
         'tour_type_id',

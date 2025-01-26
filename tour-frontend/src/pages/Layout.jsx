@@ -77,10 +77,10 @@ export default function Layout() {
                                     {
                                         tourTypes.map((tourType) => (
                                             <MenubarSub key={tourType.id}>
-                                                <MenubarSubTrigger onClick={() => handleRefreshType(tourType.id)}>{tourType.name}</MenubarSubTrigger>
+                                                <MenubarSubTrigger onClick={() => handleRefreshType(tourType.slug)}>{tourType.name}</MenubarSubTrigger>
                                                 <MenubarSubContent>
                                                     {tourType.tours?.map((tour) => (
-                                                    <MenubarItem key={tour.id} onClick={() => handleRefreshTour(tour.id)}>{tour.name}<span className="ml-8 text-sm">({tour.duration} days/nights)</span></MenubarItem>
+                                                    <MenubarItem key={tour.id} onClick={() => handleRefreshTour(tour.slug)}>{tour.name}<span className="ml-8 text-sm">({tour.duration} days/nights)</span></MenubarItem>
                                                     ))}
                                                 </MenubarSubContent>
                                             </MenubarSub>
@@ -93,7 +93,7 @@ export default function Layout() {
                             <User size={24} className="mr-2" />
                             Cheek your Quet
                         </Link>
-                        <Link to="/blog" className={getNavLinkClass('/blog')}>
+                        <Link to="/blog" className={getNavLinkClassTour('/blog')}>
                             <FileText size={24} className="mr-2" />
                             Blog
                         </Link>

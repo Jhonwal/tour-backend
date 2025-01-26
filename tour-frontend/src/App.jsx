@@ -14,7 +14,8 @@ import WaguerPolicy from './services/WaguerPolicy';
 import TermsOfService from './services/TermsOfService';
 import ForgotPassword from './admin/auth/ForgotPassword';
 import ResetPassword from './admin/auth/ResetPassword';
-import BlogPage from './pages/components/BlogPage';
+import BlogPage from './pages/blogs/BlogPage';
+import PostDetails from './pages/blogs/PostDetails';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
           <Route path='/privacy' element={<WaguerPolicy/>} />
           <Route path='/terms' element={<TermsOfService/>} />
           <Route path='/blog' element={<BlogPage/>} />
+          <Route path='/blog/post/:slug' element={<PostDetails/>} />
         </Route>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/password-reset/:token" element={<ResetPassword />} />

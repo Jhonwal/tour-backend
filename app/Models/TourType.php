@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TourType extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'description', 'image'];
+    protected $fillable = ['name', 'slug', 'description', 'image'];
 
     public function tours()
     {

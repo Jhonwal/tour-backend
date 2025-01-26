@@ -18,6 +18,8 @@ import TourTypesTable from './tours/TourTypesTable';
 import TourDetails from './tours/view/TourDetails';
 import UpdateTour from './tours/updates/UpdateTour';
 import UserProfile from './profile/UserProfile';
+import UserProfileManagement from './profile/UserProfileManagement';
+import CategoriesManagement from './blogs/CategoriesManagement';
 
 function LayoutAdmin() {
   return (
@@ -37,7 +39,8 @@ function LayoutAdmin() {
           <Route path='/testimonials' element={<Testimonials />} />
           <Route path="/bookings" element={<MainBook />} />
           <Route path="/tours/:tourId/update" element={<UpdateTour />} />
-          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/profile" element={<UserProfileManagement />} />
+          <Route path="/blogs" element={<CategoriesManagement />} />
         </Route>
         <Route path="/pagee" element={<Page />} />
         <Route path="*" element={<NotFound />} />

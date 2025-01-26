@@ -97,7 +97,7 @@ export default function CarouselPlugin() {
                                             {slide.description}
                                         </p>
                                         {slide.id && (
-                                            <Link to={`/tour/types/${slide.id}`}>
+                                            <Link to={`/tour/types/${slide.slug}`}>
                                                 <Button 
                                                     variant="waguer2"
                                                     className="group relative px-6 py-2 text-lg font-semibold transform hover:scale-105 transition-all duration-300"
