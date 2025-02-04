@@ -18,10 +18,10 @@ const InfoCard = ({ image, name, description, email, facebook, instagram }) => (
         <a href={`mailto:${email}`} className="text-orange-500 hover:text-orange-600 transition-colors">
           <Mail className="w-5 h-5" />
         </a>
-        <a href={facebook} className="text-orange-500 hover:text-orange-600 transition-colors">
+        <a href={facebook} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-600 transition-colors">
           <Facebook className="w-5 h-5" />
         </a>
-        <a href={instagram} className="text-orange-500 hover:text-orange-600 transition-colors">
+        <a href={instagram} target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:text-orange-600 transition-colors">
           <Instagram className="w-5 h-5" />
         </a>
       </div>

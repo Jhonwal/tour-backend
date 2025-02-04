@@ -49,19 +49,22 @@ class BlogController extends Controller
             ->firstOrFail();
         $post->featured_image = URL::to($post->featured_image);
 
-        // Fetch related posts in the same category
-        $relatedPosts = Post::with(['category', 'author'])->where('category_id', $post->category_id)
-            ->where('id', '!=', $post->id)
-            ->limit(3)
-            ->get();
-        foreach($relatedPosts as $post){
-            $post->featured_image = URL::to($post->featured_image);
-        }   
         $post->increment('views');
 
-        return response()->json([
-            'post' => $post,
-            'related_posts' => $relatedPosts
-        ]);
+        return response()->json(['post' => $post ]);
+    }
+    public function related($slug){
+        $post = Post::where('slug', $slug)
+        ->firstOrFail();
+        $relatedPosts = Post::with(['category', 'author'])
+        ->where('id', '!=', $post->id)
+        ->where('category_id', $post->category_id)
+        ->latest('published_at')
+        ->take(3)
+        ->get();
+        foreach($relatedPosts as $post){
+            $post->featured_image = URL::to($post->featured_image);
+        }
+        return response()->json(['posts' => $relatedPosts]);
     }
 }

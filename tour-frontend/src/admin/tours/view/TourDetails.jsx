@@ -12,7 +12,7 @@ import TourPrices from "./TourPrices";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ServiceTable from "@/pages/tour/components/ServiceTable";
 import { ArrowLeftFromLineIcon } from "lucide-react";
-import UpdateTour from "../updates/UpdateTour";
+import UpdateTour from "../UpdateTour";
 
 function TourDetails() {
   const api = useApi();
@@ -46,7 +46,6 @@ function TourDetails() {
       <ArrowLeftFromLineIcon className="text-3xl text-orange-600 hover:text-orange-500 cursor-pointer" 
       onClick={() => navigate('/admin/tours')} />
       <h1 className="text-2xl font-bold text-blue-700 text-center underline">Tour: {tour.name}</h1>
-      <Link to={`/admin/tours/${tour.id}/update`}>Upadate the tour</Link>
       {/* Tour Overview */}
       <div className="flex flex-col lg:flex-row gap-8 p-5 shadow-md shadow-blue-300">
         {/* Left Section */}

@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import CarouselPlugin from "./components/Carousel";
 import Destinations from "./components/Destination";
 import Gate2MoroccoDescription from "./components/Gate2MoroccoDescription";
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Map, PartyPopper } from 'lucide-react';
+import { Map } from 'lucide-react';
 import TestimonialList from './testemonials/TestimonialList';
 import { Button } from '@/components/ui/button';
 import { toast, ToastContainer } from 'react-toastify';
+import FAQComponent from './components/FAQComponent';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export default function Home() {
     
@@ -45,7 +46,7 @@ export default function Home() {
                             </div>
                         </section>
                         <section id="offers" className="py-12">
-                            <h2 className="text-3xl font-bold font-verdana text-center mb-8 text-white bg-orange-500 p-2">Special Offers</h2>
+                            <h2 className="text-3xl font-bold font-verdana text-center mb-12 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-lg shadow-md">Special Offers</h2>
                             <div className="bg-blue-600 text-white p-6 rounded-lg shadow-md text-center">
                                 <h3 className="text-xl font-semibold mb-4">Spring Special: 20% Off All Tours!</h3>
                                 <p className="mb-6">Book now and save on your dream Moroccan adventure.</p>
@@ -55,6 +56,17 @@ export default function Home() {
                             </div>
                         </section>
                         <TestimonialList/>
+                        <FAQComponent n={3}/>
+                        <div className='mx-auto bg-gray-100 bg-opacity-75 flex justify-center pb-4'>
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="waguer2" className='font-semibold max-w-lg'>more</Button>
+                                </SheetTrigger>
+                                <SheetContent side="left">
+                                    <FAQComponent/>
+                                </SheetContent>
+                            </Sheet>
+                        </div>
                     </div>
                 </div>
                 <ToastContainer

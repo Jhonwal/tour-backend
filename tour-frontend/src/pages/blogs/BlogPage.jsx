@@ -70,6 +70,7 @@ const BlogPage = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-orange-400" />
             <Input
               type="text"
+              variant='orange'
               placeholder="Search articles..."
               className="pl-10 w-full border-orange-300 focus:border-orange-500"
               value={searchTerm}
@@ -125,7 +126,7 @@ const BlogPage = () => {
                   <span>{new Date(featuredPost.published_at).toLocaleDateString()}</span>
                 </div>
                 <Link to={`/blog/post/${featuredPost.slug}`}>
-                  <Button>Read More</Button>
+                  <Button variant='waguer2'>Read More</Button>
                 </Link>
               </div>
             </div>
@@ -161,7 +162,7 @@ const BlogPage = () => {
                     <span>{post.author.name}</span>
                   </div>
                   <Link to={`/blog/post/${post.slug}`}>
-                    <Button variant="outline" size="sm">Read More</Button>
+                    <Button variant="outline" size="sm" className='text-orange-700'>Read More</Button>
                   </Link>
                 </div>
               </div>

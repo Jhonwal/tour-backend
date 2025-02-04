@@ -43,6 +43,6 @@ class Post extends Model
     public function getReadingTimeAttribute()
     {
         $words = str_word_count(strip_tags($this->content));
-        return ceil($words / 200); // Avg reading time
+        return ceil($words / 200);
     }
 }

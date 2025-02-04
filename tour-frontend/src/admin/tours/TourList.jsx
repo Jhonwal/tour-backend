@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import useApi from "@/services/api";
-import { Eye, Pen, Trash2 } from "lucide-react";
+import { Eye, Pen } from "lucide-react";
 import { getToken } from "@/services/getToken";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
@@ -80,6 +80,27 @@ const TourTable = () => {
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
+  const ActionButton = ({ icon: Icon, to, color, hoverColor }) => (
+    <Link to={to}>
+      <button className={`
+        group
+        relative
+        p-1
+        rounded-full
+        transition-all
+        duration-300
+        ease-in-out
+        hover:shadow-lg
+        ${color}
+        ${hoverColor}
+        transform
+        hover:scale-110
+      `}>
+        <Icon className="w-5 h-5 text-white transition-transform duration-300 ease-in-out group-hover:rotate-12" />
+        <span className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+      </button>
+    </Link>
+  );
 
   return (
     <div className="max-w-6xl mx-auto p-6 shadow-lg rounded-md">
@@ -133,16 +154,20 @@ const TourTable = () => {
                   <td className="border border-orange-300 px-4 py-2">{tour.depart_city}</td>
                   <td className="border border-orange-300 px-4 py-2">{tour.end_city}</td>
                   <td className="border border-orange-300 px-4 py-2 text-center">
-                    <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0 justify-center">
-                      <Link to={`/admin/tours/${tour.id}`}>
-                        <button
-                          className="px-3 py-1 bg-green-500 text-white text-sm font-medium rounded-md hover:bg-green-600 w-full sm:w-auto text-center"
-                          onClick={() => console.log(`View: ${tour.id}`)}
-                        >
-                            <Eye />
-                        </button>
-                      </Link>
-                    </div>
+                    <div className="flex items-center justify-center gap-3">
+                        <ActionButton 
+                          icon={Eye}
+                          to={`/admin/tours/${tour.id}`}
+                          color="bg-orange-500"
+                          hoverColor="hover:bg-orange-600"
+                        />
+                        <ActionButton 
+                          icon={Pen}
+                          to={`/admin/tours/${tour.id}/update`}
+                          color="bg-green-500"
+                          hoverColor="hover:bg-green-600"
+                        />
+                      </div>
                   </td>
                 </tr>
               ))

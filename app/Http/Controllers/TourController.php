@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DayImage;
 use App\Models\Tour;
 use App\Models\User;
 use App\Models\Service;
@@ -13,6 +14,7 @@ use App\Models\Destination;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -216,7 +218,6 @@ class TourController extends Controller
             // Fetch prices
             $prices = TourPrice::where('tour_id', $id)->get();
 
-            // Combine all data into a single response
             $data = [
                 'tour' => $tour,
                 'images' => $images,
@@ -237,4 +238,317 @@ class TourController extends Controller
             ], 500);
         }
     }   
+    public function updateTourInfo(Request $request, $id)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tour = Tour::with(['destinations', 'tourDays'])->findOrFail($id);
+            $totalNights = $tour->destinations->sum('number_of_nights');
+            $newDuration = (int) $request->input('duration');
+
+            if ($totalNights !== $newDuration) {
+                $destinations = $tour->destinations;
+                $count = count($destinations);
+                if ($count > 0) {
+                    $nightsPerDestination = intdiv($newDuration, $count);
+                    $remainingNights = $newDuration % $count;
+
+                    foreach ($destinations as $index => $destination) {
+                        $destination->number_of_nights = $nightsPerDestination + ($index < $remainingNights ? 1 : 0);
+                        $destination->save();
+                    }
+                }
+            }
+
+            if ($newDuration < $tour->duration) {
+                $daysToDelete = json_decode($request->input('days_to_delete', '[]'));
+
+                if (count($daysToDelete) !== ($tour->duration - $newDuration)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Incorrect number of days selected for deletion'
+                    ], 422);
+                }
+
+                foreach ($daysToDelete as $dayId) {
+                    $day = TourDay::find($dayId);
+                    if ($day) {
+                        foreach ($day->dayImages as $image) {
+                            $path = str_replace('/storage/', '', $image->url);
+                            if (Storage::disk('public')->exists($path)) {
+                                Storage::disk('public')->delete($path);
+                            }
+                            $image->delete();
+                        }
+                        $day->delete();
+                    }
+                }
+
+                $remainingDays = $tour->tourDays()
+                    ->whereNotIn('id', $daysToDelete)
+                    ->orderBy('number')
+                    ->get();
+
+                foreach ($remainingDays as $index => $day) {
+                    $day->update(['number' => $index + 1]);
+                }
+            }elseif ($newDuration > $tour->duration) {
+                $newDays = $newDuration - $tour->duration;
+                for ($i = 1; $i <= $newDays; $i++) {
+                    $day = new TourDay();
+                    $day->number = $tour->tourDays()->max('number') + 1;
+                    $day->name = 'new day';
+                    $day->tour_id = $tour->id;
+                    $day->save();
+                }
+            }
+
+            $tour->name = $request->input('name');
+            $tour->depart_city = $request->input('depart_city');
+            $tour->end_city = $request->input('end_city');
+            $tour->description = $request->input('description');
+            $tour->duration = $newDuration;
+
+            if ($request->hasFile('map_image')) {
+                if ($tour->map_image) {
+                    $path = str_replace('/storage/', '', $tour->map_image);
+                    if (Storage::disk('public')->exists($path)) {
+                        Storage::disk('public')->delete($path);
+                    }
+                }
+                $mapImagePath = $request->file('map_image')->store('tours/map', 'public');
+                $tour->map_image = Storage::url($mapImagePath);
+            }
+
+            if ($request->hasFile('banner')) {
+                if ($tour->banner) {
+                    $path = str_replace('/storage/', '', $tour->banner);
+                    if (Storage::disk('public')->exists($path)) {
+                        Storage::disk('public')->delete($path);
+                    }
+                }
+                $bannerPath = $request->file('banner')->store('tours/banner', 'public');
+                $tour->banner = Storage::url($bannerPath);
+            }
+
+            $tour->save();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Tour information updated successfully'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating tour information: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+ // Handle tour images
+ public function updateTourImages(Request $request, $id)
+ {
+     try {
+         $tour = Tour::findOrFail($id);
+
+         if ($request->hasFile('new_images_0')) {
+             $i = 0;
+             while ($request->hasFile("new_images_$i")) {
+                 $imagePath = $request->file("new_images_$i")->store('tours/additional', 'public');
+                 TourImage::create([
+                     'url' => Storage::url($imagePath),
+                     'tour_id' => $tour->id
+                 ]);
+                 $i++;
+             }
+         }
+
+         return response()->json([
+             'success' => true,
+             'message' => 'Tour images updated successfully'
+         ]);
+
+     } catch (\Exception $e) {
+         return response()->json([
+             'success' => false,
+             'message' => 'Error updating tour images: ' . $e->getMessage()
+         ], 500);
+     }
+ }
+
+ // Update single tour day
+ public function updateTourDay(Request $request, $tourId, $dayId)
+ {
+     try {
+         $day = TourDay::where('tour_id', $tourId)
+                      ->where('id', $dayId)
+                      ->firstOrFail();
+
+         $day->name = $request->input('name');
+         $day->description = $request->input('description');
+         $day->save();
+
+         // Handle day images
+         if ($request->hasFile('new_images_0')) {
+             $i = 0;
+             while ($request->hasFile("new_images_$i")) {
+                 $imagePath = $request->file("new_images_$i")->store('tours/tour_days', 'public');
+                 DayImage::create([
+                     'url' => Storage::url($imagePath),
+                     'day_id' => $day->id
+                 ]);
+                 $i++;
+             }
+         }
+
+         return response()->json([
+             'success' => true,
+             'message' => 'Tour day updated successfully'
+         ]);
+
+     } catch (\Exception $e) {
+         return response()->json([
+             'success' => false,
+             'message' => 'Error updating tour day: ' . $e->getMessage()
+         ], 500);
+     }
+ }
+
+ // Update single service
+ public function updateService(Request $request, $tourId, $serviceId)
+ {
+     try {
+         $service = Service::where('tour_id', $tourId)
+                         ->where('id', $serviceId)
+                         ->firstOrFail();
+
+         $service->update([
+             'type' => $request->input('type'),
+             'services' => $request->input('services'),
+             'services_description' => $request->input('services_description')
+         ]);
+
+         return response()->json([
+             'success' => true,
+             'message' => 'Service updated successfully'
+         ]);
+
+     } catch (\Exception $e) {
+         return response()->json([
+             'success' => false,
+             'message' => 'Error updating service: ' . $e->getMessage()
+         ], 500);
+     }
+ }
+
+ // Update destinations
+ public function updateDestinations(Request $request, $tourId)
+ {
+     try {
+         $destinations = $request->input('destinations');
+         
+         foreach ($destinations as $destData) {
+             Destination::where('tour_id', $tourId)
+                       ->where('id', $destData['id'])
+                       ->update([
+                           'name' => $destData['name'],
+                           'number_of_nights' => $destData['number_of_nights']
+                       ]);
+         }
+
+         return response()->json([
+             'success' => true,
+             'message' => 'Destinations updated successfully'
+         ]);
+
+     } catch (\Exception $e) {
+         return response()->json([
+             'success' => false,
+             'message' => 'Error updating destinations: ' . $e->getMessage()
+         ], 500);
+     }
+ }
+
+ // Update tour prices
+ public function updatePrices(Request $request, $tourId)
+ {
+     try {
+         $priceRecord = TourPrice::where('tour_id', $tourId)->firstOrFail();
+         
+         $priceColumns = [
+             '3-stars|2', '4-stars|2', '4&5-stars|2', '5-stars|2',
+             '3-stars|3-4', '4-stars|3-4', '4&5-stars|3-4', '5-stars|3-4',
+             '3-stars|5<n', '4-stars|5<n', '4&5-stars|5<n', '5-stars|5<n'
+         ];
+
+         $priceData = [];
+         foreach ($priceColumns as $column) {
+             $priceData[$column] = $request->input($column);
+         }
+
+         $priceRecord->update($priceData);
+
+         return response()->json([
+             'success' => true,
+             'message' => 'Prices updated successfully'
+         ]);
+
+     } catch (\Exception $e) {
+         return response()->json([
+             'success' => false,
+             'message' => 'Error updating prices: ' . $e->getMessage()
+         ], 500);
+     }
+ }
+
+ // Delete tour image
+ public function deleteTourImage($id)
+ {
+     try {
+         $image = TourImage::findOrFail($id);
+ 
+         $filePath = str_replace('/storage/', '', $image->url);
+ 
+         if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);}
+          $image->delete();
+ 
+         return response()->json([
+             'success' => true,
+             'message' => 'Tour image deleted successfully'
+         ]);
+     } catch (\Exception $e) {
+         return response()->json([
+             'success' => false,
+             'message' => 'Error deleting tour image: ' . $e->getMessage()
+         ], 500);
+     }
+ }
+ 
+
+ public function deleteDayImage($id)
+ {
+     try {
+         $image = DayImage::findOrFail($id);
+         $filePath = str_replace('/storage/', '', $image->url);
+ 
+         if (Storage::disk('public')->exists($filePath)) {
+            Storage::disk('public')->delete($filePath);}
+          $image->delete();
+ 
+         return response()->json([
+             'success' => true,
+             'message' => 'Tour image deleted successfully'
+         ]);
+     } catch (\Exception $e) {
+         return response()->json([
+             'success' => false,
+             'message' => 'Error deleting tour image: ' . $e->getMessage()
+         ], 500);
+     }
+ }
 }

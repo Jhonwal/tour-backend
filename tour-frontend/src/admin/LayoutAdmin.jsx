@@ -16,10 +16,13 @@ import MainBook from '@/admin/booking/MainBook';
 import { Page } from './sideBar/sidBar';
 import TourTypesTable from './tours/TourTypesTable';
 import TourDetails from './tours/view/TourDetails';
-import UpdateTour from './tours/updates/UpdateTour';
+import UpdateTour from './tours/UpdateTour';
 import UserProfile from './profile/UserProfile';
 import UserProfileManagement from './profile/UserProfileManagement';
 import CategoriesManagement from './blogs/CategoriesManagement';
+import TourTypeManagement from './tours/TourTypeManagement';
+import ViewTourType from './tours/view/ViewTourType';
+import PostsManagement from './blogs/PostsManagement';
 
 function LayoutAdmin() {
   return (
@@ -34,13 +37,15 @@ function LayoutAdmin() {
           <Route path='/tours/destination' element={<TourDestinition/>}/>
           <Route path='/tours/prices' element={<TourPrices/>}/>
           <Route path='/tours/services' element={<TourServices/>}/>
-          <Route path='/tours/tour_types/:id' element={<TourTypesTable/>}/>
+          <Route path='/tours/tour_types/' element={<TourTypeManagement/>}/>
           <Route path="/tours/:id" element={<TourDetails />} />
+          <Route path="/tours/tour-types/type/:id" element={<ViewTourType />} />
           <Route path='/testimonials' element={<Testimonials />} />
           <Route path="/bookings" element={<MainBook />} />
           <Route path="/tours/:tourId/update" element={<UpdateTour />} />
           <Route path="/profile" element={<UserProfileManagement />} />
           <Route path="/blogs" element={<CategoriesManagement />} />
+          <Route path="/blogs/categories/:categoryId/posts" element={<PostsManagement />} />
         </Route>
         <Route path="/pagee" element={<Page />} />
         <Route path="*" element={<NotFound />} />

@@ -66,8 +66,8 @@ const TestimonialList = () => {
     };
 
     return (
-        <div className="bg-gray-100 bg-opacity-75 pb-5">
-            <h2 className="text-3xl font-bold font-verdana text-center mb-8 text-white bg-orange-500 p-2">What Our Customers Say.</h2>
+        <div className="bg-gray-100 bg-opacity-75 pb-5 rounded-t-lg">
+            <h2 className="text-3xl font-bold font-verdana text-center mb-12 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-lg shadow-md">What Our Customers Say.</h2>
             <p className="text-center text-lg font-semibold font-verdana text-orange-600 mb-8">
                 We take great pride in delivering exceptional services to our customers. Here's what some of them have to say about their experiences with us. Their feedback motivates us to continue improving and providing the best service possible.
             </p>
@@ -124,7 +124,7 @@ const TestimonialList = () => {
                     </PopoverTrigger>
                     <PopoverContent className="min-w-6xl"> {/* Popover width set to 2/3 screen */}
                         <TestemonialForm onSuccess={handleFormSuccess} closePopover={setIsPopoverOpen}/>
-                    </PopoverContent>-
+                    </PopoverContent>
                 </Popover>
             </div>
         </div>

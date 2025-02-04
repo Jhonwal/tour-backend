@@ -1,4 +1,4 @@
-import { Home, LogOut, Menu, MessageCircle, Newspaper, TentTree, UserRoundCog, X } from "lucide-react";
+import { ArrowLeft, Book, Home, LogOut, Menu, MessageCircle, Newspaper, TentTree, UserRoundCog, X } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useState } from "react";
 
@@ -77,6 +77,14 @@ export default function Sidebar() {
                         <Newspaper size={28} strokeWidth={3} className="mr-4 text-white" />
                         <span className="text-lg">Bookings</span>
                     </Link>
+                    {/* link to blog */}
+                    <Link
+                        to="/admin/blogs"
+                        className={getNavLinkClass('/admin/blog')}
+                        onClick={closeSidebar}>
+                            <Book size={28} strokeWidth={3} className="mr-4 text-white" />
+                            <span className="text-lg">Blog</span>
+                    </Link>
                     <Link 
                         to="/admin/profile" 
                         className={getNavLinkClass('/admin/profile')} 
@@ -95,9 +103,17 @@ export default function Sidebar() {
             </div>
 
             {/* Main content */}
-            <main className={`flex-1 lg:ml-64 transition-all duration-300`}>
+            <main className="flex-1 lg:ml-64 transition-all duration-300 relative">
                 <Outlet />
+                <button
+                    onClick={() => window.history.back()}
+                    className="fixed bottom-4 right-4 flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg hover:bg-orange-600 transition-all duration-300"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span className="font-medium">Go Back</span>
+                </button>
             </main>
+
         </div>
     );
 }

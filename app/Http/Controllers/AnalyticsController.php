@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\VisitorCount;
-use App\Models\Tour;
-use App\Models\Booking;
-use App\Models\Testimonial;
-use App\Models\TourType;
 use Carbon\Carbon;
+use App\Models\Tour;
+use App\Models\User;
+use App\Models\Booking;
+use App\Models\TourType;
+use App\Models\Testimonial;
+use App\Models\VisitorCount;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class AnalyticsController extends Controller
 {
@@ -92,5 +94,17 @@ class AnalyticsController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+    public function getUsers()
+    {
+        // جلب كافة المستخدمين
+        $users = User::select('id', 'name', 'email', 'profile_picture', 'facebook', 'instagram')->get();
+        //get the url to the profil using foreach lop
+        foreach ($users as $user) {
+            $user->profile_picture = URL::to($user->profile_picture);
+        }
+        return response()->json([
+            'users' => $users
+        ]);
     }
 }

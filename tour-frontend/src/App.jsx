@@ -16,6 +16,8 @@ import ForgotPassword from './admin/auth/ForgotPassword';
 import ResetPassword from './admin/auth/ResetPassword';
 import BlogPage from './pages/blogs/BlogPage';
 import PostDetails from './pages/blogs/PostDetails';
+import FAQComponent from './pages/components/FAQComponent';
+import MoroccoMapViewer from './pages/components/TourMap';
 
 export default function App() {
   return (
@@ -25,12 +27,12 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="/tour/:id" element={<TourDetails />} />
           <Route path="/tour/types/:id" element={<TourTypesList/>} />
-          <Route path='/check-booking' element={<CheckBooking/>} />
           <Route path='/privacy' element={<WaguerPolicy/>} />
           <Route path='/terms' element={<TermsOfService/>} />
           <Route path='/blog' element={<BlogPage/>} />
           <Route path='/blog/post/:slug' element={<PostDetails/>} />
         </Route>
+        <Route path='/check-booking' element={<CheckBooking/>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/password-reset/:token" element={<ResetPassword />} />
 

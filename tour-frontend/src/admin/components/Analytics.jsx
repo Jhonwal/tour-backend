@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils';
 import useApi from '@/services/api';
 import { getToken } from '@/services/getToken';
 import { Visitors } from './Visitors';
+import UsersTable from './UserTable';
 
 ChartJS.register(
     CategoryScale,
@@ -315,6 +316,7 @@ const Analytics = () => {
                     </CardContent>
                 </Card>
             </div>
+            <UsersTable/>
         </div>
     );
 };

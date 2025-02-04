@@ -1,12 +1,9 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { PartyPopper } from "lucide-react";
+import { ListCheckIcon, PartyPopper, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TourList from "./TourList";
-import { TourTypes } from "./TourTypes";
-import TourTypesTable from "./TourTypesTable";
 
 export default function MainTours() {
     const [message, setMessage] = useState(null);
@@ -29,38 +26,46 @@ export default function MainTours() {
     return (
         <>
             {isAlertVisible && message && (
-                <Alert variant="success" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-4 max-w-xl w-full flex items-center justify-between">
-                    <div className="flex flex-col">
-                        <div className="flex items-center">
-                            <PartyPopper className="h-6 w-6 mr-2" />
-                            <div>
-                                <AlertTitle>Success!</AlertTitle>
-                                <AlertDescription>{message}</AlertDescription>
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <Alert variant="success" className="max-w-md w-full bg-white shadow-2xl rounded-xl border-0">
+                        <div className="p-6">
+                            <div className="flex items-start space-x-4">
+                                <div className="bg-green-100 p-2 rounded-full">
+                                    <PartyPopper className="h-6 w-6 text-green-600" />
+                                </div>
+                                <div className="flex-1 space-y-2">
+                                    <AlertTitle className="text-xl font-semibold text-gray-900">
+                                        Success!
+                                    </AlertTitle>
+                                    <AlertDescription className="text-gray-600">
+                                        {message}
+                                    </AlertDescription>
+                                </div>
                             </div>
+                            <Button
+                                onClick={closeAlert}
+                                className="w-full mt-6 bg-red-500 hover:bg-red-600 text-white transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                                Close
+                            </Button>
                         </div>
-                        <Button variant="danger" onClick={closeAlert}>
-                            Close
-                        </Button>
-                    </div>
-                </Alert>
+                    </Alert>
+                </div>
             )}
             <div className="flex flex-col p-2">
-                <div className="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
-                    <Link to="/tour-types/create" className="w-full lg:min-w-96 sm:w-auto">
-                        <Button variant="waguer2" className="w-full lg:min-w-96 sm:w-auto">Add new tour type</Button>
+                <div className="flex flex-col px-8 pt-8 sm:flex-row justify-between items-center mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
+                    <Link to="/admin/tours/tour_types/" className="w-full lg:min-w-96 sm:w-auto">
+                        <Button variant="waguer2" className="w-full lg:min-w-96 sm:w-auto flex items-center justify-center gap-2">
+                            <ListCheckIcon className="w-5 h-5" /> {/* Icon for "Manage the tour types" */}
+                            Manage the tour types
+                        </Button>
                     </Link>
                     <Link to="/admin/tours/new-tours" className="w-full lg:min-w-96 sm:w-auto">
-                            <Button variant="waguer2" className="w-full lg:min-w-96 sm:w-auto">Create new tour</Button>
+                        <Button variant="waguer2" className="w-full lg:min-w-96 sm:w-auto flex items-center justify-center gap-2">
+                            <PlusCircle className="w-5 h-5" /> {/* Icon for "Create new tour" */}
+                            Create new tour
+                        </Button>
                     </Link>
-                </div>
-
-                <div className="grid md:grid-cols-3 sm:grid-cols-1 gap-4 mb-2">
-                    <div className="col-span-1">
-                        <TourTypes/>
-                    </div>
-                    <div className="col-span-2">
-                        <TourTypesTable/>
-                    </div>
                 </div>
                 <div>
                     <TourList/>
