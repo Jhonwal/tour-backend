@@ -59,7 +59,7 @@ class TourController extends Controller
             'depart_city' => 'required|string|max:255',
             'end_city' => 'required|string|max:255',
             'description' => 'required|string|min:10',
-            'map_image' => 'required|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max size: 2MB
+            'map_image' => 'required|file|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048', // Max size: 2MB
             'banner' => 'required|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max size: 2MB
             'duration' => 'required|integer|min:1',
             'tour_type_id' => 'required|exists:tour_types,id', // Validate against existing tour types

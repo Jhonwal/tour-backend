@@ -18,7 +18,7 @@ class TestimonialController extends Controller
             'email' => 'required|email|max:255',
             'message' => 'required|string|min:10',
             'rating' => 'required|integer|min:1|max:5',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate avatar as image
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048', // Validate avatar as image
         ]);
 
         // Handle avatar upload

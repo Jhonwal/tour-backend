@@ -42,7 +42,7 @@ class UserProfileController extends Controller
         ];
     
         if ($request->hasFile('profile_picture')) {
-            $validationRules['profile_picture'] = 'image|mimes:jpeg,png,jpg,gif,svg|max:2048';
+            $validationRules['profile_picture'] = 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048';
         }
     
         // Validate the request data

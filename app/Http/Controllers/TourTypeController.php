@@ -76,7 +76,7 @@ class TourTypeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048'
         ]);
 
         $imagePath = $request->file('image')->store('tour-types', 'public');
