@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Facebook, Instagram, Mail, MapPin, Award, Users, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import useApi from '@/services/api';
+import { toast } from 'react-toastify';
 
-const InfoCard = ({ image, name, description, email, facebook, instagram }) => (
+const InfoCard = ({ profile_picture, name, bio, email, facebook, instagram }) => (
   <div className="bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
     <div className="relative h-48">
       <img
-        src={image}
+        src={profile_picture}
         alt={name}
         className="w-full h-full object-cover"
       />
@@ -13,7 +15,7 @@ const InfoCard = ({ image, name, description, email, facebook, instagram }) => (
     </div>
     <div className="p-6">
       <h3 className="text-xl font-bold text-gray-800 mb-2">{name}</h3>
-      <p className="text-gray-600 mb-4 text-sm">{description}</p>
+      <p className="text-gray-600 mb-4 text-sm">{bio}</p>
       <div className="flex space-x-4">
         <a href={`mailto:${email}`} className="text-orange-500 hover:text-orange-600 transition-colors">
           <Mail className="w-5 h-5" />
@@ -107,42 +109,29 @@ const StatsCard = ({ icon: Icon, title, value }) => (
 );
 
 const Gate2MoroccoDescription = () => {
-  const teamMembers = [
-    {
-      image: './images/Rabat.webp',
-      name: 'John Doe',
-      description: 'Travel expert with over 10 years of experience in crafting unique Moroccan adventures.',
-      email: 'john.doe@example.com',
-      facebook: 'https://facebook.com/johndoe',
-      instagram: 'https://instagram.com/johndoe'
-    },
-    {
-      image: './images/Rabat.webp',
-      name: 'Jane Smith',
-      description: 'Specialist in Moroccan culture and heritage tours with extensive local knowledge.',
-      email: 'jane.smith@example.com',
-      facebook: 'https://facebook.com/janesmith',
-      instagram: 'https://instagram.com/janesmith'
-    },
-    {
-      image: './images/Rabat.webp',
-      name: 'Ahmed Hassan',
-      description: 'Desert expedition expert with deep knowledge of Sahara tours and adventures.',
-      email: 'ahmed.hassan@example.com',
-      facebook: 'https://facebook.com/ahmedhassan',
-      instagram: 'https://instagram.com/ahmedhassan'
-    }
-  ];
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [book, setBook] = useState([]);
+  const [tours, setTours] = useState([]);
+  const api = useApi();
 
+  useEffect(() => {
+    api.get("/api/team")
+      .then(response => {
+        setTeamMembers(response.data.teamMembers);
+        setBook(response.data.book);
+        setTours(response.data.tourCount);
+      })
+      .catch(error => toast.error("Error fetching data:", error));
+  }, []);
   const stats = [
-    { icon: Users, title: 'Happy Clients', value: '1000+' },
-    { icon: MapPin, title: 'Destinations', value: '50+' },
+    { icon: Users, title: 'Happy Clients', value: book+'+' },
+    { icon: MapPin, title: 'Destinations', value: tours+'+' },
     { icon: Clock, title: 'Years Experience', value: '15+' },
     { icon: Award, title: 'Awards Won', value: '20+' }
   ];
 
   return (
-    <section className="py-12 px-4 lg:px-16 bg-orange-50 bg-opacity-40">
+    <section className="py-12 px-4 lg:px-16">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl font-bold font-verdana text-center mb-12 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3 rounded-lg shadow-md">
             About Us
@@ -165,12 +154,12 @@ const Gate2MoroccoDescription = () => {
               <div className="absolute top-0 right-0 w-40 h-40 bg-orange-100 rounded-full -mr-20 -mt-20 opacity-50"></div>
               
               <h2 className="text-3xl font-bold text-gray-800 mb-6 relative">
-                Sharmin Morocco tours: Your Gateway to Authentic Moroccan Adventures
+                Charming tours to Morocco: Your Gateway to Authentic Moroccan Adventures
               </h2>
 
               <div className="space-y-6 text-gray-600 relative">
                 <p className="leading-relaxed">
-                  Welcome to <span className="font-semibold text-orange-600">Sharmin Morocco tours</span>, 
+                  Welcome to <span className="font-semibold text-orange-600">Charming tours to Morocco</span>, 
                   your premier travel partner for exploring the rich cultural tapestry and breathtaking 
                   landscapes of Morocco. As a leading tourism agency, we specialize in crafting unforgettable 
                   experiences that capture the essence of this vibrant North African gem.
@@ -184,7 +173,7 @@ const Gate2MoroccoDescription = () => {
                 </p>
 
                 <p className="leading-relaxed">
-                  At <span className="font-semibold text-orange-600">Sharmin Morocco tours</span>, we pride ourselves 
+                  At <span className="font-semibold text-orange-600">Charming tours to Morocco</span>, we pride ourselves 
                   on our deep local knowledge and commitment to exceptional service. Whether you're seeking a 
                   luxurious getaway, an adventurous journey, or an immersive cultural experience, we are here 
                   to ensure your Moroccan adventure is nothing short of extraordinary.

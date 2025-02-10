@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button.jsx";
 import { BadgeInfo, Loader, PartyPopper, Terminal, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Loading from "@/services/Loading";
-import {useCookies} from "react-cookie";
+import { useCookies } from "react-cookie";
 import { getToken } from "@/services/getToken";
 
 const TourActivities = () => {
@@ -19,7 +19,7 @@ const TourActivities = () => {
     const [error, setError] = useState(false);
     const [selectedActivitiesByDay, setSelectedActivitiesByDay] = useState({});
     const [dayNames, setDayNames] = useState({});
-    const [dayDescriptions, setDayDescriptions] = useState({})
+    const [dayDescriptions, setDayDescriptions] = useState({});
     const [submittedDays, setSubmittedDays] = useState({});
     const [showWarning, setShowWarning] = useState(true);
     const [showAlert, setShowAlert] = useState(true);
@@ -28,16 +28,18 @@ const TourActivities = () => {
     const [message, setMessage] = useState('');
     const [isSubmit, setIsSubmit] = useState(false);
     const navigate = useNavigate(); // Use navigate for programmatic navigation
-    const [cookie, setCookie] = useCookies('activites')
+    const [cookie, setCookie] = useCookies('activites');
     const [cookieTors] = useCookies('tours');
+    const [numberOfHotelsByDay, setNumberOfHotelsByDay] = useState({});
+    const [hotelsByDay, setHotelsByDay] = useState({});
+
     // On component mount, load submitted days from localStorage
     useEffect(() => {
-
-        if (cookie.activites){
-            navigate('/admin/tours//day-images')
+        if (cookie.activites) {
+            navigate('/admin/tours/day-images');
         }
-        if (!cookieTors.tours){
-            navigate('/admin/tours/new-tours')
+        if (!cookieTors.tours) {
+            navigate('/admin/tours/new-tours');
         }
         const storedSubmittedDays = localStorage.getItem("submittedDays");
         if (storedSubmittedDays) {
@@ -51,7 +53,7 @@ const TourActivities = () => {
 
         const fetchTourAndRelatedData = async () => {
             try {
-                const token =  getToken();
+                const token = getToken();
                 const headers = {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -111,18 +113,51 @@ const TourActivities = () => {
             [dayId]: newName,
         }));
     };
+
     const handleDayDescriptionChange = (dayId, newDescription) => {
         setDayDescriptions((prevDescriptions) => ({
             ...prevDescriptions,
             [dayId]: newDescription,
         }));
     };
+
+    const handleNumberOfHotelsChange = (dayId, numberOfHotels) => {
+        setNumberOfHotelsByDay((prev) => ({
+            ...prev,
+            [dayId]: numberOfHotels,
+        }));
+
+        // Initialize hotel details if not already present
+        if (!hotelsByDay[dayId]) {
+            setHotelsByDay((prev) => ({
+                ...prev,
+                [dayId]: Array.from({ length: numberOfHotels }, () => ({ name: '', link: '' })),
+            }));
+        } else {
+            setHotelsByDay((prev) => ({
+                ...prev,
+                [dayId]: Array.from({ length: numberOfHotels }, (_, index) => prev[dayId][index] || { name: '', link: '' }),
+            }));
+        }
+    };
+
+    const handleHotelChange = (dayId, index, field, value) => {
+        setHotelsByDay((prev) => {
+            const updatedHotels = [...prev[dayId]];
+            updatedHotels[index][field] = value;
+            return {
+                ...prev,
+                [dayId]: updatedHotels,
+            };
+        });
+    };
+
     const handleSubmitDay = async (dayId) => {
         try {
             setIsSubmit(true);
             setShowAlert(true);
             setShowAlert1(true);
-            const token =  getToken();
+            const token = getToken();
             const headers = {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -130,6 +165,7 @@ const TourActivities = () => {
             const dayName = dayNames[dayId];
             const dayDescription = dayDescriptions[dayId];
             const selectedActivities = selectedActivitiesByDay[dayId] || [];
+            const hotels = hotelsByDay[dayId] || [];
 
             const submissionData = {
                 tour_id: tour.id,
@@ -137,6 +173,7 @@ const TourActivities = () => {
                 name: dayName,
                 description: dayDescription,
                 activities: selectedActivities.map((activity) => activity.id),
+                hotels: hotels, // Include hotel details
             };
 
             await api.post("/api/submit-day", submissionData, { headers });
@@ -161,7 +198,7 @@ const TourActivities = () => {
                 const dateExpire = new Date();
                 dateExpire.setDate(dateExpire.getDate() + 60);
                 localStorage.removeItem('submittedDays');
-                setCookie('activites', 'true', { path: '/', expires: dateExpire});
+                setCookie('activites', 'true', { path: '/', expires: dateExpire });
                 navigate('/admin/tours/day-images'); // Redirect to another page
             }
             setIsSubmit(false);
@@ -225,7 +262,7 @@ const TourActivities = () => {
             <div className={`mb-4 flex flex-col items-center`}>
                 {showWarning && tourDays && tourDays.length > 0 && (
                     <Alert variant="warning">
-                        <BadgeInfo className={`mr-2`}/>
+                        <BadgeInfo className={`mr-2`} />
                         <AlertTitle>Warning!</AlertTitle>
                         <AlertDescription>
                             - Click on the number of day you want to modify.
@@ -237,14 +274,14 @@ const TourActivities = () => {
                             - Select any available activities for this day.
                         </AlertDescription>
                         <div className={`absolute top-2 right-2 `}>
-                            <X className={`hover:text-red-600 cursor-pointer`} onClick={closeWarning}/>
+                            <X className={`hover:text-red-600 cursor-pointer`} onClick={closeWarning} />
                         </div>
                     </Alert>
                 )}
 
                 {showAlert && success && (
                     <Alert variant="success" className={`top-2 end-2 mr-2`}>
-                        <PartyPopper className="h-4 w-4"/>
+                        <PartyPopper className="h-4 w-4" />
                         <AlertTitle>Success!</AlertTitle>
                         <AlertDescription>
                             {message}
@@ -253,7 +290,7 @@ const TourActivities = () => {
                 )}
                 {showAlert1 && error && (
                     <Alert variant="error" className={`top-2 end-2`}>
-                        <Terminal className="h-4 w-4"/>
+                        <Terminal className="h-4 w-4" />
                         <AlertTitle>Error!</AlertTitle>
                         <AlertDescription>
                             {message}
@@ -300,12 +337,49 @@ const TourActivities = () => {
                                             ></textarea>
                                         </div>
 
+                                        {/* Input for number of hotels */}
+                                        <div className="flex gap-2 items-center mb-6">
+                                            <Input
+                                                type="number"
+                                                value={numberOfHotelsByDay[tourDay.id] || 0}
+                                                onChange={(e) => handleNumberOfHotelsChange(tourDay.id, parseInt(e.target.value))}
+                                                variant={`orange`}
+                                                disabled={isSubmitted || isSubmit}
+                                                placeholder={`Number of hotels for ${tourDay.number}`}
+                                            />
+                                        </div>
+
+                                        {/* Input fields for hotel details */}
+                                        {numberOfHotelsByDay[tourDay.id] > 0 && (
+                                            <div className="mb-6">
+                                                <h2 className="text-xl font-semibold p-2 text-center text-white rounded-t-md bg-orange-500">Hotel Details</h2>
+                                                <div className="flex flex-col gap-2 bg-amber-200 rounded-b-md bg-opacity-35 p-2">
+                                                    {Array.from({ length: numberOfHotelsByDay[tourDay.id] }).map((_, index) => (
+                                                        <div key={index} className="flex gap-2">
+                                                            <Input
+                                                                value={hotelsByDay[tourDay.id]?.[index]?.name || ""}
+                                                                onChange={(e) => handleHotelChange(tourDay.id, index, 'name', e.target.value)}
+                                                                variant={`orange`}
+                                                                disabled={isSubmitted || isSubmit}
+                                                                placeholder={`Hotel ${index + 1} Name`}
+                                                            />
+                                                            <Input
+                                                                value={hotelsByDay[tourDay.id]?.[index]?.link || ""}
+                                                                onChange={(e) => handleHotelChange(tourDay.id, index, 'link', e.target.value)}
+                                                                variant={`orange`}
+                                                                disabled={isSubmitted || isSubmit}
+                                                                placeholder={`Hotel ${index + 1} Link`}
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
                                         {selectedActivities.length > 0 && (
                                             <div className="mb-6">
-                                                <h2 className="text-xl font-semibold p-2 text-center text-white rounded-t-md bg-orange-500">Selected
-                                                    Activities</h2>
-                                                <div
-                                                    className="flex flex-wrap gap-2 bg-amber-200 rounded-b-md bg-opacity-35 p-2 ">
+                                                <h2 className="text-xl font-semibold p-2 text-center text-white rounded-t-md bg-orange-500">Selected Activities</h2>
+                                                <div className="flex flex-wrap gap-2 bg-amber-200 rounded-b-md bg-opacity-35 p-2 ">
                                                     {selectedActivities.map((activity, index) => (
                                                         <span
                                                             key={index}
@@ -327,8 +401,7 @@ const TourActivities = () => {
 
                                         {availableActivities.length > 0 && (
                                             <div>
-                                                <h2 className="text-lg font-semibold mb-3 text-center text-white rounded-t-md bg-orange-500">Select
-                                                    Activities</h2>
+                                                <h2 className="text-lg font-semibold mb-3 text-center text-white rounded-t-md bg-orange-500">Select Activities</h2>
                                                 <div className="flex flex-wrap gap-2">
                                                     {availableActivities.map((activity, index) => (
                                                         <button
@@ -344,7 +417,6 @@ const TourActivities = () => {
                                             </div>
                                         )}
 
-
                                         {!isSubmit ? (
                                             <Button
                                                 variant={`waguer2`}
@@ -359,7 +431,7 @@ const TourActivities = () => {
                                                 variant={`waguer2`}
                                                 className="mt-4"
                                             >
-                                                <Loader className={`animate-spin`}/> Submitted
+                                                <Loader className={`animate-spin`} /> Submitted
                                             </Button>
                                         )}
                                     </div>
@@ -370,7 +442,7 @@ const TourActivities = () => {
                 </Accordion>
             ) : (
                 <Alert variant="warning" className={`top-6`}>
-                    <BadgeInfo className={`mr-2`}/>
+                    <BadgeInfo className={`mr-2`} />
                     <AlertTitle>Warning!</AlertTitle>
                     <AlertDescription>
                         - No tour days available.

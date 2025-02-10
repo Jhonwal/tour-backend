@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ReservationCreated;
+use App\Models\User;
 use App\Models\Booking;
 use App\Models\TourPrice;
-use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Mail\ReservationCreated;
+use App\Mail\BookingStatusUpdated;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
@@ -30,6 +32,7 @@ class BookingController extends Controller
             'tour_level' => 'required|in:3-stars,4-stars,4&5-stars,5-stars',
             'special_requests' => 'nullable|string',
             'tour_id' => 'required|exists:tours,id',
+            'promo' => 'required|numeric|min:0|max:100'
         ]);
     
         try {
@@ -54,6 +57,7 @@ class BookingController extends Controller
             $price = $tour_price->$price_category;
     
             $total_price = $price * $total_people;
+            $total_price -= ($total_price * ($validated['promo'] / 100));
             $reference = strtoupper(Str::random(10));
     
             $booking = Booking::create([
@@ -70,7 +74,7 @@ class BookingController extends Controller
                 'special_requests' => $validated['special_requests'] ?? null,
                 'status' => 'pending',
                 'total_price' => $total_price, 
-                'discount' => 0,
+                'discount' => $validated['promo'],
                 'reference_code' => $reference,
                 'tour_id' => $validated['tour_id'],
             ]);
@@ -138,22 +142,6 @@ class BookingController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|in:pending,confirmed,canceled,completed',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $booking = Booking::findOrFail($id);
-        $booking->update(['status' => $request->status]);
-
-        return response()->json(['message' => 'Booking updated successfully', 'data' => $booking]);
-    }
-
     // Delete a booking
     public function destroy($id)
     {
@@ -162,8 +150,23 @@ class BookingController extends Controller
 
         return response()->json(['message' => 'Booking deleted successfully']);
     }
+    public function updateStatus(Request $request, Booking $booking)
+    {
+        // Validate the request
+        $request->validate([
+            'status' => 'required|in:pending,confirmed,canceled,completed',
+        ]);
 
-
+        // Update the booking status
+        $booking->status = $request->status;
+        $booking->save();
+        
+        Mail::to($booking->email)->send(new BookingStatusUpdated($booking));
+        return response()->json([
+            'message' => 'Booking status updated successfully.',
+            'booking' => $booking,
+        ]);
+    }
     private function sendNewBookingNotification($bookingReference)
     {
         // Fetch all users from the users table

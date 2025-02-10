@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 
 const DeclinedAlert = () => {
   // Define phone number and email for support
-  const supportPhoneNumber = "+1234567890"; // Replace with your support phone number
-  const supportEmail = "support@example.com"; // Replace with your support email
+  const supportPhoneNumber = "+1 (312) 414-6237"; // Replace with your support phone number
+  const supportEmail = "cm2ours@gmail.com"; // Replace with your support email
 
   // Function to handle the "Call Support" button click
   const handleCallSupport = () => {

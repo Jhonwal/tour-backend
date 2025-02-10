@@ -64,6 +64,8 @@ class Tour extends Model
     {
         return $this->hasMany(Service::class)->where('type', 'exclude');
     }
-
-
+    public function promotions()
+    {
+        return $this->belongsToMany(Promotion::class, 'promotion_tour');
+    }
 }

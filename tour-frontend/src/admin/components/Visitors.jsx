@@ -15,6 +15,7 @@ import {
 import { TrendingUp, TrendingDown, Loader } from "lucide-react"
 import { LabelList, Pie, PieChart } from "recharts"
 import useApi from "@/services/api"
+import { toast } from "react-toastify"
 
 export function Visitors() {
   const [chartData, setChartData] = useState([])
@@ -37,7 +38,7 @@ export function Visitors() {
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching visitor data:", error)
+        toast.error("Error fetching visitor data:", error)
         setLoading(false);
       })
   }, [])

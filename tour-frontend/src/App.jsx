@@ -16,10 +16,27 @@ import ForgotPassword from './admin/auth/ForgotPassword';
 import ResetPassword from './admin/auth/ResetPassword';
 import BlogPage from './pages/blogs/BlogPage';
 import PostDetails from './pages/blogs/PostDetails';
-import FAQComponent from './pages/components/FAQComponent';
-import MoroccoMapViewer from './pages/components/TourMap';
+import Promotions from './pages/components/Promotions';
+import ContactForm from './pages/components/ContactForm';
+import PersonaliseTour from './pages/tour/PersonaliseTour';
 
 export default function App() {
+  if (!sessionStorage.getItem("console_signature_shown")) {
+    console.log("%c🚀 Made with ❤️ by %cWaguer", 
+        "color: black; font-size: 18px; font-weight: bold; background: #f0f0f0; padding: 8px; border-radius: 5px;",
+        "color: blue; font-size: 18px; font-weight: bold; text-decoration: underline; cursor: pointer;"
+    );
+
+    console.log("🔗 Visit my portfolio: https://your-portfolio.com");
+
+    console.log("%c⚠ WARNING! ⚠", "color: red; font-size: 20px; font-weight: bold; text-shadow: 1px 1px 2px black;");
+    console.log("%cDo not paste anything here! It may be a security risk (Self-XSS).", "color: orange; font-size: 16px; font-weight: bold;");
+    console.log("%cIf someone told you to paste something here, they might be trying to steal your account!", "color: red; font-size: 14px;");
+    
+    // Mark as shown
+    sessionStorage.setItem("console_signature_shown", "true");
+}
+
   return (
     <BrowserRouter>
       <Routes>
@@ -31,6 +48,9 @@ export default function App() {
           <Route path='/terms' element={<TermsOfService/>} />
           <Route path='/blog' element={<BlogPage/>} />
           <Route path='/blog/post/:slug' element={<PostDetails/>} />
+          <Route path="/promotions" element={<Promotions />} />
+          <Route path="/contact-us" element={<ContactForm />} />
+          <Route path="/get-quote" element={<PersonaliseTour />} />
         </Route>
         <Route path='/check-booking' element={<CheckBooking/>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

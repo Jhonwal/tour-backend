@@ -53,7 +53,6 @@ const PostDetails = () => {
         setPost(postData);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching post details', error);
         setLoading(false);
       }
     };
@@ -72,7 +71,6 @@ const PostDetails = () => {
         setRelatedPosts(response.data.posts);
         setLoadingRelated(false);
       } catch (error) {
-        console.error('Error fetching related posts', error);
         setLoadingRelated(false);
       }
     };

@@ -27,7 +27,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Loader2, User, Mail, Phone, MapPin, Users, Bed, Calendar, Star, MessageCircle } from "lucide-react";
 
-export function Reserve({ tourId, name }) {
+export function Reserve({ tourId, name, promo=0 }) {
   const [open, setOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const api = useApi();
@@ -37,6 +37,7 @@ export function Reserve({ tourId, name }) {
     phone: "",
     country: "",
     region: "",
+    promo:promo,
     number_of_adults: 1,
     number_of_children: 0,
     number_of_rooms: 1,
@@ -97,7 +98,6 @@ export function Reserve({ tourId, name }) {
         setIsSubmitting(false);
       }
     } catch (error) {
-      console.error("Error occurred during booking:", error);
       toast.error("There was an error while booking. Please try again.");
       setIsSubmitting(false);
     }
@@ -129,7 +129,10 @@ export function Reserve({ tourId, name }) {
           <DialogHeader>
             <DialogTitle className="text-center">Book Your Tour: {name}</DialogTitle>
             <DialogDescription>
-              Fill out the details below to book your tour. We'll get back to you soon!
+              Fill out the details below to book your tour. We'll get back to you soon!<br/>
+            By submitting your reservation, you agree to abide by our  
+              <span class="font-semibold text-orange-600"> terms and conditions</span>. 
+              Please ensure you have reviewed them carefully before proceeding.
             </DialogDescription>
           </DialogHeader>
           <BookingFormContent
@@ -154,7 +157,10 @@ export function Reserve({ tourId, name }) {
         <DrawerHeader>
           <DrawerTitle className="text-center">Book Your Tour: {name}</DrawerTitle>
           <DrawerDescription>
-            Fill out the details below to book your tour. We'll get back to you soon!
+            Fill out the details below to book your tour. We'll get back to you soon!<br/>
+            By submitting your reservation, you agree to abide by our 
+              <span class="font-semibold text-orange-600"> terms and conditions</span>. 
+              Please ensure you have reviewed them carefully before proceeding.
           </DrawerDescription>
         </DrawerHeader>
         <BookingFormContent

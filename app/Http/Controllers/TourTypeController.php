@@ -7,12 +7,23 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class TourTypeController extends Controller
 {
+
     public function index()
     {
-        return response()->json(TourType::all());
+        // Fetch all tour types with the count of associated tours
+        $tourTypes = TourType::withCount('tours')->with('tours')->get();
+
+        // Add the full URL to each tour type's image
+        foreach ($tourTypes as $tourType) {
+            $tourType->image = URL::to($tourType->image);
+        }
+
+        // Return the tour types as JSON
+        return response()->json($tourTypes);
     }
     public function tour_type()
     {
@@ -46,6 +57,7 @@ class TourTypeController extends Controller
     public function show($id)
     {
         $tourType = TourType::find($id);
+        $tourType->image = URL::to($tourType->image);
     
         if (!$tourType) {
             return response()->json(['message' => 'Tour type not found'], 404);
@@ -72,6 +84,7 @@ class TourTypeController extends Controller
         $tourType = TourType::create([
             'name' => $validated['name'],
             'description' => $validated['description'],
+            'slug' => Str::slug($validated['name']),
             'image' => "/storage/" . $imagePath
         ]);
 
@@ -104,8 +117,9 @@ class TourTypeController extends Controller
         return response()->json($tourType);
     }
 
-    public function destroy(TourType $tourType)
+    public function destroy($id)
     {
+        $tourType = TourType::find($id);
         // Delete image
         $imagePath = str_replace('/storage/', '', $tourType->image);
         Storage::disk('public')->delete($imagePath);

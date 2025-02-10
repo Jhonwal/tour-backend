@@ -136,14 +136,14 @@
     <div class="email-container">
         <!-- Header Section -->
         <div class="email-header">
-            <img src={{ asset('images/waguer.png') }} alt="Sharming Morocco Tours Logo">
-            <h2>Sharming Morocco Tours</h2>
+            <img src={{ public_path('/logoEmail.png') }} alt="Charming Morocco Tours Logo">
+            <h2>Charming Tours 2 Morocco</h2>
         </div>
 
         <!-- Body Section -->
         <div class="email-body">
             <h4>Dear {{ $userName }},</h4>
-            <p>Thank you for choosing <strong>Sharming Morocco Tours</strong>! Your reservation has been successfully created.</p>
+            <p>Thank you for choosing <strong>Charming Tours 2 Morocco</strong>! Your reservation has been successfully created.</p>
             <p>We are thrilled to assist you in creating an unforgettable journey. Below is your reservation reference code:</p>
             <div class="reference">
                 {{ $reference }}
@@ -153,16 +153,16 @@
             <div class="notice-box">
                 <p><strong>Important Notice:</strong></p>
                 <p>Your reservation request is currently being <strong>reviewed by our dedicated team</strong>. We will notify you as soon as possible with an update regarding the <strong>status of your reservation</strong>.</p>
-                <p>Thank you for your patience and trust in Sharming Morocco Tours!</p>
+                <p>Thank you for your patience and trust in Charming Morocco Tours!</p>
             </div>
             
-            <p>If you have any questions or need further assistance, feel free to <a href="mailto:support@sharmingmorocco.com">contact us</a>. We’re always happy to help!</p>
+            <p>If you have any questions or need further assistance, feel free to <a href="mailto:cm2ours.com">contact us</a>. We’re always happy to help!</p>
         </div>
 
         <!-- Footer Section -->
         <div class="email-footer">
-            <p>&copy; {{ date('Y') }} Sharming Morocco Tours. All rights reserved.</p>
-            <p>Visit us at <a href="https://www.sharmingmorocco.com">sharmingmorocco.com</a></p>
+            <p>&copy; {{ date('Y') }} Charming Tours 2 Morocco. All rights reserved.</p>
+            <p>Visit us at <a href="https://www.charmingtours2morocco.com">charmingtours2morocco.com</a></p>
         </div>
     </div>
 </body>

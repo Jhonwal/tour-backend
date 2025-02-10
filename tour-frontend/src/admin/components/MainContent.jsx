@@ -1,9 +1,6 @@
 import useApi from "@/services/api";
 import { useEffect, useState } from "react";
-import { Visitors } from "./Visitors";
 import { getToken } from "@/services/getToken";
-import { TourTypes } from "../tours/TourTypes";
-import { VisitorsAll } from "./VisitorsAll";
 import Analytics from "./Analytics";
 
 export default function MainContent() {
@@ -26,7 +23,6 @@ export default function MainContent() {
               } else {
                   setError("An unexpected error occurred");
               }
-              console.log(err);
           }
       };
   

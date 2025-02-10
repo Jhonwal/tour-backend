@@ -24,7 +24,7 @@ const TermsOfService = () => {
       {/* Introduction Section */}
       <section className="mb-8">
         <p className="text-gray-700 text-lg leading-relaxed animate-fadeIn">
-          Welcome to <strong className="text-blue-600">Sharming Morocco Tours</strong>! These Terms of Service (“Terms”) govern your use of our website, services, and offerings. By accessing or using our services, you agree to comply with and be bound by these Terms. If you do not agree to these Terms, please refrain from using our website or services. We encourage you to review these Terms regularly as they may change over time.
+          Welcome to <strong className="text-blue-600">Charming Tours to Morocco</strong>! These Terms of Service (“Terms”) govern your use of our website, services, and offerings. By accessing or using our services, you agree to comply with and be bound by these Terms. If you do not agree to these Terms, please refrain from using our website or services. We encourage you to review these Terms regularly as they may change over time.
         </p>
         <p className="text-gray-700 text-lg leading-relaxed">
           These Terms apply to all visitors, users, and others who access or use our services. If you are accessing the site on behalf of a company or organization, you represent and warrant that you have the authority to bind such entity to these Terms.
@@ -38,7 +38,7 @@ const TermsOfService = () => {
           1. General Terms
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          Sharming Morocco Tours provides travel-related services including tour bookings, transportation, accommodation, and guided tours across Morocco. By using our platform, you agree to these Terms as well as any additional rules or policies that may be posted on the website from time to time.
+          Charming Tours to Morocco provides travel-related services including tour bookings, transportation, accommodation, and guided tours across Morocco. By using our platform, you agree to these Terms as well as any additional rules or policies that may be posted on the website from time to time.
         </p>
         <p className="text-gray-700 text-lg leading-relaxed">
           We may update or modify these Terms periodically without notice. It is your responsibility to review these Terms regularly. Your continued use of our services constitutes acceptance of any modifications.
@@ -52,10 +52,7 @@ const TermsOfService = () => {
           2. Account Responsibility
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          In order to access some services on our website, you may be required to create an account. You are solely responsible for maintaining the confidentiality of your account credentials (username and password) and for all activities that occur under your account.
-        </p>
-        <p className="text-gray-700 text-lg leading-relaxed">
-          You agree to notify us immediately if you believe your account has been compromised. You are also responsible for ensuring that the information you provide is accurate and up to date. If we detect any suspicious activity, we reserve the right to suspend or terminate your account.
+          <strong>No user registration is required</strong> to use our services. You can book tours and access our services without creating an account.
         </p>
       </section>
 
@@ -80,7 +77,7 @@ const TermsOfService = () => {
           4. Booking and Reservation Policy
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          By making a booking on our website, you are entering into a binding contract with Sharming Morocco Tours and, in some cases, third-party service providers. You agree to provide accurate and complete information when making a reservation, including personal details and payment information (if applicable).
+          By making a booking on our website, you are entering into a binding contract with Charming Tours to Morocco and, in some cases, third-party service providers. You agree to provide accurate and complete information when making a reservation, including personal details.
         </p>
         <p className="text-gray-700 text-lg leading-relaxed">
           You acknowledge that all bookings are subject to availability, and we reserve the right to cancel or modify any booking if necessary. In the event of changes to your booking, we will make every effort to notify you as soon as possible.
@@ -108,7 +105,7 @@ const TermsOfService = () => {
           6. Payment Policy
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          Currently, our website does not process payments directly. All transactions, including payments for tours, accommodations, and services, will be settled directly with the service provider. We will provide you with the necessary information for making payments upon booking.
+          <strong>All payments are made in cash</strong>. Our website does not process payments directly, and no online payment methods are available. Payments for tours, accommodations, and services will be settled directly with the service provider or our representatives.
         </p>
         <p className="text-gray-700 text-lg leading-relaxed">
           You acknowledge that payment terms and conditions may vary depending on the provider. It is your responsibility to ensure that the payment is made according to the service provider’s terms and in a timely manner to confirm your reservation.
@@ -122,7 +119,7 @@ const TermsOfService = () => {
           7. User Conduct
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          As a user of Sharming Morocco Tours, you agree to use our services in a respectful and responsible manner. You must not engage in any activity that disrupts, interferes with, or damages the functionality of our website or services.
+          As a user of Charming Tours to Morocco, you agree to use our services in a respectful and responsible manner. You must not engage in any activity that disrupts, interferes with, or damages the functionality of our website or services.
         </p>
         <p className="text-gray-700 text-lg leading-relaxed">
           You are prohibited from attempting to gain unauthorized access to our systems, using our services for fraudulent purposes, or uploading harmful content to our platform.
@@ -147,7 +144,7 @@ const TermsOfService = () => {
           9. Disclaimer of Liability
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          Sharming Morocco Tours makes every effort to ensure the accuracy of the information presented on our website. However, we do not guarantee the accuracy, completeness, or timeliness of the information. We are not liable for any errors or omissions in the content provided.
+          Charming Tours to Morocco makes every effort to ensure the accuracy of the information presented on our website. However, we do not guarantee the accuracy, completeness, or timeliness of the information. We are not liable for any errors or omissions in the content provided.
         </p>
       </section>
 
@@ -169,7 +166,7 @@ const TermsOfService = () => {
           11. Contact Us
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          If you have any questions or concerns about these Terms of Service, please feel free to reach out to us at <strong className="text-blue-600">support@sharmingmoroccotours.com</strong>.
+          If you have any questions or concerns about these Terms of Service, please feel free to reach out to us at <strong className="text-blue-600">cm2ours@gmail.com</strong>.
         </p>
       </section>
 

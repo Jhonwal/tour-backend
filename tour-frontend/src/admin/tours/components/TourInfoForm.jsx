@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import useApi from '@/services/api';
 import { getToken } from '@/services/getToken';
 import { toast } from 'react-toastify';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 
 const TourInfoForm = ({ tourData, onSuccess }) => {
   const api = useApi();
   const [duration, setDuration] = useState(tourData.tour.duration);
   const [showDaysToDelete, setShowDaysToDelete] = useState(false);
   const [selectedDaysToDelete, setSelectedDaysToDelete] = useState([]);
-console.log(tourData);
   const handleDurationChange = (e) => {
     const newDuration = parseInt(e.target.value);
     setDuration(newDuration);
@@ -81,7 +82,7 @@ console.log(tourData);
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1 text-orange-700">Name</label>
-            <input
+            <Input variant='orange'
               type="text"
               name="name"
               defaultValue={tourData.tour.name}
@@ -90,7 +91,7 @@ console.log(tourData);
           </div>
           <div>
             <label className="block text-sm font-medium mb-1 text-orange-700">Departure City</label>
-            <input
+            <Input variant='orange'
               type="text"
               name="depart_city"
               defaultValue={tourData.tour.depart_city}
@@ -99,7 +100,7 @@ console.log(tourData);
           </div>
           <div>
             <label className="block text-sm font-medium mb-1 text-orange-700">End City</label>
-            <input
+            <Input variant='orange'
               type="text"
               name="end_city"
               defaultValue={tourData.tour.end_city}
@@ -108,7 +109,7 @@ console.log(tourData);
           </div>
           <div>
             <label className="block text-sm font-medium mb-1 text-orange-700">Duration (days)</label>
-            <input
+            <Input variant='orange'
               type="number"
               name="duration"
               value={duration}
@@ -127,7 +128,7 @@ console.log(tourData);
             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {tourData.days.map((day, index) => (
                 <label key={day.id} className="flex items-center space-x-2">
-                  <input
+                  <Input variant='orange'
                     type="checkbox"
                     checked={selectedDaysToDelete.includes(day.id)}
                     onChange={() => handleDaySelection(day.id)}
@@ -142,7 +143,8 @@ console.log(tourData);
 
         <div>
           <label className="block text-sm font-medium mb-1 text-orange-700">Description</label>
-          <textarea
+          <Textarea
+            variant='orange'
             name="description"
             defaultValue={tourData.tour.description}
             className="w-full p-2 border rounded h-32 focus:ring-2 focus:ring-orange-500"
@@ -157,7 +159,7 @@ console.log(tourData);
               alt="Map"
               className="w-full h-48 object-cover rounded"
             />
-            <input type="file" name="map_image" className="mt-2" accept="image/*" />
+            <Input variant='orange' type="file" name="map_image" className="mt-2" accept="image/*" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1 text-orange-700">Current Banner</label>
@@ -166,7 +168,7 @@ console.log(tourData);
               alt="Banner"
               className="w-full h-48 object-cover rounded"
             />
-            <input type="file" name="banner" className="mt-2" accept="image/*" />
+            <Input variant='orange' type="file" name="banner" className="mt-2" accept="image/*" />
           </div>
         </div>
 

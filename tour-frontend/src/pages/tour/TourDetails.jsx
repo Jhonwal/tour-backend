@@ -13,28 +13,25 @@ import TourPrices from "./components/TourPrices";
 import { Reserve } from "./components/Reserve";
 import { useParams } from "react-router-dom";
 
-// Main TourDet Component
 function TourDetails() {
   const api = useApi();
   const [tour, setTour] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(null); // State for the selected day
+  const [selectedDay, setSelectedDay] = useState(null);
   const { id } = useParams(); 
 
   const autoplayPlugin = useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: false }) // Autoplay indefinitely
+    Autoplay({ delay: 3000, stopOnInteraction: false })
   );
 
   useEffect(() => {
-    // Fetch tour data from the API
     api.get(`/api/tour/slug/${id}`).then((response) => {
       const tourData = response.data;
-      console.log(tourData);
       setTour(tourData);
-      setMainImage(tourData.map_image); // Default to the map image as the main image
+      setMainImage(tourData.map_image);
       if (tourData.tour_days && tourData.tour_days.length > 0) {
-        setSelectedDay(tourData.tour_days[0].id); // Default to the first day
+        setSelectedDay(tourData.tour_days[0].id);
       }
     });
   }, [id]);
@@ -43,9 +40,35 @@ function TourDetails() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold text-orange-700 text-center underline">Tour: {tour.name}</h1>
+      {/* Promotional Banner */}
+      {tour.promotions > 0 && (
+        <div className="bg-gradient-to-r max-w-[90%] mx-auto from-orange-500 to-red-500 text-white p-4 mb-6 rounded-lg shadow-lg animate-pulse">
+          <div className="flex justify-center items-center gap-4">
+            <div className="text-3xl font-bold">🎉</div>
+            <div className="text-center">
+              <span className="text-2xl font-bold">Special Offer!</span>
+              <br />
+              <span className="text-xl">Save {tour.promotions}% on this amazing tour</span>
+            </div>
+            <div className="text-3xl font-bold">🎉</div>
+          </div>
+        </div>
+      )}
+
+      {/* Tour Title with Promo Badge */}
+      <div className="relative max-w-[90%] text-center mb-8">
+        <h1 className="text-2xl font-bold text-orange-700 inline-block">
+          Tour: {tour.name}
+          {tour.promotions > 0 && (
+            <span className="absolute -top-4 -right-16 bg-red-500 text-white px-4 py-1 rounded-full text-sm transform rotate-12 shadow-lg">
+              -{tour.promotions}% OFF!
+            </span>
+          )}
+        </h1>
+      </div>
+
       {/* Tour Overview */}
-      <div className="flex flex-col lg:flex-row gap-8 p-5 shadow-md shadow-orange-300">
+      <div className={`flex flex-col lg:flex-row gap-8 p-5 shadow-md ${tour.promotions > 0 ? 'shadow-red-300' : 'shadow-orange-300'}`}>
         {/* Left Section */}
         <div className="flex-1">
           <h2 className="text-3xl font-semibold mb-4 text-orange-700">
@@ -67,14 +90,20 @@ function TourDetails() {
 
         {/* Right Section */}
         <div className="flex-1">
-          {/* Main Image */}
-          <div>
+          {/* Main Image with Promo Badge */}
+          <div className="relative">
             <img
               src={mainImage}
               alt="Main"
-              className="w-full h-64 object-cover object-center cursor-pointer"
+              className="w-full h-64 object-cover object-center cursor-pointer rounded-lg"
               onClick={() => setIsModalOpen(true)}
             />
+            {tour.promotions > 0 && (
+              <div className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg transform rotate-12">
+                <div className="text-lg font-bold">SAVE</div>
+                <div className="text-2xl font-bold">{tour.promotions}%</div>
+              </div>
+            )}
           </div>
 
           {/* Carousel */}
@@ -88,50 +117,47 @@ function TourDetails() {
               onMouseLeave={() => autoplayPlugin.current.play()}
             >
               <CarouselContent>
-                {/* Map Image */}
                 <CarouselItem className="basis-1/3 md:basis-1/4">
                   <div className="p-1">
                     <img
                       src={tour.map_image}
                       alt="Map Thumbnail"
-                      className={`w-full h-24 object-cover rounded-lg cursor-pointer  ${
-                                    tour.map_image === mainImage
-                                    ? "border-4 border-orange-500"
-                                    : "border border-gray-200"
-                                }`}
+                      className={`w-full h-24 object-cover rounded-lg cursor-pointer ${
+                        tour.map_image === mainImage
+                          ? "border-4 border-orange-500"
+                          : "border border-gray-200"
+                      }`}
                       onClick={() => setMainImage(tour.map_image)}
                     />
                   </div>
                 </CarouselItem>
 
-                {/* Banner Image */}
                 <CarouselItem className="basis-1/3 md:basis-1/4">
                   <div className="p-1">
                     <img
                       src={tour.banner}
                       alt="Banner Thumbnail"
-                      className={`w-full h-24 object-cover rounded-lg cursor-pointer  ${
-                                    tour.banner === mainImage
-                                    ? "border-4 border-orange-500"
-                                    : "border border-gray-200"
-                                }`}
+                      className={`w-full h-24 object-cover rounded-lg cursor-pointer ${
+                        tour.banner === mainImage
+                          ? "border-4 border-orange-500"
+                          : "border border-gray-200"
+                      }`}
                       onClick={() => setMainImage(tour.banner)}
                     />
                   </div>
                 </CarouselItem>
 
-                {/* Tour Images */}
                 {tour.tour_images?.map((image) => (
                   <CarouselItem key={image.id} className="basis-1/3 md:basis-1/4">
                     <div className="p-1">
                       <img
                         src={image.url}
                         alt={`Tour Image ${image.id}`}
-                        className={`w-full h-24 object-cover rounded-lg cursor-pointer  ${
-                                    image.url === mainImage
-                                    ? "border-4 border-orange-500"
-                                    : "border border-gray-200"
-                                }`}
+                        className={`w-full h-24 object-cover rounded-lg cursor-pointer ${
+                          image.url === mainImage
+                            ? "border-4 border-orange-500"
+                            : "border border-gray-200"
+                        }`}
                         onClick={() => setMainImage(image.url)}
                       />
                     </div>
@@ -159,7 +185,7 @@ function TourDetails() {
 
       {/* Tour Itinerary */}
       <div className="mt-12">
-        <h3 className="text-2xl font-semibold text-white bg-orange-300 header-waguer border-b-8 border-orange-300 p-3 text-center">
+        <h3 className={`text-2xl font-semibold text-white ${tour.promotions > 0 ? 'bg-gradient-to-r from-orange-400 to-red-500' : 'bg-orange-300'} header-waguer border-b-8 border-orange-300 p-3 text-center`}>
           Tour Itinerary
         </h3>
         <div className="flex flex-wrap gap-2 mt-4">
@@ -168,19 +194,20 @@ function TourDetails() {
               key={day.id}
               className={`text-orange-800 font-semibold px-4 py-2 rounded shadow-md ${
                 selectedDay === day.id
-                  ? "bg-orange-200 border border-orange-500"
+                  ? tour.promotions > 0
+                    ? "bg-red-200 border border-red-500"
+                    : "bg-orange-200 border border-orange-500"
                   : "bg-gray-100 hover:bg-orange-100"
               }`}
               aria-expanded={selectedDay === day.id}
               aria-controls={`day-${day.id}-details`}
-              onClick={() => setSelectedDay(selectedDay === day.id ? null : day.id)} // Toggle selection
+              onClick={() => setSelectedDay(selectedDay === day.id ? null : day.id)}
             >
               Day {day.number}: {day.title}
             </button>
           ))}
         </div>
 
-        {/* Display Day Details */}
         {selectedDay && (
           <div
             id={`day-${selectedDay}-details`}
@@ -202,8 +229,9 @@ function TourDetails() {
           </div>
         </div>
       )}
-      <TourPrices price={tour.price} />
-      <Reserve tourId={tour.id} name={tour.name}/>
+
+      <TourPrices price={tour.price} promo={tour.promotions}/>
+      <Reserve tourId={tour.id} name={tour.name} promo={tour.promotions}/>
     </div>
   );
 }

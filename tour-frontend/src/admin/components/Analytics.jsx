@@ -27,6 +27,7 @@ import useApi from '@/services/api';
 import { getToken } from '@/services/getToken';
 import { Visitors } from './Visitors';
 import UsersTable from './UserTable';
+import { toast } from 'react-toastify';
 
 ChartJS.register(
     CategoryScale,
@@ -61,24 +62,27 @@ const Analytics = () => {
     const fetchData = async () => {
         try {
             const token = getToken();
-            const [
-                visitorCountResponse,
-                currentMonthVisitorsResponse,
-                toursByTypeResponse,
-                keyMetricsResponse,
-            ] = await Promise.all([
-                api.get('/api/admin/analytics/visitor-count-by-month', { headers: { Authorization: `Bearer ${token}` } }),
-                api.get('/api/admin/analytics/current-month-visitors-by-country', { headers: { Authorization: `Bearer ${token}` } }),
-                api.get('/api/admin/analytics/tours-by-type', { headers: { Authorization: `Bearer ${token}` } }),
-                api.get('/api/admin/analytics/key-metrics', { headers: { Authorization: `Bearer ${token}` } }),
-            ]);
 
-            setVisitorCountByMonth(visitorCountResponse.data);
-            setCurrentMonthVisitorsByCountry(currentMonthVisitorsResponse.data);
-            setToursByType(toursByTypeResponse.data);
-            setKeyMetrics(keyMetricsResponse.data);
+            // Make a single API call to fetch all analytics data
+            const analyticsResponse = await api.get('/api/admin/analytics/get-all-analytics-data', { 
+                headers: { Authorization: `Bearer ${token}` } 
+            });
+
+            // Destructure the response data
+            const {
+                visitorCountsByMonth,
+                currentMonthVisitorsByCountry,
+                toursByType,
+                keyMetrics,
+            } = analyticsResponse.data;
+
+            // Update your state with the fetched data
+            setVisitorCountByMonth(visitorCountsByMonth);
+            setCurrentMonthVisitorsByCountry(currentMonthVisitorsByCountry);
+            setToursByType(toursByType);
+            setKeyMetrics(keyMetrics);
         } catch (error) {
-            console.error('Error fetching analytics data:', error);
+            toast.error('Error fetching analytics data:', error);
         } finally {
             setLoading(false);
         }

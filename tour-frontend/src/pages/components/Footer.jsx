@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
 import useApi from '@/services/api';
 import WaguerPolicy from '@/services/WaguerPolicy';
 import {
     Sheet,
     SheetContent,
     SheetFooter,
-    SheetHeader,
-    SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
 import TermsOfService from '@/services/TermsOfService';
+import { toast } from 'react-toastify';
 
 export default function Footer() {
     const [tourTypes, setTourTypes] = useState([]);
@@ -23,7 +22,7 @@ export default function Footer() {
                 const response = await api.get("/api/tour-types");
                 setTourTypes(response.data);
             } catch (error) {
-                console.error("Error fetching tour types:", error);
+                toast.error("Error fetching tour types:", error);
             }
         };
 
@@ -32,7 +31,7 @@ export default function Footer() {
                 const response = await api.get("/api/destinations/featured");
                 setPopularTours(response.data);
             } catch (error) {
-                console.error("Error fetching popular tours:", error);
+                toast.error("Error fetching popular tours:", error);
             }
         };
 
@@ -40,15 +39,22 @@ export default function Footer() {
         fetchPopularTours();
     }, []);
     
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
     return (
         <footer className="w-full bg-gradient-to-b from-gray-700 to-gray-800 text-white">
             <div className="container mx-auto px-4 py-12">
                 {/* Logo Section with Animation */}
                 <div className="text-center mb-12">
                     <img 
-                        src="/images/waguer.png" 
+                        src="/images/logo.svg" 
                         className="w-40 mx-auto transform hover:scale-110 transition-transform duration-300 cursor-pointer"
                         alt="Agency Logo" 
+                        onClick={scrollToTop}
                     />
                 </div>
 
@@ -59,15 +65,19 @@ export default function Footer() {
                         <div className="space-y-4">
                             <div className="flex items-center gap-3 hover:text-orange-400 transition-colors duration-200">
                                 <MapPin className="w-5 h-5" />
-                                <p>1234 Travel Road, Wander City</p>
+                                <p>4413 N Kenneth avenue</p>
                             </div>
                             <div className="flex items-center gap-3 hover:text-orange-400 transition-colors duration-200">
-                                <Phone className="w-5 h-5" />
-                                <p>+212 613-821525</p>
+                                <MessageCircle className="w-5 h-5" />
+                                <p>+1 (312) 414-6237</p>
+                            </div>
+                            <div className="flex items-center gap-3 hover:text-orange-400 transition-colors duration-200">
+                                <MessageCircle className="w-5 h-5" />
+                                <p>+212 655-596912</p>
                             </div>
                             <div className="flex items-center gap-3 hover:text-orange-400 transition-colors duration-200">
                                 <Mail className="w-5 h-5" />
-                                <p>sharmingmoroccotour@gmail.com</p>
+                                <p>cm2ours@gmail.com</p>
                             </div>
                         </div>
                     </div>
@@ -114,7 +124,7 @@ export default function Footer() {
                                 </svg>
                                 <span>X</span>
                             </a>
-                            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-pink-500 transition-colors duration-200 group">
+                            <a href="https://www.instagram.com/charmintours2morocco" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 hover:text-pink-500 transition-colors duration-200 group">
                                 <Instagram className="w-6 h-6 group-hover:scale-110 transition-transform duration-200" />
                                 <span>Instagram</span>
                             </a>

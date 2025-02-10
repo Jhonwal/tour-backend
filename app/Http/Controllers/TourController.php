@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DayImage;
 use App\Models\Tour;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\TourDay;
+use App\Models\DayImage;
 use App\Models\TourType;
+use App\Models\Promotion;
 use App\Models\TourImage;
 use App\Models\TourPrice;
 use App\Models\Destination;
@@ -16,7 +17,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,6 +39,7 @@ class TourController extends Controller
             $tour->banner = URL::to($tour->banner);
             $tour->map_image = URL::to($tour->map_image);
         });
+        $type->image = URL::to($type->image);
         return response()->json([
             'tours' => $tours,
             'type' => $type,
@@ -116,7 +117,19 @@ class TourController extends Controller
             'excludedServices',
             'includedServices',
         ])->findOrFail($id);
-    
+
+        $tourId =  $tour->id;
+        $discountValue = Promotion::whereHas('tours', function ($query) use ($tourId) {
+            $query->where('tour_id', $tourId);
+        })
+        ->where('start_date', '<=', date('Y-m-d'))
+        ->where('end_date', '>=', date('Y-m-d'))
+        ->orderByDesc('start_date')
+        ->value('discount_value'); 
+        //make discountvalue 0 if null
+        $discountValue = $discountValue ?? 0;
+        $tour->promotions = $discountValue;
+
         // Ensure all image paths are full URLs
         $tour->banner = URL::to($tour->banner);
         $tour->map_image = URL::to($tour->map_image);
@@ -137,15 +150,25 @@ class TourController extends Controller
             'excludedServices',
             'includedServices',
         ])->where('slug', $slug)->first();
-    
-        // Ensure all image paths are full URLs
+        
+        $tourId =  $tour->id;
+        $discountValue = Promotion::whereHas('tours', function ($query) use ($tourId) {
+            $query->where('tour_id', $tourId);
+        })
+        ->where('start_date', '<=', date('Y-m-d'))
+        ->where('end_date', '>=', date('Y-m-d'))
+        ->orderByDesc('start_date')
+        ->value('discount_value'); 
+        $discountValue = $discountValue ?? 0;
+        $tour->promotions = $discountValue;
+        
         $tour->banner = URL::to($tour->banner);
         $tour->map_image = URL::to($tour->map_image);
     
         foreach ($tour->tourImages as $image) {
             $image->url = URL::to($image->url);
         }
-    
+        //add a row promotion to the tour
         return response()->json($tour);
     }
     public function getThree() 
@@ -200,7 +223,7 @@ class TourController extends Controller
                 $image->url = URL::to($image->url);
             }
             // Fetch tour days
-            $days = TourDay::with('dayImages')
+            $days = TourDay::with('dayImages', 'activities.activites')
                 ->where('tour_id', $id)
                 ->get();
             foreach ($days as $day) {
@@ -297,7 +320,7 @@ class TourController extends Controller
                 $newDays = $newDuration - $tour->duration;
                 for ($i = 1; $i <= $newDays; $i++) {
                     $day = new TourDay();
-                    $day->number = $tour->tourDays()->max('number') + 1;
+                    $day->number = $tour->tourDays()->max('number') + 1 ?? 1;
                     $day->name = 'new day';
                     $day->tour_id = $tour->id;
                     $day->save();
@@ -551,4 +574,69 @@ class TourController extends Controller
          ], 500);
      }
  }
+ public function destroy($id)
+{
+    try {
+        DB::beginTransaction();
+
+        // Find the tour
+        $tour = Tour::with([
+            'tourImages',
+            'tourDays.dayImages',
+        ])->findOrFail($id);
+
+        // Delete tour images from storage and database
+        foreach ($tour->tourImages as $image) {
+            $filePath = str_replace('/storage/', '', $image->url);
+            if (Storage::disk('public')->exists($filePath)) {
+                Storage::disk('public')->delete($filePath);
+            }
+            $image->delete();
+        }
+
+        // Delete day images from storage and database
+        foreach ($tour->tourDays as $day) {
+            foreach ($day->dayImages as $dayImage) {
+                $filePath = str_replace('/storage/', '', $dayImage->url);
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
+                $dayImage->delete();
+            }
+            $day->delete(); // Delete the tour day
+        }
+
+        // Delete the tour's banner and map image from storage
+        if ($tour->banner) {
+            $bannerPath = str_replace('/storage/', '', $tour->banner);
+            if (Storage::disk('public')->exists($bannerPath)) {
+                Storage::disk('public')->delete($bannerPath);
+            }
+        }
+
+        if ($tour->map_image) {
+            $mapImagePath = str_replace('/storage/', '', $tour->map_image);
+            if (Storage::disk('public')->exists($mapImagePath)) {
+                Storage::disk('public')->delete($mapImagePath);
+            }
+        }
+
+        // Finally, delete the tour itself
+        $tour->delete();
+
+        DB::commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tour and all related data deleted successfully',
+        ]);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'success' => false,
+            'message' => 'Error deleting tour: ' . $e->getMessage(),
+        ], 500);
+    }
+}
 }

@@ -12,6 +12,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import TestemonialForm from "./TestemonialForm";
 import './styles.css';
+import { toast } from "react-toastify";
 
 const TestimonialList = () => {
     const api = useApi();
@@ -30,7 +31,7 @@ const TestimonialList = () => {
                 setTestimonials(testimonialsArray); // Update state with the array
                 setLoading(false);
             } catch (error) {
-                console.error("Error fetching testimonials:", error);
+                toast.error("Error fetching testimonials:", error);
             }
         };
         

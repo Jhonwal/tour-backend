@@ -8,6 +8,7 @@ import useApi from '@/services/api';
 import PendingAlert from './components/PendingAlert';
 import DeclinedAlert from './components/DeclinedAlert';
 import html2pdf from 'html2pdf.js';
+import waguer from '/images/waguer.png'; // Import your waguer image
 
 export default function CheckBooking() {
     const [email, setEmail] = useState('');
@@ -194,7 +195,7 @@ export default function CheckBooking() {
     return (
         <div className="relative h-screen overflow-hidden">
             <BackButton />
-            <div className="absolute inset-0 bg-gradient-to-br from-green-100 via-blue-50 to-green-100 animate-gradient-x" />
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-100 via-blue-50 to-orange-100 animate-gradient-x" />
             
             <motion.div 
                 initial={{ opacity: 0 }}
@@ -205,7 +206,7 @@ export default function CheckBooking() {
                     <motion.h1
                         initial={{ scale: 0.9 }}
                         animate={{ scale: 1 }}
-                        className="text-3xl font-bold mb-6 text-center text-green-700"
+                        className="text-3xl font-bold mb-6 text-center text-orange-700"
                     >
                         Booking Details
                     </motion.h1>
@@ -213,39 +214,86 @@ export default function CheckBooking() {
                     <motion.p
                         initial={{ y: 20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        className="text-green-700 text-lg font-medium text-center mb-8"
+                        className="text-orange-700 text-lg font-medium text-center mb-8"
                     >
                         Your request has been successfully confirmed! <br />
                         Thank you for your trust. We are excited to assist you further.
                     </motion.p>
 
-                    <div ref={printRef} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {[
-                            { icon: <User className="w-6 h-6 text-blue-600" />, label: 'Full Name', value: result.full_name },
-                            { icon: <Mail className="w-6 h-6 text-red-600" />, label: 'Email', value: result.email },
-                            { icon: <Phone className="w-6 h-6 text-green-600" />, label: 'Phone', value: result.phone },
-                            { icon: <Globe className="w-6 h-6 text-yellow-600" />, label: 'Country', value: result.country },
-                            { icon: <MapPin className="w-6 h-6 text-purple-600" />, label: 'Region', value: result.region },
-                            { icon: <Calendar className="w-6 h-6 text-orange-600" />, label: 'Arrival Date', value: result.arrival_date },
-                            { icon: <DollarSign className="w-6 h-6 text-teal-600" />, label: 'Total Price', value: `$${result.total_price}` },
-                            { icon: <CheckCircle className="w-6 h-6 text-pink-600" />, label: 'Status', value: result.status },
-                            { icon: <Plane className="w-6 h-6 text-indigo-600" />, label: 'Tour Name', value: result.tour.name },
-                            { icon: <Clock className="w-6 h-6 text-cyan-600" />, label: 'Tour Duration', value: `${result.tour.duration} days` },
-                        ].map((item, index) => (
+                    <div ref={printRef}>
+                        {/* waguer and Header */}
+                        <div className="text-center mb-8 space-y-2">
+                            <img src={waguer} alt="Charming Morocco Tours waguer" className="w-32 h-32 mx-auto mb-4" />
+                            <h1 className="text-3xl font-bold text-orange-700">Charming Morocco Tours</h1>
+                            <p className="text-orange-700">Booking Reference: {result.reference_code}</p>
+                        </div>
+
+                        {/* Discount Card */}
+                        {result.discount && result.discount > 0 && (
                             <motion.div
-                                key={index}
                                 initial={{ scale: 0.8, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="p-4 backdrop-blur-lg bg-white bg-opacity-40 rounded-xl shadow-lg border border-white border-opacity-20 hover:transform hover:scale-105 transition-all duration-300"
+                                transition={{ delay: 0.2 }}
+                                className="mb-8 p-6 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-xl shadow-lg border border-yellow-300"
                             >
-                                <p className="font-semibold text-gray-700">{item.label}</p>
-                                <div className="flex items-center space-x-2 mt-2">
-                                    {item.icon}
-                                    <p className="text-gray-800">{item.value}</p>
+                                <div className="flex items-center space-x-4">
+                                    <DollarSign className="w-8 h-8 text-yellow-700" />
+                                    <div>
+                                        <p className="text-lg font-semibold text-yellow-800">Discount Applied</p>
+                                        <p className="text-yellow-700">-{result.discount} %</p>
+                                    </div>
                                 </div>
                             </motion.div>
-                        ))}
+                        )}
+
+                        {/* Booking Details Table */}
+                        <table className="w-full border-collapse backdrop-blur-lg bg-white bg-opacity-40 rounded-xl shadow-lg border border-white border-opacity-20">
+                            <thead>
+                                <tr className="bg-orange-50 bg-opacity-60">
+                                    <th className="p-4 text-left text-orange-700">Field</th>
+                                    <th className="p-4 text-left text-orange-700">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[
+                                    { label: 'Full Name', value: result.full_name },
+                                    { label: 'Email', value: result.email },
+                                    { label: 'Phone', value: result.phone },
+                                    { label: 'Country', value: result.country },
+                                    { label: 'Region', value: result.region },
+                                    { label: 'Arrival Date', value: result.arrival_date },
+                                    {
+                                        label: 'Total Price',
+                                        value: (
+                                          <>
+                                            {result.discount > 0 ? (
+                                              <div className="flex items-center space-x-4">
+                                                <span className="text-red-500 line-through text-lg">${(result.total_price / (1 - result.discount / 100)).toFixed(2)}</span>
+                                                <span className="text-green-500 text-xl font-semibold">${result.total_price}</span>
+                                              </div>
+                                            ) : (
+                                              <span className="text-xl font-semibold">${result.total_price}</span>
+                                            )}
+                                          </>
+                                        ),
+                                    },
+                                    { label: 'Status', value: result.status },
+                                    { label: 'Tour Name', value: result.tour.name },
+                                    { label: 'Tour Duration', value: `${result.tour.duration} days` },
+                                ].map((item, index) => (
+                                    <motion.tr
+                                        key={index}
+                                        initial={{ scale: 0.8, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="hover:bg-orange-50 hover:bg-opacity-30 transition-all border-2 duration-300"
+                                    >
+                                        <td className="p-4 text-gray-700 font-semibold">{item.label}</td>
+                                        <td className="p-4 text-gray-800">{item.value}</td>
+                                    </motion.tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
 
                     <motion.div
@@ -256,7 +304,7 @@ export default function CheckBooking() {
                     >
                         <Button
                             onClick={handleGeneratePDF}
-                            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center space-x-2 mx-auto transform hover:scale-105 transition-all duration-300"
+                            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center space-x-2 mx-auto transform hover:scale-105 transition-all duration-300"
                         >
                             <Printer className="w-5 h-5" />
                             <span>Print Receipt</span>

@@ -9,7 +9,9 @@ import {
   Mail as MailIcon,
   Facebook as FacebookIcon,
   Instagram as InstagramIcon,
-  Edit as EditIcon
+  Edit as EditIcon,
+  Phone,
+  Loader2
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +26,8 @@ const UserProfileManagement = () => {
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
-    profile_picture: '',
+    phone_number: '',
+    profile_picture: null,
     facebook: '',
     instagram: '',
     bio: '',
@@ -40,6 +43,8 @@ const UserProfileManagement = () => {
   const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState(null);
   const [editMode, setEditMode] = useState(false);
+  const [profileUpdateLoading, setProfileUpdateLoading] = useState(false);
+  const [securityUpdateLoading, setSecurityUpdateLoading] = useState(false);
   const api = useApi();
 
   useEffect(() => {
@@ -52,12 +57,10 @@ const UserProfileManagement = () => {
           }
         });
         const userData = response.data;
-        console.error(userData);
         setUser(userData);
         setProfileData(userData);
         setLoading(false);
       } catch (err) {
-        console.log(err);
         toast.error('Failed to fetch user data');
         setLoading(false);
       }
@@ -68,18 +71,19 @@ const UserProfileManagement = () => {
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
+    setProfileUpdateLoading(true);
+
     const formData = new FormData();
-    
     Object.keys(profileData).forEach(key => {
       if (profileData[key] !== null && profileData[key] !== undefined) {
         formData.append(key, profileData[key]);
       }
     });
-  
+
     if (profileImage) {
       formData.append('profile_picture', profileImage);
     }
-  
+
     try {
       const token = getToken();
       await api.post('/api/user/profile', formData, {
@@ -93,11 +97,12 @@ const UserProfileManagement = () => {
     } catch (err) {
       console.error(err);
       if (err.response) {
-        console.error('Backend Error:', err.response.data);
         toast.error(`Failed to update profile: ${err.response.data.message}`);
       } else {
         toast.error('Failed to update profile');
       }
+    } finally {
+      setProfileUpdateLoading(false);
     }
   };
 
@@ -107,6 +112,9 @@ const UserProfileManagement = () => {
       toast.error('Passwords do not match');
       return;
     }
+
+    setSecurityUpdateLoading(true);
+
     try {
       const token = getToken();
       await api.post('/api/user/security', securityData, {
@@ -122,6 +130,8 @@ const UserProfileManagement = () => {
       });
     } catch (err) {
       toast.error('Failed to update security settings');
+    } finally {
+      setSecurityUpdateLoading(false);
     }
   };
 
@@ -140,11 +150,11 @@ const UserProfileManagement = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50">
-      <ToastContainer position="top-right" theme="colored" className="text-sm" />
+      <ToastContainer position="top-right" className="text-sm" />
 
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className=" mx-auto space-y-8">
         {/* Profile Overview Card */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-white shadow-2xl overflow-hidden">
           <div className="bg-gradient-to-r from-orange-500 to-yellow-500 p-6 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-white flex items-center">
               <UserIcon className="mr-3" /> User Profile
@@ -170,15 +180,28 @@ const UserProfileManagement = () => {
                 <p className="text-gray-500">{profileData.email}</p>
               </div>
               
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <FacebookIcon className="text-orange-500" />
-                  <span>{profileData.facebook || 'No Facebook linked'}</span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <InstagramIcon className="text-orange-500" />
-                  <span>{profileData.instagram || 'No Instagram linked'}</span>
-                </div>
+              <div className="space-y-8">
+                {/* phone_number */}
+                  <div className="flex items-center space-x-4">
+                    <Phone className="text-orange-500" />
+                        <span>{profileData.phone_number}</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <FacebookIcon className="text-orange-500" />
+                    <a href={profileData.facebook}
+                          className='hover:underline hover:text-orange-600'
+                        target="_blank" rel="noopener noreferrer">
+                        <span>Facebook link</span>
+                    </a>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                      <InstagramIcon className="text-orange-500" />
+                      <a href={profileData.instagram}
+                          className='hover:underline hover:text-orange-600'
+                            target="_blank" rel="noopener noreferrer">                
+                            <span>Instagram link</span>
+                      </a>
+                  </div>
               </div>
               
               <div className="space-y-4">
@@ -231,24 +254,35 @@ const UserProfileManagement = () => {
                 
                 <div className="grid md:grid-cols-2 gap-4">
                   <Input
+                    variant='orange'
                     placeholder="Name"
                     value={profileData.name}
                     onChange={(e) => setProfileData({...profileData, name: e.target.value})}
                     className="border-orange-300 focus:border-orange-500"
                   />
                   <Input
+                    variant='orange'
                     placeholder="Email"
                     value={profileData.email}
                     onChange={(e) => setProfileData({...profileData, email: e.target.value})}
                     className="border-orange-300 focus:border-orange-500"
                   />
                   <Input
+                    variant='orange'
+                    placeholder="phone_number"
+                    value={profileData.phone_number}
+                    onChange={(e) => setProfileData({...profileData, phone_number: e.target.value})}
+                    className="border-orange-300 focus:border-orange-500"
+                  />
+                  <Input
+                    variant='orange'
                     placeholder="Facebook Link"
                     value={profileData.facebook || ''}
                     onChange={(e) => setProfileData({...profileData, facebook: e.target.value})}
                     className="border-orange-300 focus:border-orange-500"
                   />
                   <Input
+                    variant='orange'
                     placeholder="Instagram Link"
                     value={profileData.instagram || ''}
                     onChange={(e) => setProfileData({...profileData, instagram: e.target.value})}
@@ -256,6 +290,7 @@ const UserProfileManagement = () => {
                   />
                 </div>
                 <Textarea
+                    variant='orange'
                   placeholder="Bio"
                   value={profileData.bio || ''}
                   onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
@@ -263,9 +298,18 @@ const UserProfileManagement = () => {
                 />
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600"
+                  variant='waguer3'
+                  disabled={profileUpdateLoading}
                 >
-                  <SaveIcon className="mr-2" /> Update Profile
+                  {profileUpdateLoading ? (
+                    <div className="flex items-center">
+                      <Loader2 className="animate-spin mr-2" /> Updating...
+                    </div>
+                  ) : (
+                    <>
+                      <SaveIcon className="mr-2" /> Update Profile
+                    </>
+                  )}
                 </Button>
               </form>
             </CardContent>
@@ -273,7 +317,7 @@ const UserProfileManagement = () => {
         </div>
 
         {/* Security Settings Card */}
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-white shadow-2xl overflow-hidden">
           <div className="bg-gradient-to-r from-orange-500 to-yellow-500 p-6">
             <h2 className="text-2xl font-bold text-white flex items-center">
               <LockIcon className="mr-3" /> Security Settings
@@ -282,6 +326,7 @@ const UserProfileManagement = () => {
           <CardContent className="p-8">
             <form onSubmit={handleSecurityUpdate} className="space-y-6">
               <Input
+                variant='orange'
                 type="password"
                 placeholder="Current Password"
                 value={securityData.currentPassword}
@@ -289,6 +334,7 @@ const UserProfileManagement = () => {
                 className="border-orange-300 focus:border-orange-500"
               />
               <Input
+                variant='orange'
                 type="password"
                 placeholder="New Password"
                 value={securityData.newPassword}
@@ -296,6 +342,7 @@ const UserProfileManagement = () => {
                 className="border-orange-300 focus:border-orange-500"
               />
               <Input
+                variant='orange'
                 type="password"
                 placeholder="Confirm New Password"
                 value={securityData.confirmPassword}
@@ -304,9 +351,18 @@ const UserProfileManagement = () => {
               />
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600"
+                variant='waguer3'
+                disabled={securityUpdateLoading}
               >
-                <LockIcon className="mr-2" /> Update Security
+                {securityUpdateLoading ? (
+                  <div className="flex items-center">
+                   <Loader2 className="animate-spin mr-2" /> Updating...
+                  </div>
+                ) : (
+                  <>
+                    <LockIcon className="mr-2" /> Update Security
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>

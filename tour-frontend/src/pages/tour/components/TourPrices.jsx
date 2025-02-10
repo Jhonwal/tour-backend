@@ -1,10 +1,10 @@
 import { Input } from '@/components/ui/input';
 import React, { useState } from 'react';
 
-function TourPrices({ price }) {
+function TourPrices({ price, promo = 0 }) {
     const [groupSize, setGroupSize] = useState(1);
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [result, setResult] = useState('0 $');
+    const [result, setResult] = useState({ original: '0 $', discounted: '0 $' });
 
     const handleGroupSizeChange = (e) => {
         setGroupSize(e.target.value);
@@ -16,18 +16,24 @@ function TourPrices({ price }) {
 
     const calculateResult = () => {
         if (selectedCategory && groupSize) {
+            let key;
             if (groupSize <= 2) {
-                let key = selectedCategory + '|2';
-                setResult(`${groupSize * price[key]} $`);
+                key = selectedCategory + '|2';
             } else if (groupSize >= 5) {
-                let key = selectedCategory + '|5<n';
-                setResult(`${groupSize * price[key]} $`);
+                key = selectedCategory + '|5<n';
             } else {
-                let key = selectedCategory + '|3-4';
-                setResult(`${groupSize * price[key]} $`);
+                key = selectedCategory + '|3-4';
             }
+            
+            const originalPrice = groupSize * price[key];
+            const discountedPrice = originalPrice * (1 - promo / 100);
+            
+            setResult({
+                original: `${originalPrice} $`,
+                discounted: `${discountedPrice.toFixed(2)} $`
+            });
         } else {
-            setResult('0 $');
+            setResult({ original: '0 $', discounted: '0 $' });
         }
     };
 
@@ -39,10 +45,9 @@ function TourPrices({ price }) {
         return <p>No price data available.</p>;
     }
 
-    // Group prices by category
     const groupedPrices = price
         ? Object.entries(price)
-              .filter(([key]) => !['id', 'tour_id', 'created_at', 'updated_at'].includes(key)) // Exclude non-price fields
+              .filter(([key]) => !['id', 'tour_id', 'created_at', 'updated_at'].includes(key))
               .reduce((acc, [key, value]) => {
                   const [category, groupSize] = key.split('|');
                   if (!acc[category]) {
@@ -53,13 +58,15 @@ function TourPrices({ price }) {
               }, {})
         : {};
 
-    // Extract unique group sizes
     const groupSizes = [...new Set(Object.values(groupedPrices).flat().map(item => item.groupSize))];
 
     return (
         <div className="mt-8">
-            <h3 className="text-2xl font-semibold text-white bg-orange-300 header-waguer border-b-8 border-orange-300 p-3 text-center mb-4">Tour Prices</h3>
+            <h3 className="text-2xl font-semibold text-white bg-orange-300 header-waguer border-b-8 border-orange-300 p-3 text-center mb-4">
+                Tour Prices {promo > 0 && <span className="ml-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm">-{promo}% OFF!</span>}
+            </h3>
             <p className="mb-6 text-lg font-verdana text-gray-700">The following prices are categorized by accommodation type and group size. Prices are quoted per person.</p>
+            
             <table className="table-auto w-full border-collapse border border-gray-200">
                 <thead className="bg-orange-100">
                     <tr>
@@ -77,10 +84,22 @@ function TourPrices({ price }) {
                             <tr>
                                 <td className="border border-gray-300 px-4 py-2 font-bold">{category} - {categoryDescription(category)}</td>
                                 {groupSizes.map((size) => {
-                                    const priceData = details.find(item => item.groupSize == size);
+                                    const priceData = details.find(item => item.groupSize === size);
+                                    const originalPrice = priceData ? priceData.price : null;
+                                    const discountedPrice = originalPrice ? originalPrice * (1 - promo / 100) : null;
+                                    
                                     return (
                                         <td key={size} className="border border-gray-300 px-4 py-2">
-                                            {priceData ? priceData.price + ' $' : '-'}
+                                            {priceData ? (
+                                                <div>
+                                                    {promo > 0 && (
+                                                        <span className="line-through text-gray-500">{originalPrice} $</span>
+                                                    )}
+                                                    <span className={`block font-bold ${promo > 0 ? 'text-green-600' : ''}`}>
+                                                        {discountedPrice ? discountedPrice.toFixed(2) : originalPrice} $
+                                                    </span>
+                                                </div>
+                                            ) : '-'}
                                         </td>
                                     );
                                 })}
@@ -89,64 +108,71 @@ function TourPrices({ price }) {
                     ))}
                 </tbody>
             </table>
-            <div className='shadow-lg p-4 bg-orange-50'>
+
+            <div className="shadow-lg p-4 bg-orange-50 mt-6">
                 <h3 className="text-2xl font-semibold text-orange-500 p-3 text-center mb-4">Calculate Your Budget</h3>
-                <div className='flex gap-6'>
-                    <div className='lg:w-1/2'>
+                <div className="flex gap-6">
+                    <div className="lg:w-1/2">
                         <label className="block text-gray-700 text-sm font-semibold mb-2">Group size:</label>
                         <Input
-                            type='number'
-                            min='1'
-                            variant='orange'
+                            type="number"
+                            min="1"
+                            variant="orange"
                             placeholder="Group size"
                             className="px-4 py-3 border rounded-lg text-sm bg-white text-orange-700 font-semibold placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 border-orange-600"
                             value={groupSize}
                             onChange={handleGroupSizeChange}
                         />
                     </div>
-                    <div className='lg:w-1/2'>
+                    <div className="lg:w-1/2">
                         <label className="block text-gray-700 text-sm font-semibold mb-2">Category:</label>
                         <select
-                            className='block w-full px-4 py-3 border rounded-lg text-sm bg-white text-orange-700 font-semibold placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 border-orange-600'
+                            className="block w-full px-4 py-3 border rounded-lg text-sm bg-white text-orange-700 font-semibold placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 border-orange-600"
                             value={selectedCategory}
                             onChange={handleCategoryChange}
                         >
                             <option value="" disabled>Select a category</option>
                             {Object.keys(groupedPrices).map((category) => (
-                                <option key={category} className="text-orange-600 font-semibold hover:bg-orange-500 focus:ring-2 focus:ring-orange-500">
+                                <option key={category} value={category} className="text-orange-600 font-semibold">
                                     {category}
                                 </option>
                             ))}
                         </select>
                     </div>
                 </div>
-                <div className='mt-4'>
+
+                <div className="mt-4 flex flex-col items-center gap-2">
+                    {promo > 0 && (
+                        <div className="w-1/2 relative">
+                            <Input
+                                className="w-full text-center font-bold text-gray-500 line-through text-lg"
+                                variant="orange"
+                                value={result.original}
+                                readOnly
+                            />
+                            <span className="absolute -right-16 top-1/2 -translate-y-1/2 bg-red-500 text-white px-2 py-1 rounded-full text-xs">
+                                -{promo}%
+                            </span>
+                        </div>
+                    )}
                     <Input
-                        className="w-1/2 mx-auto text-center font-bold text-green-600 text-lg"
-                        variant='orange'
-                        placeholder="Result"
-                        value={result}
+                        className="w-1/2 text-center font-bold text-green-600 text-lg"
+                        variant="orange"
+                        value={result.discounted}
                         readOnly
                     />
                 </div>
-                {/* Warning below the budget calculation */}
+
                 <div className="mt-4 text-orange-600 text-sm font-semibold">
-                    <p>
-                        ⚠️ Please note that the listed prices are for the standard trip package. Any additional activities not included in the itinerary, such as snorkeling, trekking, or special tours, will be subject to extra charges. 
-                    </p>
-                    <p>
-                        ⚠️ An external fee may also apply depending on the specific requirements of your trip. Please check with us for further details.
-                    </p>
-                    <p>
-                        ⚠️ Please note that during January and December, there will be an additional 10% charge on every tour price. This seasonal adjustment applies to all bookings within these months.
-                    </p>
+                    <p>⚠️ Please note that the listed prices are for the standard trip package. Any additional activities not included in the itinerary will be subject to extra charges.</p>
+                    <p>⚠️ An external fee may also apply depending on the specific requirements of your trip. Please check with us for further details.</p>
+                    <p>⚠️ Please note that during January and December, there will be an additional 10% charge on every tour price. This seasonal adjustment applies to all bookings within these months.</p>
                 </div>
             </div>
         </div>
     );
 }
 
-// Function to provide a description of the category
 function categoryDescription(category) {
     const descriptions = {
         "3-stars": "Budget-friendly accommodation with essential amenities.",
@@ -157,7 +183,6 @@ function categoryDescription(category) {
     return descriptions[category] || "Standard accommodation.";
 }
 
-// Function to describe the group size
 function groupSizeDescription(groupSize) {
     const groupSizeDescriptions = {
         "2": "2 people (Couple or small group)",

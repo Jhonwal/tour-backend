@@ -32,7 +32,6 @@ const DayDetails = ({ dayId }) => {
       try {
         const response = await api.get(`/api/tour/day/${dayId}`);
         setDay(response.data);
-        console.log(response.data)
         setMainImage(response.data.day_images[0]?.url || null); // Set the first image as the main image
         setLoading(false);
       } catch (err) {
@@ -44,18 +43,21 @@ const DayDetails = ({ dayId }) => {
     fetchDayDetails();
   }, [dayId]);
 
+  
   if (loading) {
-    return <Loading />;
-  }
-
+      return <Loading />;
+    }
+    
+    const hotels = day?.hotels ? JSON.parse(day.hotels) : [];
+    
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
 
   return (
     <>
-        <div className="p-2 bg-orange-200">        
-            <h1 className="text-2xl font-semibold font-verdana text-orange-800 text-center">{day.name}</h1>
+        <div className="p-2 bg-blue-200">        
+            <h1 className="text-2xl font-semibold font-verdana text-blue-800 text-center">{day.name}</h1>
         </div>
         <div className="flex flex-col lg:flex-row gap-8 bg-white shadow-md rounded-lg p-2">
             {/* Right Section: Description and Activities */}
@@ -67,7 +69,7 @@ const DayDetails = ({ dayId }) => {
 
                 {/* Activities Section */}
                 <div className="mt-6">
-                <h2 className="text-xl font-semibold font-verdana text-orange-700">Activities :</h2>
+                <h2 className="text-xl font-semibold font-verdana text-blue-700">Activities :</h2>
                     {day.activities.length > 0 ? (
                         day.activities.map((activity) => (
                             <p key={activity.id}>
@@ -85,8 +87,32 @@ const DayDetails = ({ dayId }) => {
                         ) : (
                         <p>No activities available.</p>
                     )}
-
                 </div>
+                {hotels.length > 0 && (
+                    <div className="mt-6 p-2">
+                        <h3 className="text-2xl font-bold text-blue-500 mb-4">Stay At:</h3>
+                        <p className="text-sm text-blue-600 mb-4 italic">
+                            Click on a hotel name to see more details.
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                            {hotels.map((hotel, index) => (
+                                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                    <div className="p-2">
+                                        <a
+                                            href={hotel.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-700 hover:text-blue-900 font-semibold text-lg hover:underline transition duration-300"
+                                        >
+                                            {hotel.name}
+                                        </a>
+                                        <p className="text-sm text-gray-600 mt-2">{hotel.description}</p> {/* Add a description to your hotel data */}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
             <div className="lg:w-1/2 text-center place-content-center">
                 {mainImage && (
@@ -122,7 +148,7 @@ const DayDetails = ({ dayId }) => {
                                 alt={`Day ${day.number} Thumbnail`}
                                 className={`rounded-lg shadow-md cursor-pointer object-cover ${
                                     image.url === mainImage
-                                    ? "border-2 border-orange-500"
+                                    ? "border-2 border-blue-500"
                                     : "border border-gray-200"
                                 }`}
                                 onClick={() => setMainImage(image.url)} // Update the main image on click

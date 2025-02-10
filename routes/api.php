@@ -1,14 +1,17 @@
 <?php
 
 
+use App\Models\User;
 use App\Models\TourType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\TourDayController;
@@ -17,9 +20,11 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DayImageController;
 use App\Http\Controllers\TourTypeController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\TourPriceController;
 use App\Http\Controllers\DestinationController;
 use App\Http\Controllers\TestimonialController;
+use App\Http\Controllers\TourRequestController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\VisitorCountController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -54,14 +59,14 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 Route::get('/tour/{id}', [TourController::class, 'show']);
 Route::get('/tour/slug/{slug}', [TourController::class, 'showSlug']);
 
-
-
 Route::get('images', [ImageController::class, 'index']);
 
 
-Route::get('/tour-types', function () {
-    $tourTypes = TourType::with('tours')->get();
-    return response()->json($tourTypes);
+Route::get('/tour-types', [TourTypeController::class, 'index']);
+Route::get('/phone-numbers', function () {
+    $phoneNumbers = User::pluck('phone_number'); // This will return an array of phone numbers
+
+    return response()->json($phoneNumbers);
 });
 Route::get('/tour-types/page', [TourTypeController::class, 'tour_type']);
 Route::post('/track-visitor', [VisitorCountController::class, 'trackVisitor']);
@@ -79,6 +84,12 @@ Route::post('/check-booking', [BookingController::class, 'checkBooking']);
 Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/{slug}', [BlogController::class, 'show']);
 Route::get('/blog/{slug}/related', [BlogController::class, 'related']);
+Route::get('/faqs/frontend', [FaqController::class, 'index']);
+Route::get('/team', [UserProfileController::class, 'getTeamMembers']);
+Route::get('/promotions/front', [PromotionController::class, 'indexFrontend']);
+Route::post('/contact', [ContactController::class, 'store']);
+Route::get('/getAllAnalyticsData', [AnalyticsController::class, 'getAllAnalyticsData']);
+Route::post('/tour-requests', [TourRequestController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', function (){
@@ -106,15 +117,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/testimonials/{id}', [TestimonialController::class, 'updateState']);
     Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy']);
     Route::get('/admin/bookings', [BookingController::class, 'index']);
-    Route::post('/admin/bookings', [BookingController::class, 'store']);
-    Route::put('/admin/bookings/{id}', [BookingController::class, 'update']);
     Route::delete('/admin/bookings/{id}', [BookingController::class, 'destroy']);
+    Route::put('/admin/bookings/{booking}/status', [BookingController::class, 'updateStatus']);
     Route::get('/tours/{id}', [TourController::class, 'showTour']);
     
-    Route::get('/admin/analytics/visitor-count-by-month', [AnalyticsController::class, 'getVisitorCountByMonth']);
-    Route::get('/admin/analytics/current-month-visitors-by-country', [AnalyticsController::class, 'getCurrentMonthVisitorsByCountry']);
-    Route::get('/admin/analytics/tours-by-type', [AnalyticsController::class, 'getToursByType']);
-    Route::get('/admin/analytics/key-metrics', [AnalyticsController::class, 'getKeyMetrics']);
+    Route::get('/admin/analytics/get-all-analytics-data', [AnalyticsController::class, 'getAllAnalyticsData']);
+
 
         // Fetch tour details
     Route::prefix('tours')->group(function () {
@@ -127,7 +135,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/update-prices/{tourId}', [TourController::class, 'updatePrices']);
         Route::delete('/tour-images/{id}', [TourController::class, 'deleteTourImage']);
         Route::delete('/day-images/{id}', [TourController::class, 'deleteDayImage']);
+        Route::delete('/tour-days/{dayId}/activities/{id}', [TourDayController::class, 'deleteActivity']);
+        Route::delete('/delete-service/{tourId}/{serviceId}', [ServiceController::class, 'deleteService']);
+        Route::post('/add-service/{tourId}', [ServiceController::class, 'addService']);
+        Route::post('/add-destination/{tourId}', [DestinationController::class, 'newDestination']);
+        Route::delete('/delete-destination/{destinationId}', [DestinationController::class, 'deleteDestination']);
+        
+        Route::post('/tour-days/{tourDayId}/hotels', [TourDayController::class, 'addHotel']);
+        Route::put('/tour-days/{tourDayId}/hotels/{hotelIndex}', [TourDayController::class, 'updateHotel']);
+        Route::delete('/tour-days/{tourDayId}/hotels/{hotelIndex}', [TourDayController::class, 'deleteHotel']);
+
+        Route::post('/tour-days/{tourId}/{dayId}/activities', [TourDayController::class, 'addActivity']);
     });
+    Route::delete('/tour/{id}', [TourController::class, 'destroy']);
 
     Route::apiResource('/tour-types/type', TourTypeController::class);
     Route::get('/tour-types/type/{tourType}/tours', [TourTypeController::class, 'tours']);
@@ -140,5 +160,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/posts/{id}', [PostController::class, 'show']);
     Route::put('/admin/posts/{id}', [PostController::class, 'update']);
     Route::delete('/admin/posts/{id}', [PostController::class, 'destroy']);
-});
 
+    Route::get('/faqs/all', [FaqController::class, 'all']);
+    Route::apiResource('/faqs', FaqController::class);
+    
+    Route::apiResource('/promotions', PromotionController::class);
+
+    Route::get('/tour-requests', [TourRequestController::class, 'index']);
+    Route::patch('/tour-requests/{tourRequest}/status', [TourRequestController::class, 'updateStatus']);
+    Route::post('/tour-requests/{tourRequest}/email', [TourRequestController::class, 'sendEmail']);
+
+    Route::apiResource('/activities', ActivityController::class);
+
+    Route::get('/activities/day/{id}', [ActivityController::class, 'getactivitynotexist']);
+});

@@ -34,7 +34,6 @@ export default function CarouselPlugin() {
                 setSlides(response.data);
                 setLoading(false);
             } catch (error) {
-                console.error("Error fetching tour types:", error);
                 setLoading(false);
             }
         };

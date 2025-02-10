@@ -33,10 +33,8 @@ const TourTypesList = () => {
                 setTours(response.data.tours);
                 setType(response.data.type);
                 setLoading(false);
-                console.log(response.data);
             } catch (err) {
                 setError(err.message);
-                console.log(err);
                 setLoading(false);
             }
         };

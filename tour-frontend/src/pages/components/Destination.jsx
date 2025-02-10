@@ -32,7 +32,6 @@ const Destinations = () => {
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
-                console.log(err);
                 setLoading(false);
             }
         };

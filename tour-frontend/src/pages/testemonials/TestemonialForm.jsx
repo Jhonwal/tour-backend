@@ -82,7 +82,7 @@ const TestimonialForm = ({ closePopover }) => {
                 setLoading(false);
             } else {
                 setLoading(false);
-                console.error("Error submitting testimonial:", error.response?.data);
+                toast.error("Error submitting testimonial:", error.response?.data);
             }
         }
     };

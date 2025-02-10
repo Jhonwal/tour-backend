@@ -1,8 +1,8 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Home, MapPin, User, FileText, Menu, X, Plane, ChevronUp } from "lucide-react";
+import { Home, MapPin, User, FileText, Menu, X, Plane, ChevronUp, Phone, MessageCircle } from "lucide-react"; // Import MessageCircle for WhatsApp icon
 import { useEffect, useState } from "react";
 import VisitorTracker from "@/services/visitorService";
-import CookieConsentBanner from "@/services/CookieConsentBanner.jsx";
+import CookieConsentBanner from "@/services/CookieConsentBanner";
 import Footer from "./components/Footer";
 import {
     Menubar,
@@ -15,6 +15,7 @@ import {
     MenubarTrigger,
 } from "@/components/ui/menubar";
 import useApi from "@/services/api";
+import { toast } from "react-toastify";
 
 export default function Layout() {
     const location = useLocation();
@@ -24,18 +25,29 @@ export default function Layout() {
     const [isScrolled, setIsScrolled] = useState(false);
     const api = useApi();
     const navigate = useNavigate();
+    const [phoneNumbers, setPhoneNumbers] = useState([]);
 
+    const fetchPhoneNumbers = async () => {
+        try {
+            const response = await api.get('/api/phone-numbers');
+            const data = response.data;
+            setPhoneNumbers(data);
+        } catch (error) {
+            toast.error(error);
+        }
+    };
+    const fetchTourTypes = async () => {
+        try {
+            const response = await api.get("/api/tour-types");
+            setTourTypes(response.data);
+            console.log('tourtypepepee',response)
+        } catch (error) {
+            toast.error("Error fetching tour types:", error);
+        }
+    };
     useEffect(() => {
-        const fetchTourTypes = async () => {
-            try {
-                const response = await api.get("/api/tour-types");
-                setTourTypes(response.data);
-            } catch (error) {
-                console.error("Error fetching tour types:", error);
-            }
-        };
-
         fetchTourTypes();
+        fetchPhoneNumbers();
 
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 300);
@@ -86,6 +98,9 @@ export default function Layout() {
         window.location.reload();
     };
 
+    // Randomly select a phone number
+    const randomPhoneNumber = phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)];
+
     return (
         <>
             <VisitorTracker />
@@ -95,7 +110,7 @@ export default function Layout() {
                     <div className={`flex items-center transition-all duration-300 w-auto opacity-100`}>
                         <Link to="/">
                             <img 
-                                src="/images/waguer.png" 
+                                src="/images/logo.svg" 
                                 alt="logo" 
                                 className="lg:w-28 md:w-24 w-20 lg:scale-125 md:scale-110 scale-105 transform lg:hover:scale-[1.3] md:hover:scale-105 hover:scale-100 transition-transform duration-300"
                             />
@@ -148,6 +163,10 @@ export default function Layout() {
                         <Link to="/blog" className={getNavLinkClassTour('/blog')}>
                             <FileText size={20} className="mr-1" />
                             <span>Blog</span>
+                        </Link>
+                        <Link to="/contact-us" className={getNavLinkClass('/contact-us')}>
+                            <Phone size={20} className="mr-1" />
+                            <span>Contact</span>
                         </Link>
                     </div>
 
@@ -217,6 +236,10 @@ export default function Layout() {
                             <FileText size={18} className="mr-2" />
                             <span>Blog</span>
                         </Link>
+                        <Link to="/contact-us" className={getNavLinkClass('/contact-us')}>
+                            <Phone size={20} className="mr-1" />
+                            <span>Contact</span>
+                        </Link>
                     </div>
                 </div>
             </header>
@@ -225,6 +248,20 @@ export default function Layout() {
                 <Outlet />
             </main>
 
+            {/* WhatsApp Button */}
+            <a
+                href={`https://wa.me/${randomPhoneNumber}`}                            // Replace with your WhatsApp number
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`fixed bottom-20 right-6 p-3 rounded-full bg-green-500 text-white shadow-lg transform transition-all duration-300 hover:scale-110 z-50 ${
+                    showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'
+                }`}
+                aria-label="Chat on WhatsApp"
+            >
+                <MessageCircle size={24} />
+            </a>
+
+            {/* Scroll to Top Button */}
             <button
                 onClick={scrollToTop}
                 className={`fixed bottom-6 right-6 p-3 rounded-full bg-gradient-to-r from-orange-600 to-yellow-600 text-white shadow-lg transform transition-all duration-300 hover:scale-110 z-50 ${

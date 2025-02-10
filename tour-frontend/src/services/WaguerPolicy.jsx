@@ -29,7 +29,7 @@ const WaguerPolicy = () => {
           Introduction
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          Welcome to Sharming Morocco Tours. Your privacy is of the utmost importance to us. This Privacy Policy
+          Welcome to Charming Tours to Morocco. Your privacy is of the utmost importance to us. This Privacy Policy
           outlines how we collect, use, store, and protect the information that you provide when interacting
           with our services, including when you visit our website, make a booking, or communicate with us.
         </p>
@@ -67,9 +67,8 @@ const WaguerPolicy = () => {
           </li>
         </ul>
         <p className="text-gray-700 text-lg leading-relaxed">
-          Please note that we do not collect any payment information directly. Any payments made through our website
-          are processed by trusted third-party payment providers, and we do not store sensitive financial information
-          such as credit card numbers or bank details.
+          Please note that <strong>all payments are made in cash</strong>, and we do not process any payments directly on our website.
+          This means we do not collect or store any payment information, such as credit card numbers or bank details.
         </p>
       </section>
 
@@ -85,7 +84,7 @@ const WaguerPolicy = () => {
         <ul className="list-disc pl-5 text-gray-700 text-lg leading-relaxed">
           <li>
             <strong>To Provide Our Services:</strong> We use your information to process bookings, respond to inquiries,
-            and ensure that you have a smooth experience with Sharming Morocco Tours.
+            and ensure that you have a smooth experience with Charming Tours to Morocco.
           </li>
           <li>
             <strong>To Improve Our Website and Services:</strong> Usage data helps us analyze how our website is used,
@@ -114,7 +113,7 @@ const WaguerPolicy = () => {
           How We Protect Your Information
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          At Sharming Morocco Tours, we are committed to safeguarding your personal information. We use a variety of
+          At Charming Tours to Morocco, we are committed to safeguarding your personal information. We use a variety of
           security measures to ensure that your data is protected from unauthorized access, alteration, or disclosure.
         </p>
         <p className="text-gray-700 text-lg leading-relaxed">
@@ -139,10 +138,9 @@ const WaguerPolicy = () => {
           Third-Party Services
         </h2>
         <p className="text-gray-700 text-lg leading-relaxed">
-          We may engage third-party services to assist in providing certain aspects of our services, such as payment
-          processing, email marketing, or data analytics. These third-party services may have access to your information,
-          but they are required to use it only to provide the services we have contracted them for, and they are not
-          permitted to use your data for any other purpose.
+          We may engage third-party services to assist in providing certain aspects of our services, such as email marketing
+          or data analytics. However, <strong>we do not process any payments on our website</strong>, and therefore, we do not
+          engage third-party payment processors. All payments are made in cash.
         </p>
         <p className="text-gray-700 text-lg leading-relaxed">
           We ensure that our third-party partners are compliant with relevant data protection laws and have appropriate
@@ -216,10 +214,10 @@ const WaguerPolicy = () => {
           please contact us at:
         </p>
         <p className="text-gray-700 text-lg leading-relaxed">
-          Email: <a href="mailto:info@sharmingmoroccotours.com" className="text-blue-600 hover:underline">info@sharmingmoroccotours.com</a>
+          Email: <a href="mailto:cm2ours@gmail.com" className="text-blue-600 hover:underline">cm2ours@gmail.com</a>
         </p>
-        <p className="text-gray-700 text-lg leading-relaxed">Phone: +1 (123) 456-7890</p>
-        <p className="text-gray-700 text-lg leading-relaxed">Address: 1234 Travel Road, Wander City, Morocco</p>
+        <p className="text-gray-700 text-lg leading-relaxed">Phone: +h+1 (312) 414-6237</p>
+        <p className="text-gray-700 text-lg leading-relaxed">Address: 4413 N Kenneth avenue</p>
       </section>
     </div>
   );

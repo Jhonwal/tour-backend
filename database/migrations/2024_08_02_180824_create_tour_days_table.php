@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('number');
             $table->text('description')->nullable();
+            $table->json('hotels')->nullable();
             $table->unsignedBigInteger('tour_id');
             $table->foreign('tour_id')->references('id')->on('tours')->onDelete('cascade');
             $table->timestamps();

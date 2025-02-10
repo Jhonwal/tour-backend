@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { PlusCircle, Pencil, Eye, Loader2 } from 'lucide-react';
-import { toast } from 'react-toastify';
+import { PlusCircle, Pencil, Eye, Loader2, Trash2 } from 'lucide-react';
+import { toast, ToastContainer } from 'react-toastify';
 import {
   Card,
   CardContent,
@@ -36,23 +36,36 @@ const TourTypeManagement = () => {
     try {
       setIsLoading(true);
       const token = getToken();
-      const response = await api.get('/api/tour-types/type',
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
+      const response = await api.get('/api/tour-types/type', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setTourTypes(response.data);
     } catch (error) {
-      toast.error("Failed to fetch tour types");
+      toast.error('Failed to fetch tour types');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleDeleteTourType = async (id) => {
+    try {
+      const token = getToken();
+      await api.delete(`/api/tour-types/type/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      toast.success('Tour type deleted successfully');
+      fetchTourTypes(); // Refresh the list
+    } catch (error) {
+      toast.error('Failed to delete tour type');
+    }
+  };
+
   if (isLoading) {
-    return <Loading/>;
+    return <Loading />;
   }
 
   return (
@@ -74,15 +87,17 @@ const TourTypeManagement = () => {
             key={type.id}
             type={type}
             onView={() => {
-              navigate(`/admin/tours/tour-types/type/${type.id}`)
+              navigate(`/admin/tours/tour-types/type/${type.id}`);
             }}
             onEdit={() => {
               setSelectedType(type);
               setIsEditOpen(true);
             }}
+            onDelete={() => handleDeleteTourType(type.id)}
           />
         ))}
-      </div>     
+      </div>
+
       <EditTourTypeDialog
         isOpen={isEditOpen}
         setIsOpen={setIsEditOpen}
@@ -95,11 +110,12 @@ const TourTypeManagement = () => {
         setIsOpen={setIsAddOpen}
         onAdd={fetchTourTypes}
       />
+      <ToastContainer/>
     </div>
   );
 };
 
-const TourTypeCard = ({ type, onView, onEdit }) => {
+const TourTypeCard = ({ type, onView, onEdit, onDelete }) => {
   return (
     <Card className="w-full hover:shadow-lg transition-shadow duration-200">
       <CardHeader>
@@ -127,6 +143,15 @@ const TourTypeCard = ({ type, onView, onEdit }) => {
             <Pencil className="h-4 w-4" />
             Edit
           </button>
+          {type.tours_count === 0 && (
+            <button
+              onClick={onDelete}
+              className="flex items-center gap-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </button>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -262,6 +287,7 @@ const AddTourTypeDialog = ({ isOpen, setIsOpen, onAdd }) => {
       onAdd();
       toast.success("Tour type added successfully");
     } catch (error) {
+      console.error(error)
       toast.error("Failed to add tour type");
     } finally {
       setIsSubmitting(false);

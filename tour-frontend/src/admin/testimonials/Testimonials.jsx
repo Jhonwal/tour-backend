@@ -16,322 +16,360 @@ import {
     DialogTitle,
     DialogDescription,
     DialogClose,
-  } from "@/components/ui/dialog";
-import { Circle } from "lucide-react";
+} from "@/components/ui/dialog";
+import { Circle, Star, MessageCircle, Mail, User } from "lucide-react";
 import { getToken } from "@/services/getToken";
 import { Button } from "@/components/ui/button";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 const Testimonials = () => {
-  const [testimonials, setTestimonials] = useState([]);
-  const [filteredTestimonials, setFilteredTestimonials] = useState([]);
-  const [stateCounts, setStateCounts] = useState({ pending: 0, accept: 0, decline: 0 });
-  const [selectedState, setSelectedState] = useState(null); // State filter
-  const api = useApi();
-  const [currentTestimonial, setCurrentTestimonial] = useState(null);
-  const [loding, setLoading] = useState(false);
-  const [alert, setAlert] = useState({ visible: false, message: "" }); // Alert state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+    const [testimonials, setTestimonials] = useState([]);
+    const [filteredTestimonials, setFilteredTestimonials] = useState([]);
+    const [stateCounts, setStateCounts] = useState({ pending: 0, accept: 0, decline: 0 });
+    const [selectedState, setSelectedState] = useState(null);
+    const api = useApi();
+    const [currentTestimonial, setCurrentTestimonial] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage] = useState(10);
 
-  // Fetch testimonials from the backend
-  useEffect(() => {
-    const token =  getToken();
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
-
-    api.get("/api/testimonials/all", { headers }) // Replace with your actual API endpoint
-      .then((response) => {
-        setTestimonials(response.data);
-        setFilteredTestimonials(response.data); // Initially show all testimonials
-
-        // Calculate state counts
-        const counts = {
-          pending: response.data.filter((t) => t.state === "pending").length,
-          accept: response.data.filter((t) => t.state === "accept").length,
-          decline: response.data.filter((t) => t.state === "decline").length,
+    useEffect(() => {
+        const token = getToken();
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         };
-        setStateCounts(counts);
-        setLoading(true);
-      })
-      .catch((error) => console.error("Error fetching testimonials:", error));
-  }, []);
 
-  // Filter testimonials based on selectedState
-  useEffect(() => {
-    if (selectedState) {
-      setFilteredTestimonials(testimonials.filter((t) => t.state === selectedState));
-      setCurrentPage(1);
-    } else {
-      setFilteredTestimonials(testimonials);
-      setCurrentPage(1);
+        api.get("/api/testimonials/all", { headers })
+            .then((response) => {
+                setTestimonials(response.data);
+                setFilteredTestimonials(response.data);
+                const counts = {
+                    pending: response.data.filter((t) => t.state === "pending").length,
+                    accept: response.data.filter((t) => t.state === "accept").length,
+                    decline: response.data.filter((t) => t.state === "decline").length,
+                };
+                setStateCounts(counts);
+                setLoading(true);
+            })
+            .catch((error) => {
+                toast.error("Failed to fetch testimonials");
+            });
+    }, []);
+
+    useEffect(() => {
+        if (selectedState) {
+            setFilteredTestimonials(testimonials.filter((t) => t.state === selectedState));
+            setCurrentPage(1);
+        } else {
+            setFilteredTestimonials(testimonials);
+            setCurrentPage(1);
+        }
+    }, [selectedState, testimonials]);
+
+    const handleStatusUpdate = (id, newState) => {
+        const token = getToken();
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        };
+
+        api.put(`/api/testimonials/${id}`, { state: newState }, { headers })
+            .then((response) => {
+                setTestimonials((prev) =>
+                    prev.map((t) => (t.id === id ? { ...t, state: newState } : t))
+                );
+                toast.success(`Status updated to '${newState}' successfully`);
+            })
+            .catch((error) => {
+                toast.error("Failed to update status");
+            });
+    };
+
+    const handleRemove = (id) => {
+        const token = getToken();
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        };
+
+        api.delete(`/api/testimonials/${id}`, { headers })
+            .then(() => {
+                setTestimonials((prev) => prev.filter((t) => t.id !== id));
+                toast.success("Testimonial deleted successfully");
+                setCurrentTestimonial(null);
+            })
+            .catch((error) => {
+                toast.error("Failed to delete testimonial");
+            });
+    };
+
+    const stateColors = {
+        pending: "text-yellow-400 bg-yellow-400",
+        accept: "text-green-400 bg-green-400",
+        decline: "text-red-400 bg-red-400",
+    };
+
+    const stateIcons = {
+        pending: "⌛",
+        accept: "✅",
+        decline: "❌",
+    };
+
+    const handlePagination = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const paginateTestimonials = () => {
+        const indexOfLastTestimonial = currentPage * perPage;
+        const indexOfFirstTestimonial = indexOfLastTestimonial - perPage;
+        return filteredTestimonials.slice(indexOfFirstTestimonial, indexOfLastTestimonial);
+    };
+
+    if (!loading) {
+        return <Loading />;
     }
-  }, [selectedState, testimonials]);
 
-  const handleStatusUpdate = (id, newState) => {
-    const token =  getToken();
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 p-8">
+            <div className="max-w-7xl mx-auto">
+                <h1 className="text-4xl font-bold mb-8 text-center text-orange-800 tracking-tight">
+                    Testimonials Dashboard
+                </h1>
 
-    api.put(`/api/testimonials/${id}`, { state: newState }, { headers })
-      .then((response) => {
-        setTestimonials((prev) =>
-          prev.map((t) => (t.id === id ? { ...t, state: newState } : t))
-        );
-        toast.success(`Status updated to '${newState}' successfully.`);
-      })
-      .catch((error) => console.error("Error updating status:", error));
-  };
-
-  const handleRemove = (id) => {
-    const token =  getToken();
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
-
-    api
-      .delete(`/api/testimonials/${id}`, { headers })
-      .then(() => {
-        setTestimonials((prev) => prev.filter((t) => t.id !== id));
-        toast.success(`Testimonial deleted successfully.`);
-        setCurrentTestimonial(null); // Close dialog
-        hideAlertAfterTimeout();
-      })
-      .catch((error) => console.error("Error deleting testimonial:", error));
-  };
-
-  // const closeAlert = () => {
-  //     setAlert({ visible: false, message: '' });
-  // };
-  // State color mapping
-  const stateColors = {
-    pending: "text-yellow-400 bg-yellow-400",
-    accept: "text-green-400 bg-green-400",
-    decline: "text-red-400 bg-red-400",
-  };
-  const handlePagination = (pageNumber) => {
-      setCurrentPage(pageNumber);
-  };
-
-  const paginateTestimonials = () => {
-      const indexOfLastTestimonial = currentPage * perPage;
-      const indexOfFirstTestimonial = indexOfLastTestimonial - perPage;
-      return filteredTestimonials.slice(indexOfFirstTestimonial, indexOfLastTestimonial);
-  };
-  if(!loding){
-    return <Loading/>
-  }
-  return (
-    <div className="p-6 relative" >
-      {/* Alert */}
-      {/* {alert.visible && (
-          <Alert variant="success" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-4 max-w-xl">
-            <PartyPopper className="h-6 w-6 mr-2" />
-            <AlertTitle>Success!</AlertTitle>
-            <AlertDescription>{alert.message}</AlertDescription>
-          </Alert>
-      )} */}
-      <h1 className="text-2xl font-bold mb-6 text-center text-orange-700">Testimonials</h1>
-
-      {/* Filter Cards */}
-      <div className="grid lg:grid-cols-3 grid-cols-1 gap-4 mb-6">
-        {Object.entries(stateCounts).map(([state, count]) => (
-          <div
-            key={state}
-            onClick={() => setSelectedState(state === selectedState ? null : state)} // Toggle filter
-            className={`cursor-pointer group w-full h-44 flex flex-col justify-center items-center relative rounded-xl overflow-hidden shadow-md 
-              ${state === "pending" ? "bg-yellow-100 text-yellow-500" : ""}
-              ${state === "accept" ? "bg-green-100 text-green-500" : ""}
-              ${state === "decline" ? "bg-red-100 text-red-500" : ""}
-              ${selectedState === state ? "ring-4 ring-offset-2 ring-orange-400" : ""}`}
-          >
-            <svg
-              viewBox="0 0 200 200"
-              xmlns="http://www.w3.org/2000/svg"
-              className={`absolute blur z-10 duration-500 group-hover:blur-none group-hover:scale-105 
-                ${state === "pending" ? "fill-yellow-300" : ""}
-                ${state === "accept" ? "fill-green-300" : ""}
-                ${state === "decline" ? "fill-red-300" : ""}`}
-            >
-              <path
-                transform="translate(100 100)"
-                d="M39.5,-49.6C54.8,-43.2,73.2,-36.5,78.2,-24.6C83.2,-12.7,74.8,4.4,69,22.5C63.3,40.6,60.2,59.6,49.1,64.8C38.1,70,19,61.5,0.6,60.7C-17.9,59.9,-35.9,67,-47.2,61.9C-58.6,56.7,-63.4,39.5,-70,22.1C-76.6,4.7,-84.9,-12.8,-81.9,-28.1C-79,-43.3,-64.6,-56.3,-49.1,-62.5C-33.6,-68.8,-16.8,-68.3,-2.3,-65.1C12.1,-61.9,24.2,-55.9,39.5,-49.6Z"
-              ></path>
-            </svg>
-
-            <div className="z-20 flex flex-col justify-center items-center">
-              <span className="font-bold text-6xl ml-2">{count}</span>
-              <p className="font-bold capitalize">{state}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      {selectedState &&(
-        <div className="flex justify-end p-4">
-          <Button variant='link' className='w-1/3 hover:bg-orange-300' onClick={() => setSelectedState(null)}>Remove filter</Button>
-        </div>
-      )}
-      {/* Testimonials Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full table-auto border-collapse border border-gray-200">
-          <thead className="bg-orange-100">
-            <tr>
-              <th className="border border-orange-300 px-4 py-2 text-left">Name</th>
-              <th className="border border-orange-300 px-4 py-2 text-left">Email</th>
-              <th className="border border-orange-300 px-4 py-2 text-left">Message</th>
-              <th className="border border-orange-300 px-4 py-2 text-left">Rating</th>
-              <th className="border border-orange-300 px-4 py-2 text-left">State</th>     
-              <th className="border border-orange-300 px-4 py-2 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginateTestimonials().map((testimonial) => (
-              <tr key={testimonial.id} className="odd:bg-white even:bg-gray-50 hover:bg-orange-50">
-                  <td className="border border-orange-300 px-4 py-2">{testimonial.name}</td>
-                  <td className="border border-orange-300 px-4 py-2">{testimonial.email}</td>
-                  <td className="border border-orange-300 px-4 py-2">
-                  <TooltipProvider>
-                      <Tooltip>
-                          <TooltipTrigger asChild>
-                              <p className="hover:cursor-pointer">Show</p>
-                          </TooltipTrigger>
-                      <TooltipContent>
-                          <div className="max-w-lg">
-                              <h1 className="text-center text-xl font-semibold text-white bg-orange-300">Message</h1>
-                              <p className="p-6">{testimonial.message}</p>
-                          </div>
-                      </TooltipContent>
-                  </Tooltip>
-              </TooltipProvider>
-                  </td>
-                  <td className="border border-orange-300 px-4 py-2">{testimonial.rating}</td>
-                  <td className="border border-orange-300 mx-auto px-4 py-2">
-                    <span><Circle className={`mx-auto ${stateColors[testimonial.state]}`}/></span>
-                  </td>
-                  <td className="border border-orange-300 px-4 py-2">
-                      <Dialog>
-                          <DialogTrigger asChild>
-                          <button
-                              onClick={() => setCurrentTestimonial(testimonial)}
-                              className="px-3 py-2 w-full text-white bg-orange-500 rounded-md hover:bg-orange-600"
-                          >
-                              Update Status
-                          </button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Update Status</DialogTitle>
-                            </DialogHeader>
-                            <DialogDescription>
-                                Choose a new status for the testimonial.
-                            </DialogDescription>
-                            <div className="space-y-4">
-                                {testimonial.state === "pending" && (
-                                  <>
-                                    <DialogClose className="w-full">
-                                        <button
-                                        onClick={() => handleStatusUpdate(testimonial.id, "accept")}
-                                        className="w-full px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600"
-                                        >
-                                        Accept
-                                        </button>
-                                    </DialogClose>
-                                    <DialogClose className="w-full">
-                                        <button
-                                        onClick={() => handleStatusUpdate(testimonial.id, "decline")}
-                                        className="w-full px-4 py-2 text-white bg-red-300 rounded-md hover:bg-red-400"
-                                        >
-                                        Decline
-                                        </button>
-                                    </DialogClose>
-                                  </>
-                                )}
-                                {testimonial.state === "accept" && (
-                                    <>
-                                      <DialogClose className="w-full">
-                                          <button
-                                              onClick={() => handleStatusUpdate(testimonial.id, "pending")}
-                                              className="w-full px-4 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
-                                                                      >
-                                              Set to Pending
-                                          </button>
-                                      </DialogClose>
-                                      <DialogClose className="w-full">
-                                          <button
-                                              onClick={() => handleStatusUpdate(testimonial.id, "decline")}
-                                              className="w-full px-4 py-2 text-white bg-red-300 rounded-md hover:bg-red-400"
-                                              >
-                                              Decline
-                                          </button>                                      
-                                      </DialogClose>
-                                    </>
-                                )}
-                                {testimonial.state === "decline" && (
-                                    <>
-                                      <DialogClose className="w-full">
-                                          <button
-                                              onClick={() => handleStatusUpdate(testimonial.id, "pending")}
-                                              className="w-full px-4 py-2 text-white bg-yellow-500 rounded-md hover:bg-yellow-600"
-                                                                      >
-                                              Set to Pending
-                                          </button>
-                                      </DialogClose>
-                                      <DialogClose className="w-full">
-                                          <button
-                                          onClick={() => handleStatusUpdate(testimonial.id, "accept")}
-                                          className="w-full px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600"
-                                          >
-                                          Accept
-                                          </button>
-                                      </DialogClose>
-                                    </>
-                                )}
+                {/* Stats Cards */}
+                <div className="grid lg:grid-cols-3 gap-6 mb-8">
+                    {Object.entries(stateCounts).map(([state, count]) => (
+                        <div
+                            key={state}
+                            onClick={() => setSelectedState(state === selectedState ? null : state)}
+                            className={`
+                                transform transition-all duration-300 hover:scale-105
+                                cursor-pointer rounded-xl p-6 shadow-lg backdrop-blur-sm
+                                ${state === "pending" ? "bg-yellow-50/90 hover:bg-yellow-100/90" : ""}
+                                ${state === "accept" ? "bg-green-50/90 hover:bg-green-100/90" : ""}
+                                ${state === "decline" ? "bg-red-50/90 hover:bg-red-100/90" : ""}
+                                ${selectedState === state ? "ring-4 ring-orange-400" : ""}
+                            `}
+                        >
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-6xl font-bold mb-2">
+                                        {stateIcons[state]} {count}
+                                    </p>
+                                    <p className="text-xl font-semibold capitalize">
+                                        {state} Testimonials
+                                    </p>
+                                </div>
                             </div>
-                            <DialogFooter>
-                              <button
-                                onClick={() => handleRemove(testimonial.id)}
-                                className="w-full px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600"
-                              >
-                                  Remove this testimonila definitlly
-                              </button>
-                            </DialogFooter>
-                          </DialogContent>
-                      </Dialog>
-                  </td>
-              </tr>                      
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className="pagination flex justify-center mt-4">
-          {[...Array(Math.ceil(filteredTestimonials.length / perPage)).keys()].map((pageNumber) => (
-              <button
-                  key={pageNumber}
-                  onClick={() => handlePagination(pageNumber + 1)}
-                  className={`px-3 py-1 text-sm font-medium rounded-md ${
-                      currentPage === pageNumber + 1 
-                        ? "bg-orange-500 text-white"
-                        : "bg-orange-200 text-orange-700 hover:bg-orange-300"
-                  }`}
-              >
-                  {pageNumber + 1}
-              </button>
-          ))}
+                        </div>
+                    ))}
+                </div>
+
+                {selectedState && (
+                    <div className="flex justify-end mb-4">
+                        <Button
+                            onClick={() => setSelectedState(null)}
+                            className="bg-orange-600 text-white hover:bg-orange-700 transition-colors"
+                        >
+                            Clear Filter
+                        </Button>
+                    </div>
+                )}
+
+                {/* Testimonials Table */}
+                <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full">
+                            <thead>
+                                <tr className="bg-orange-600 text-white">
+                                    <th className="px-6 py-4 text-left">User</th>
+                                    <th className="px-6 py-4 text-left">Contact</th>
+                                    <th className="px-6 py-4 text-left">Feedback</th>
+                                    <th className="px-6 py-4 text-center">Rating</th>
+                                    <th className="px-6 py-4 text-center">Status</th>
+                                    <th className="px-6 py-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {paginateTestimonials().map((testimonial) => (
+                                    <tr
+                                        key={testimonial.id}
+                                        className="border-b border-orange-100 hover:bg-orange-50 transition-colors"
+                                    >
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center">
+                                                <User className="h-5 w-5 text-orange-600 mr-2" />
+                                                {testimonial.name}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center">
+                                                <Mail className="h-5 w-5 text-orange-600 mr-2" />
+                                                {testimonial.email}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger>
+                                                        <div className="flex items-center cursor-pointer">
+                                                            <MessageCircle className="h-5 w-5 text-orange-600 mr-2" />
+                                                            <span className="text-orange-600">View Message</span>
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="max-w-md p-4 bg-white shadow-xl rounded-lg">
+                                                        <p className="text-gray-700">{testimonial.message}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex justify-center items-center">
+                                                <Star className="h-5 w-5 text-yellow-400 mr-1" />
+                                                <span>{testimonial.rating}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex justify-center">
+                                                <Circle className={`h-4 w-4 ${stateColors[testimonial.state]}`} />
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <Dialog>
+                                                <DialogTrigger asChild>
+                                                    <Button
+                                                        onClick={() => setCurrentTestimonial(testimonial)}
+                                                        className="w-full bg-orange-600 text-white hover:bg-orange-700 transition-colors"
+                                                    >
+                                                        Manage
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent className="sm:max-w-md">
+                                                    <DialogHeader>
+                                                        <DialogTitle className="text-2xl font-bold text-orange-800">
+                                                            Update Status
+                                                        </DialogTitle>
+                                                        <DialogDescription>
+                                                            Choose a new status for this testimonial
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                    <div className="space-y-4">
+                                                        {testimonial.state === "pending" && (
+                                                            <>
+                                                                <DialogClose className="w-full">
+                                                                    <Button
+                                                                        onClick={() => handleStatusUpdate(testimonial.id, "accept")}
+                                                                        className="w-full bg-green-600 hover:bg-green-700"
+                                                                    >
+                                                                        Accept
+                                                                    </Button>
+                                                                </DialogClose>
+                                                                <DialogClose className="w-full">
+                                                                    <Button
+                                                                        onClick={() => handleStatusUpdate(testimonial.id, "decline")}
+                                                                        className="w-full bg-red-600 hover:bg-red-700"
+                                                                    >
+                                                                        Decline
+                                                                    </Button>
+                                                                </DialogClose>
+                                                            </>
+                                                        )}
+                                                        {testimonial.state === "accept" && (
+                                                            <>
+                                                                <DialogClose className="w-full">
+                                                                    <Button
+                                                                        onClick={() => handleStatusUpdate(testimonial.id, "pending")}
+                                                                        className="w-full bg-yellow-600 hover:bg-yellow-700"
+                                                                    >
+                                                                        Set to Pending
+                                                                    </Button>
+                                                                </DialogClose>
+                                                                <DialogClose className="w-full">
+                                                                    <Button
+                                                                        onClick={() => handleStatusUpdate(testimonial.id, "decline")}
+                                                                        className="w-full bg-red-600 hover:bg-red-700"
+                                                                    >
+                                                                        Decline
+                                                                    </Button>
+                                                                </DialogClose>
+                                                            </>
+                                                        )}
+                                                        {testimonial.state === "decline" && (
+                                                            <>
+                                                                <DialogClose className="w-full">
+                                                                    <Button
+                                                                        onClick={() => handleStatusUpdate(testimonial.id, "pending")}
+                                                                        className="w-full bg-yellow-600 hover:bg-yellow-700"
+                                                                    >
+                                                                        Set to Pending
+                                                                    </Button>
+                                                                </DialogClose>
+                                                                <DialogClose className="w-full">
+                                                                    <Button
+                                                                        onClick={() => handleStatusUpdate(testimonial.id, "accept")}
+                                                                        className="w-full bg-green-600 hover:bg-green-700"
+                                                                    >
+                                                                        Accept
+                                                                    </Button>
+                                                                </DialogClose>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                    <DialogFooter>
+                                                        <Button
+                                                            onClick={() => handleRemove(testimonial.id)}
+                                                            className="w-full bg-red-600 hover:bg-red-700"
+                                                        >
+                                                            Delete Testimonial
+                                                        </Button>
+                                                    </DialogFooter>
+                                                </DialogContent>
+                                            </Dialog>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {/* Pagination */}
+                <div className="flex justify-center mt-6 gap-2">
+                    {[...Array(Math.ceil(filteredTestimonials.length / perPage))].map((_, index) => (
+                        <Button
+                            key={index}
+                            onClick={() => handlePagination(index + 1)}
+                            className={`
+                                px-4 py-2 rounded-lg transition-colors
+                                ${currentPage === index + 1
+                                    ? "bg-orange-600 text-white"
+                                    : "bg-white text-orange-600 hover:bg-orange-100"}
+                                shadow-sm hover:shadow-md
+                            `}
+                        >
+                            {index + 1}
+                        </Button>
+                    ))}
+                </div>
+
+                {/* Toast Container */}
+                <ToastContainer
+                    position="top-center"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                    className="mt-16"
+                />
+            </div>
         </div>
-        <ToastContainer 
-          position="top-center"
-          autoClose={5000}
-          theme="dark"
-        />
-    </div>
-  );
+    );
 };
 
 export default Testimonials;

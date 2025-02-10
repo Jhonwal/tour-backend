@@ -22,6 +22,7 @@ const DayDetails = ({ dayId }) => {
   const [error, setError] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
 
   const autoplayPlugin = useRef(
     Autoplay({ delay: 3000, stopOnInteraction: false }) // Autoplay carousel
@@ -32,7 +33,6 @@ const DayDetails = ({ dayId }) => {
       try {
         const response = await api.get(`/api/tour/day/${dayId}`);
         setDay(response.data);
-        console.log(response.data)
         setMainImage(response.data.day_images[0]?.url || null); // Set the first image as the main image
         setLoading(false);
       } catch (err) {
@@ -47,7 +47,7 @@ const DayDetails = ({ dayId }) => {
   if (loading) {
     return <Loading />;
   }
-
+  const hotels = day?.hotels ? JSON.parse(day.hotels) : [];
   if (error) {
     return <div className="text-center text-red-500">{error}</div>;
   }
@@ -85,8 +85,32 @@ const DayDetails = ({ dayId }) => {
                         ) : (
                         <p>No activities available.</p>
                     )}
-
                 </div>
+                {hotels.length > 0 && (
+                    <div className="mt-6 p-2">
+                        <h3 className="text-2xl font-bold text-orange-500 mb-4">Stay At:</h3>
+                        <p className="text-sm text-orange-600 mb-4 italic">
+                            Click on a hotel name to see more details.
+                        </p>
+                        <div className="flex flex-wrap gap-3">
+                            {hotels.map((hotel, index) => (
+                                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                    <div className="p-2">
+                                        <a
+                                            href={hotel.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-orange-700 hover:text-orange-900 font-semibold text-lg hover:underline transition duration-300"
+                                        >
+                                            {hotel.name}
+                                        </a>
+                                        <p className="text-sm text-gray-600 mt-2">{hotel.description}</p> {/* Add a description to your hotel data */}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
             <div className="lg:w-1/2 text-center place-content-center">
                 {mainImage && (

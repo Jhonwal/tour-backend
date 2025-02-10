@@ -1,4 +1,3 @@
-// src/admin/LayoutAdmin.jsx
 import { Route, Routes } from 'react-router-dom';
 import NotFound from '../components/NotFound';
 import Sidebar from './components/Sidbar';
@@ -14,15 +13,17 @@ import DayImages from './tours/DayImages';
 import Testimonials from '@/admin/testimonials/Testimonials';
 import MainBook from '@/admin/booking/MainBook';
 import { Page } from './sideBar/sidBar';
-import TourTypesTable from './tours/TourTypesTable';
 import TourDetails from './tours/view/TourDetails';
 import UpdateTour from './tours/UpdateTour';
-import UserProfile from './profile/UserProfile';
 import UserProfileManagement from './profile/UserProfileManagement';
 import CategoriesManagement from './blogs/CategoriesManagement';
 import TourTypeManagement from './tours/TourTypeManagement';
 import ViewTourType from './tours/view/ViewTourType';
 import PostsManagement from './blogs/PostsManagement';
+import AdminFAQPanel from './faqs/AdminFAQPanel';
+import PromotionManagement from './promotions/PromotionManagement';
+import TourRequestsManager from './tour-requests/TourRequestsManager';
+import ActivityTable from './activity/ActivityTable';
 
 function LayoutAdmin() {
   return (
@@ -46,6 +47,10 @@ function LayoutAdmin() {
           <Route path="/profile" element={<UserProfileManagement />} />
           <Route path="/blogs" element={<CategoriesManagement />} />
           <Route path="/blogs/categories/:categoryId/posts" element={<PostsManagement />} />
+          <Route path="/faqs" element={<AdminFAQPanel />} />
+          <Route path="/promotions" element={<PromotionManagement />} />
+          <Route path="/tour-requests" element={<TourRequestsManager />} />
+          <Route path="/activities" element={<ActivityTable />} />
         </Route>
         <Route path="/pagee" element={<Page />} />
         <Route path="*" element={<NotFound />} />

@@ -37,7 +37,6 @@ const BlogPage = () => {
         setFeaturedPost(response.data.featured_post);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching posts', error);
         setLoading(false);
       }
     };

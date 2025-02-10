@@ -3,6 +3,7 @@ import React from 'react';
 import useApi from '@/services/api';
 import { getToken } from '@/services/getToken';
 import { toast } from 'react-toastify';
+import { Input } from '@/components/ui/input';
 
 const PricesForm = ({ tourData, onSuccess }) => {
   const api = useApi();
@@ -50,7 +51,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">3 Stars (2 People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="3-stars|2"
                   defaultValue={price['3-stars|2']}
@@ -59,7 +60,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">4 Stars (2 People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="4-stars|2"
                   defaultValue={price['4-stars|2']}
@@ -68,7 +69,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">4&5 Stars (2 People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="4&5-stars|2"
                   defaultValue={price['4&5-stars|2']}
@@ -77,7 +78,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">5 Stars (2 People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="5-stars|2"
                   defaultValue={price['5-stars|2']}
@@ -89,7 +90,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">3 Stars (3-4 People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="3-stars|3-4"
                   defaultValue={price['3-stars|3-4']}
@@ -98,7 +99,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">4 Stars (3-4 People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="4-stars|3-4"
                   defaultValue={price['4-stars|3-4']}
@@ -107,7 +108,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">4&5 Stars (3-4 People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="4&5-stars|3-4"
                   defaultValue={price['4&5-stars|3-4']}
@@ -116,7 +117,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">5 Stars (3-4 People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="5-stars|3-4"
                   defaultValue={price['5-stars|3-4']}
@@ -128,7 +129,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">3 Stars (5+ People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="3-stars|5<n"
                   defaultValue={price['3-stars|5<n']}
@@ -137,7 +138,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">4 Stars (5+ People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="4-stars|5<n"
                   defaultValue={price['4-stars|5<n']}
@@ -146,7 +147,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">4&5 Stars (5+ People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="4&5-stars|5<n"
                   defaultValue={price['4&5-stars|5<n']}
@@ -155,7 +156,7 @@ const PricesForm = ({ tourData, onSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1 text-orange-700">5 Stars (5+ People)</label>
-                <input
+                <Input variant='orange'
                   type="number"
                   name="5-stars|5<n"
                   defaultValue={price['5-stars|5<n']}

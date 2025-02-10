@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import useApi from '@/services/api';
 import { getToken } from '@/services/getToken';
 import { toast } from 'react-toastify';
+import { Input } from '@/components/ui/input';
 
 const TourImagesForm = ({ tourData, onSuccess }) => {
   const [newImagesCount, setNewImagesCount] = useState(0);
@@ -71,7 +72,8 @@ const TourImagesForm = ({ tourData, onSuccess }) => {
           <label className="block text-sm font-medium mb-1 text-orange-700">
             Number of new images to add
           </label>
-          <input
+          <Input 
+            variant='orange'
             type="number"
             min="0"
             value={newImagesCount}
@@ -81,7 +83,8 @@ const TourImagesForm = ({ tourData, onSuccess }) => {
         </div>
         {Array.from({ length: newImagesCount }).map((_, index) => (
           <div key={index} className="grid grid-cols-2">
-            <input
+            <Input 
+              variant='orange'
               type="file"
               name={`new_images_${index}`}
               className="w-full"

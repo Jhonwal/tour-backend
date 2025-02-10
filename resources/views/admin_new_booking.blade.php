@@ -82,7 +82,7 @@
         <!-- Body Section -->
         <div class="email-body">
             <h4>Dear Admin {{ $name }},</h4>
-            <p>A new booking has just been created on <strong>Sharming Morocco Tours</strong>.</p>
+            <p>A new booking has just been created on <strong>Charming Tours to Morocco</strong>.</p>
             <p>Below is the reservation reference code for your records:</p>
             <div class="reference">
                 {{ $reference }}
@@ -92,8 +92,8 @@
 
         <!-- Footer Section -->
         <div class="email-footer">
-            <p>&copy; {{ date('Y') }} Sharming Morocco Tours. All rights reserved.</p>
-            <p>Visit us at <a href="https://www.sharmingmorocco.com">sharmingmorocco.com</a></p>
+            <p>&copy; {{ date('Y') }} Charming Tours to Morocco. All rights reserved.</p>
+            <p>Visit us at <a href="https://www.charmingtours2morocco.com">charmingtours2morocco.com</a></p>
         </div>
     </div>
 </body>

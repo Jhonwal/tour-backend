@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('admin_new_booking');
+  //return a message 
+  return 'Something went wrong!';
 });
 
 Route::get('/token', function () {

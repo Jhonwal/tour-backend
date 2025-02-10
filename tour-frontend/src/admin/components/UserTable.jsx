@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useApi from "@/services/api";
 import { getToken } from "@/services/getToken";
+import { toast } from "react-toastify";
 
 const UsersTable = () => {
   const [users, setUsers] = useState([]);
@@ -25,10 +26,9 @@ const UsersTable = () => {
         },
       });
       setUsers(response.data.users);
-      console.log(response.data)
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      toast.error("Error fetching users:", error);
       setLoading(false);
     }
   };
