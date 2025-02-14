@@ -44,7 +44,7 @@
         <div style="background-color: #f1f5f9; padding: 30px 20px; text-align: center;">
             <div style="margin-bottom: 20px;">
                 <h4 style="color: #1e293b; margin: 0 0 10px 0; font-size: 16px;">Contact Us</h4>
-                <p style="color: #64748b; margin: 5px 0;">Email: cm2ours@gmail.com</p>
+                <p style="color: #64748b; margin: 5px 0;">Email: contact@charmingtours2morocco.com</p>
                 <p style="color: #64748b; margin: 5px 0;">Phone: +1 (312) 414-6237</p>
             </div>
 

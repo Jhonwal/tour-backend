@@ -90,7 +90,7 @@ class TourDayController extends Controller
         foreach ($day->dayImages as $image) {
             $image->url = URL::to($image->url); 
         }
-    
+        $day->hotels = json_decode($day->hotels);
         return response()->json($day);
     }
 
@@ -120,105 +120,111 @@ class TourDayController extends Controller
     // Add a new hotel to a tour day
     public function addHotel(Request $request, $tourDayId)
     {
-        // Validate the request
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'link' => 'nullable|url',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
+    
         try {
-            // Find the tour day
             $tourDay = TourDay::findOrFail($tourDayId);
-
-            // Parse the existing hotels JSON or initialize an empty array
-            $hotels = $tourDay->hotels ? json_decode($tourDay->hotels, true) : [];
-
-            // Add the new hotel
+            
+            // Properly decode existing hotels or initialize empty array
+            $hotels = [];
+            if ($tourDay->hotels) {
+                $hotels = is_array($tourDay->hotels) ? $tourDay->hotels : json_decode($tourDay->hotels, true);
+                $hotels = is_array($hotels) ? $hotels : [];
+            }
+    
+            // Add new hotel
             $hotels[] = [
                 'name' => $request->name,
                 'link' => $request->link,
             ];
-
-            // Update the hotels field
+    
+            // Store as JSON string
             $tourDay->hotels = json_encode($hotels);
             $tourDay->save();
-
+    
             return response()->json(['message' => 'Hotel added successfully.', 'hotels' => $hotels], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to add hotel.', 'details' => $e->getMessage()], 500);
         }
     }
-
-    // Update an existing hotel in a tour day
+    
+    public function deleteHotel($tourDayId, $hotelIndex)
+    {
+        try {
+            $tourDay = TourDay::findOrFail($tourDayId);
+            
+            // Properly decode existing hotels
+            $hotels = [];
+            if ($tourDay->hotels) {
+                $hotels = is_array($tourDay->hotels) ? $tourDay->hotels : json_decode($tourDay->hotels, true);
+                $hotels = is_array($hotels) ? $hotels : [];
+            }
+    
+            // Check if index exists
+            if (!isset($hotels[$hotelIndex])) {
+                return response()->json(['error' => 'Hotel not found.'], 404);
+            }
+    
+            // Remove hotel at index
+            unset($hotels[$hotelIndex]);
+            $hotels = array_values($hotels); // Re-index array
+    
+            // Store as JSON string
+            $tourDay->hotels = json_encode($hotels);
+            $tourDay->save();
+    
+            return response()->json(['message' => 'Hotel deleted successfully.', 'hotels' => $hotels], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete hotel.', 'details' => $e->getMessage()], 500);
+        }
+    }
+    
     public function updateHotel(Request $request, $tourDayId, $hotelIndex)
     {
-        // Validate the request
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'link' => 'nullable|url',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
-
+    
         try {
-            // Find the tour day
             $tourDay = TourDay::findOrFail($tourDayId);
-
-            // Parse the existing hotels JSON or initialize an empty array
-            $hotels = $tourDay->hotels ? json_decode($tourDay->hotels, true) : [];
-
-            // Check if the hotel index exists
+            
+            // Properly decode existing hotels
+            $hotels = [];
+            if ($tourDay->hotels) {
+                $hotels = is_array($tourDay->hotels) ? $tourDay->hotels : json_decode($tourDay->hotels, true);
+                $hotels = is_array($hotels) ? $hotels : [];
+            }
+    
+            // Check if index exists
             if (!isset($hotels[$hotelIndex])) {
                 return response()->json(['error' => 'Hotel not found.'], 404);
             }
-
-            // Update the hotel
+    
+            // Update hotel
             $hotels[$hotelIndex] = [
                 'name' => $request->name,
                 'link' => $request->link,
             ];
-
-            // Update the hotels field
+    
+            // Store as JSON string
             $tourDay->hotels = json_encode($hotels);
             $tourDay->save();
-
+    
             return response()->json(['message' => 'Hotel updated successfully.', 'hotels' => $hotels], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to update hotel.', 'details' => $e->getMessage()], 500);
-        }
-    }
-
-    // Delete a hotel from a tour day
-    public function deleteHotel($tourDayId, $hotelIndex)
-    {
-        try {
-            // Find the tour day
-            $tourDay = TourDay::findOrFail($tourDayId);
-
-            // Parse the existing hotels JSON or initialize an empty array
-            $hotels = $tourDay->hotels ? json_decode($tourDay->hotels, true) : [];
-
-            // Check if the hotel index exists
-            if (!isset($hotels[$hotelIndex])) {
-                return response()->json(['error' => 'Hotel not found.'], 404);
-            }
-
-            // Remove the hotel
-            array_splice($hotels, $hotelIndex, 1);
-
-            // Update the hotels field
-            $tourDay->hotels = json_encode($hotels);
-            $tourDay->save();
-
-            return response()->json(['message' => 'Hotel deleted successfully.', 'hotels' => $hotels], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete hotel.', 'details' => $e->getMessage()], 500);
         }
     }
 }

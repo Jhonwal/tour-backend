@@ -91,8 +91,9 @@ class TourTypeController extends Controller
         return response()->json($tourType, 201);
     }
 
-    public function update(Request $request, TourType $tourType)
+    public function update(Request $request, $id)
     {
+        $tourType = TourType::find($id);
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',

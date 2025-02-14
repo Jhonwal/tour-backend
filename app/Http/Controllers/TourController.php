@@ -174,7 +174,7 @@ class TourController extends Controller
     public function getThree() 
     {
 
-        $destinations = Tour::limit(6)->get();
+        $destinations = Tour::with('tourType')->limit(6)->get();
         
         $destinations->each(function ($destination) {
             $destination->banner = URL::to($destination->banner);
@@ -226,10 +226,12 @@ class TourController extends Controller
             $days = TourDay::with('dayImages', 'activities.activites')
                 ->where('tour_id', $id)
                 ->get();
+            
             foreach ($days as $day) {
                 foreach ($day->dayImages as $image) {
                     $image->url = URL::to($image->url);
                 }
+                $day->hotels = $day->hotels ? json_decode($day->hotels) : [];
             }
                 
             // Fetch destinations

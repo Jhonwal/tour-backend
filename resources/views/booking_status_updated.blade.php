@@ -177,7 +177,7 @@
                     <p>We are delighted to inform you that your booking has been <strong>confirmed</strong>. We look forward to welcoming you on <strong>{{ $booking->arrival_date }}</strong>.</p>
                 @elseif($booking->status === 'canceled')
                     <strong>Booking Canceled!</strong>
-                    <p>We regret to inform you that your booking has been <strong>canceled</strong>. If this was a mistake, please <a href="mailto:cm2ours@gmail.com">contact us</a> immediately.</p>
+                    <p>We regret to inform you that your booking has been <strong>canceled</strong>. If this was a mistake, please <a href="mailto:contact@charmingtours2morocco.com">contact us</a> immediately.</p>
                 @elseif($booking->status === 'completed')
                     <strong>Booking Completed!</strong>
                     <p>Your booking has been marked as <strong>completed</strong>. We hope you had a wonderful experience with us!</p>
@@ -189,13 +189,13 @@
                 @if($booking->status === 'confirmed')
                     <p><strong>What to Do Next:</strong></p>
                     <p>Your booking is now confirmed! Please <strong>download your receipt</strong> from the <a href="https://charmingtours2morocco.com/check-booking">Check Booking</a> section of our website.</p>
-                    <p>If you have any special requests or need further assistance, feel free to <a href="mailto:cm2ours@gmail.com">contact us</a>.</p>
+                    <p>If you have any special requests or need further assistance, feel free to <a href="mailto:contact@charmingtours2morocco.com">contact us</a>.</p>
                 @elseif($booking->status === 'canceled')
-                    <p>If you wish to rebook or have any questions, please <a href="mailto:cm2ours@gmail.com">contact us</a>. We are here to help!</p>
+                    <p>If you wish to rebook or have any questions, please <a href="mailto:contact@charmingtours2morocco.com">contact us</a>. We are here to help!</p>
                 @endif
             </div>
 
-            <p>If you have any questions or need further assistance, feel free to <a href="mailto:cm2ours@gmail.com">contact us</a>. We’re always happy to help!</p>
+            <p>If you have any questions or need further assistance, feel free to <a href="mailto:contact@charmingtours2morocco.com">contact us</a>. We’re always happy to help!</p>
         </div>
 
         <!-- Footer Section -->

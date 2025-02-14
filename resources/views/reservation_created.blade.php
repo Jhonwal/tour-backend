@@ -153,10 +153,10 @@
             <div class="notice-box">
                 <p><strong>Important Notice:</strong></p>
                 <p>Your reservation request is currently being <strong>reviewed by our dedicated team</strong>. We will notify you as soon as possible with an update regarding the <strong>status of your reservation</strong>.</p>
-                <p>Thank you for your patience and trust in Charming Morocco Tours!</p>
+                <p>Thank you for your patience and trust in Charming Tours 2 Morocco!</p>
             </div>
             
-            <p>If you have any questions or need further assistance, feel free to <a href="mailto:cm2ours.com">contact us</a>. We’re always happy to help!</p>
+            <p>If you have any questions or need further assistance, feel free to <a href="mailto:contact@charmingtours2morocco.com">contact us</a>. We’re always happy to help!</p>
         </div>
 
         <!-- Footer Section -->

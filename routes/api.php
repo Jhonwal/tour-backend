@@ -150,6 +150,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/tour/{id}', [TourController::class, 'destroy']);
 
     Route::apiResource('/tour-types/type', TourTypeController::class);
+    Route::put('/tour-types/type/update/{id}', [TourTypeController::class, 'update']);
     Route::get('/tour-types/type/{tourType}/tours', [TourTypeController::class, 'tours']);
     Route::apiResource('/admin/categories', CategoryController::class)->except(['update', 'destroy']);
     Route::put('/admin/categories/{id}', [CategoryController::class, 'update']);
