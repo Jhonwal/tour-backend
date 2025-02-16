@@ -75,7 +75,7 @@ Route::post('/delete/session', [SessionController::class, 'cleanup']);
 Route::get('/tours/type/{slug}', [TourController::class, "tour_type"]);
 Route::get('/tour/day/{id}', [TourDayController::class, 'getDayDetails']);
 Route::get('/tour-prices/{id}', [TourPriceController::class, 'show']);
-
+Route::get('/all-tours', [TourController::class, 'allTours']);
 Route::post('/testimonials', [TestimonialController::class, 'store']);
 Route::get('/testimonials', [TestimonialController::class, 'index']);
 Route::post('/bookings', [BookingController::class, 'store']);

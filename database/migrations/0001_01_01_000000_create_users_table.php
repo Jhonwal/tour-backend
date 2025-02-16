@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->string('facebook')->nullable();
             $table->string('instagram')->nullable();
+            $table->string('function')->nullable();
             $table->text('bio')->nullable();
             $table->rememberToken();
             $table->timestamps();

@@ -39,6 +39,7 @@ class UserProfileController extends Controller
             'bio' => 'nullable|string|max:1000',
             'facebook' => 'nullable|url',
             'instagram' => 'nullable|url',
+            'role' => 'nullable|string',
         ];
     
         if ($request->hasFile('profile_picture')) {
@@ -69,12 +70,12 @@ class UserProfileController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'currentPassword' => 'required',
-            'newPassword' => 'required|min:8|confirmed'
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed'
         ]);
 
         // Verify current password
-        if (!Hash::check($request->currentPassword, $user->password)) {
+        if (!Hash::check($request->current_password, $user->password)) {
             throw ValidationException::withMessages([
                 'currentPassword' => ['Current password is incorrect']
             ]);
@@ -83,7 +84,7 @@ class UserProfileController extends Controller
         // Update password
         User::find($user->id)
         ->update([
-            'password' => Hash::make($request->newPassword)
+            'password' => Hash::make($request->new_password)
         ]);
 
         return response()->json([

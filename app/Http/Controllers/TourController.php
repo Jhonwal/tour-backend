@@ -31,6 +31,17 @@ class TourController extends Controller
             'types' => $type,
         ]);
     }
+    public function allTours(Request $request)
+    {
+        $tours = Tour::all(); 
+        foreach ($tours as $tour) {
+            $tour->banner = URL::to($tour->banner);
+            $tour->map_image = URL::to($tour->map_image);
+        }
+        return response()->json([
+            'tours' => $tours,
+        ]);
+    }
     public function tour_type($slug)
     {
         $type = TourType::where('slug', $slug)->first();
@@ -59,20 +70,17 @@ class TourController extends Controller
             'depart_city' => 'required|string|max:255',
             'end_city' => 'required|string|max:255',
             'description' => 'required|string|min:10',
-            'map_image' => 'required|file|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048', // Max size: 2MB
-            'banner' => 'required|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max size: 2MB
+            'map_image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048', // Max size: 2MB
+            'banner' => 'nullable|file|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Max size: 2MB
             'duration' => 'required|integer|min:1',
             'tour_type_id' => 'required|exists:tour_types,id', // Validate against existing tour types
         ]);
-
+    
         // Handle validation failure
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
-        // Handle file uploads
-        $mapImagePath = $request->file('map_image')->store('public/tours/maps');
-        $bannerPath = $request->file('banner')->store('public/tours/banners');
+    
         // Create a new tour record
         $tour = new Tour();
         $tour->name = $request->name;
@@ -80,30 +88,45 @@ class TourController extends Controller
         $tour->depart_city = $request->depart_city;
         $tour->end_city = $request->end_city;
         $tour->description = $request->description;
-        $tour->map_image = Storage::url($mapImagePath); // Store file path
-        $tour->banner = Storage::url($bannerPath); // Store file path
         $tour->duration = $request->duration;
         $tour->tour_type_id = $request->tour_type_id;
+    
+        // Handle map image upload if present
+        if ($request->hasFile('map_image')) {
+            $mapImagePath = $request->file('map_image')->store('public/tours/maps');
+            $tour->map_image = Storage::url($mapImagePath); // Store file path
+        }
+    
+        // Handle banner upload if present
+        if ($request->hasFile('banner')) {
+            $bannerPath = $request->file('banner')->store('public/tours/banners');
+            $tour->banner = Storage::url($bannerPath); // Store file path
+        }
+    
         // Save the tour to the database
         $tour->save();
-        $tourID = Tour::all()->last();
-        for ($i = 1;$i <= $request->duration;$i++) {
+    
+        // Create tour days based on duration
+        $tourID = $tour->id; // Use the ID of the newly created tour
+        for ($i = 1; $i <= $request->duration; $i++) {
             $tourDay = new TourDay();
             $tourDay->name = 'waguer';
             $tourDay->number = $i;
-            $tourDay->tour_id = $tourID->id;
+            $tourDay->tour_id = $tourID;
             $tourDay->save();
-
-        };
-        if ($request->file('additional_images')  !== null) {
+        }
+    
+        // Handle additional images if present
+        if ($request->hasFile('additional_images')) {
             foreach ($request->file('additional_images') as $file) {
-                    $filePath = $file->store('public/tours/additional');
-                    TourImage::create([
-                        'url' => Storage::url($filePath),
-                        'tour_id' => $tourID->id
-                    ]);
+                $filePath = $file->store('public/tours/additional');
+                TourImage::create([
+                    'url' => Storage::url($filePath),
+                    'tour_id' => $tourID,
+                ]);
             }
         }
+    
         // Return success response
         return response()->json(['message' => 'Tour added successfully!', 'tour' => $tour], 201);
     }

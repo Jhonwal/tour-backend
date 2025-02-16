@@ -25,6 +25,7 @@ class User extends Authenticatable
         'profile_picture',
         'facebook',
         'instagram',
+        'role',
         'bio',
     ];
 
