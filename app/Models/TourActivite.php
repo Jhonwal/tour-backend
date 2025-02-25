@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class TourActivite extends Model
 {
+    protected $table = 'tour_activites';
+
     protected $fillable = [
-        'tour_id', 'tour_day_id', 'activite_id',
+        'tour_id', 'activite_id',
     ];
 
     public function activites()

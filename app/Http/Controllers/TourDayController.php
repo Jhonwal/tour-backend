@@ -34,7 +34,6 @@ class TourDayController extends Controller
             'tour_day_id' => 'required|exists:tour_days,id', // Ensure the day exists
             'name' => 'required|string|max:255', // Validate day name
             'description' => 'required|string',
-            'activities.*' => 'exists:activites,id', // Ensure each activity ID exists in the activities table
             'hotels' => 'nullable|array',
         ]);
 
@@ -52,23 +51,6 @@ class TourDayController extends Controller
             $tourDay->name = $validated['name'];
             $tourDay->description = $validated['description'];
             $tourDay->save();
-
-            // Remove all existing associations for this day to avoid duplicates
-            TourActivite::where('tour_day_id', $validated['tour_day_id'])->delete();
-
-            // Create new associations for the selected activities
-            if (!empty($validated['activities'])) {
-                foreach ($validated['activities'] as $activityId) {
-                    TourActivite::create([
-                        'tour_id' => $validated['tour_id'],
-                        'tour_day_id' => $validated['tour_day_id'],
-                        'activite_id' => $activityId,
-                    ]);
-                }
-            }
-
-
-            // Commit the transaction
             DB::commit();
 
             return response()->json(['message' => 'Day updated and activities associated successfully.'], 200);
@@ -81,7 +63,7 @@ class TourDayController extends Controller
     
     public function getDayDetails($id)
     {
-        $day = TourDay::with(['activities.activites', 'dayImages'])->find($id);
+        $day = TourDay::with(['dayImages'])->find($id);
 
         if (!$day) {
             return response()->json(['message' => 'Day not found'], 404);
@@ -117,7 +99,6 @@ class TourDayController extends Controller
         }
         return response()->json(['message' => 'Activities added successfully.'], 200);
     }
-    // Add a new hotel to a tour day
     public function addHotel(Request $request, $tourDayId)
     {
         $validator = Validator::make($request->all(), [

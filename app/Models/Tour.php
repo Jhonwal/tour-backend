@@ -22,7 +22,10 @@ class Tour extends Model
     {
         return $this->hasMany(Booking::class);
     }
-
+    public function activites()
+    {
+        return $this->belongsToMany(Activite::class, 'tour_activites', 'tour_id', 'activite_id');
+    }
     public function destinations()
     {
         return $this->hasMany(Destination::class);

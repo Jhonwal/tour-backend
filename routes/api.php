@@ -2,12 +2,12 @@
 
 
 use App\Models\User;
-use App\Models\TourType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\BookingController;
@@ -85,7 +85,7 @@ Route::get('/blog', [BlogController::class, 'index']);
 Route::get('/blog/{slug}', [BlogController::class, 'show']);
 Route::get('/blog/{slug}/related', [BlogController::class, 'related']);
 Route::get('/faqs/frontend', [FaqController::class, 'index']);
-Route::get('/team', [UserProfileController::class, 'getTeamMembers']);
+Route::get('/team-info', [UserProfileController::class, 'getTeamMembers']);
 Route::get('/promotions/front', [PromotionController::class, 'indexFrontend']);
 Route::post('/contact', [ContactController::class, 'store']);
 Route::get('/getAllAnalyticsData', [AnalyticsController::class, 'getAllAnalyticsData']);
@@ -120,7 +120,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/admin/bookings/{id}', [BookingController::class, 'destroy']);
     Route::put('/admin/bookings/{booking}/status', [BookingController::class, 'updateStatus']);
     Route::get('/tours/{id}', [TourController::class, 'showTour']);
-    
+
+    Route::post('/tours/{tourId}/attach-activities', [TourController::class, 'attachActivities']);
+    Route::get('/tours/{tourId}/activities', [TourController::class, 'getTourActivities']);
+    Route::delete('/tours/{tourId}/activities/{activityId}', [TourController::class, 'detachActivity']);
+
     Route::get('/admin/analytics/get-all-analytics-data', [AnalyticsController::class, 'getAllAnalyticsData']);
 
 
@@ -174,4 +178,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/activities', ActivityController::class);
 
     Route::get('/activities/day/{id}', [ActivityController::class, 'getactivitynotexist']);
+
+    Route::apiResource('/team', TeamController::class);
 });

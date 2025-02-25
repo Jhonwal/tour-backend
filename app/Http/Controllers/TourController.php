@@ -137,6 +137,7 @@ class TourController extends Controller
             'tourImages',
             'price',
             'tourDays',
+            'activites',
             'excludedServices',
             'includedServices',
         ])->findOrFail($id);
@@ -170,6 +171,7 @@ class TourController extends Controller
             'tourImages',
             'price',
             'tourDays',
+            'activites',
             'excludedServices',
             'includedServices',
         ])->where('slug', $slug)->first();
@@ -246,7 +248,7 @@ class TourController extends Controller
                 $image->url = URL::to($image->url);
             }
             // Fetch tour days
-            $days = TourDay::with('dayImages', 'activities.activites')
+            $days = TourDay::with('dayImages')
                 ->where('tour_id', $id)
                 ->get();
             
@@ -664,4 +666,57 @@ class TourController extends Controller
         ], 500);
     }
 }
+
+    // Function to attach activities to a tour
+    public function attachActivities(Request $request, $tourId)
+    {
+        // Validate the request
+        $request->validate([
+            'activity_ids' => 'required|array',
+            'activity_ids.*' => 'exists:activites,id',
+        ]);
+
+        // Find the tour
+        $tour = Tour::findOrFail($tourId);
+
+        $tour->activites()->syncWithoutDetaching($request->activity_ids);
+
+        return response()->json([
+            'message' => 'Activities attached successfully',
+        ]);
+    }
+
+    public function detachActivities(Request $request, $tourId)
+    {
+        // Validate the request
+        $request->validate([
+            'activity_ids' => 'required|array',
+            'activity_ids.*' => 'exists:activites,id',
+        ]);
+
+        // Find the tour
+        $tour = Tour::findOrFail($tourId);
+
+        // Detach activities from the tour
+        $tour->activites()->detach($request->activity_ids);
+
+        return response()->json([
+            'message' => 'Activities detached successfully',
+        ]);
+    }
+    // Get activities associated with the tour
+    public function getTourActivities($tourId)
+    {
+        $tour = Tour::findOrFail($tourId);
+        $activities = $tour->activites;
+        return response()->json($activities);
+    }
+
+    // Detach an activity from the tour
+    public function detachActivity($tourId, $activityId)
+    {
+        $tour = Tour::findOrFail($tourId);
+        $tour->activites()->detach($activityId);
+        return response()->json(['message' => 'Activity detached successfully']);
+    }
 }

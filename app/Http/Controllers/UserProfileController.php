@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Team;
 use App\Models\Tour;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -93,17 +94,30 @@ class UserProfileController extends Controller
     }
     public function getTeamMembers()
     {
-        $team =  User::all();
-        $completedBookingCount = Booking::where('status', 'completed')->count();
-        $tourCount = Tour::count();
-
-        foreach ($team as $user) {
-            $user->profile_picture = URL::to($user->profile_picture);
+        try {
+            // Fetch data
+            $users = User::all();
+            $teamMembers = Team::all();
+            $completedBookingCount = Booking::where('status', 'completed')->count();
+            $tourCount = Tour::count();
+    
+            foreach ($teamMembers as $key) {
+                $key->email = null;
+            }
+            $team = $users->merge($teamMembers);
+    
+            foreach ($team as $user) {
+                $user->profile_picture = URL::to($user->profile_picture);
+            }
+    
+            // Return JSON response
+            return response()->json([
+                'teamMembers' => $team,
+                'book' => $completedBookingCount,
+                'tourCount' => $tourCount,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while fetching data.'], 500);
         }
-        return response()->json([
-            'teamMembers' => $team,
-            'book' => $completedBookingCount,
-            'tourCount' => $tourCount,
-        ]);
     }
 }

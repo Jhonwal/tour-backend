@@ -14,4 +14,9 @@ class Activite extends Model
     {
         return $this->hasMany(TourActivite::class);
     }
+
+    public function tours()
+    {
+        return $this->belongsToMany(Tour::class, 'tour_activites', 'activite_id', 'tour_id');
+    }
 }
