@@ -9,11 +9,8 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\ReservationCreated;
 use App\Mail\BookingStatusUpdated;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
@@ -40,10 +37,8 @@ class BookingController extends Controller
     
             if ($total_people <= 2) {
                 $price_category = $validated['tour_level'].'|2';
-            } elseif ($total_people <= 4) {
-                $price_category = $validated['tour_level'].'|3-4';
             } else {
-                $price_category = $validated['tour_level']."|5<n";
+                $price_category = $validated['tour_level'].'|3-4';
             }
     
             $tour_price = TourPrice::where('tour_id', $validated['tour_id'])->first();

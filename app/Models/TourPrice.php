@@ -15,10 +15,6 @@ class TourPrice extends Model
         '4-stars|3-4', 
         '4&5-stars|3-4', 
         '5-stars|3-4',        
-        '3-stars|5<n',
-        '4-stars|5<n',
-        '4&5-stars|5<n',
-        '5-stars|5<n',
         'tour_id',
     ];
 

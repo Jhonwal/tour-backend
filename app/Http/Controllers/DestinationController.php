@@ -43,7 +43,7 @@ class DestinationController extends Controller
     {
         $destination = Destination::find($destinationId);
         
-        if ($destination->number_of_nights != 0) {
+        if ($destination->number_of_nights-1 != 0) {
             $destination2 = Destination::where('tour_id', $destination->tour_id)->first();
             if ($destination2) {
                 $destination2->number_of_nights += $destination->number_of_nights;

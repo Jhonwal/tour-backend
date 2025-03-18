@@ -297,12 +297,12 @@ class TourController extends Controller
             $totalNights = $tour->destinations->sum('number_of_nights');
             $newDuration = (int) $request->input('duration');
 
-            if ($totalNights !== $newDuration) {
+            if ($totalNights !== $newDuration-1) {
                 $destinations = $tour->destinations;
                 $count = count($destinations);
                 if ($count > 0) {
-                    $nightsPerDestination = intdiv($newDuration, $count);
-                    $remainingNights = $newDuration % $count;
+                    $nightsPerDestination = intdiv($newDuration-1, $count);
+                    $remainingNights = ($newDuration-1) % $count;
 
                     foreach ($destinations as $index => $destination) {
                         $destination->number_of_nights = $nightsPerDestination + ($index < $remainingNights ? 1 : 0);
@@ -531,9 +531,8 @@ class TourController extends Controller
          
          $priceColumns = [
              '3-stars|2', '4-stars|2', '4&5-stars|2', '5-stars|2',
-             '3-stars|3-4', '4-stars|3-4', '4&5-stars|3-4', '5-stars|3-4',
-             '3-stars|5<n', '4-stars|5<n', '4&5-stars|5<n', '5-stars|5<n'
-         ];
+             '3-stars|3-4', '4-stars|3-4', '4&5-stars|3-4', '5-stars|3-4'
+            ];
 
          $priceData = [];
          foreach ($priceColumns as $column) {
